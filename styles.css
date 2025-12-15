@@ -256,3 +256,58 @@ header.site-header nav.primary-nav a[aria-current="page"]{
   text-decoration-thickness: 2px;
   text-underline-offset: 3px;
 }
+
+/* =========================
+   Footer
+   ========================= */
+
+.site-footer{
+  margin-top: 4rem;
+  padding: 2.5rem 1.5rem;
+  border-top: 1px solid var(--rule);
+  background: var(--bg);
+}
+
+.footer-inner{
+  max-width: var(--maxw);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+}
+
+.footer-identity{
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.footer-identity strong{
+  font-weight: 600;
+  color: var(--text);
+}
+
+.footer-nav{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 1.5rem;
+}
+
+.footer-nav a{
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.footer-nav a:hover{
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+@media (min-width: 720px){
+  .footer-inner{
+    grid-template-columns: auto 1fr;
+    align-items: baseline;
+  }
+}
