@@ -251,3 +251,8 @@ header.site-header .header-inner { position: relative; }
   }
 }
 
+header.site-header nav.primary-nav a[aria-current="page"]{
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
