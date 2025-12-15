@@ -311,3 +311,68 @@ header.site-header nav.primary-nav a[aria-current="page"]{
     align-items: baseline;
   }
 }
+
+/* =========================
+   Contact Form
+   ========================= */
+
+.contact-form{
+  margin-top: 1.5rem;
+  display: grid;
+  gap: 1.1rem;
+}
+
+.contact-form .field{
+  display: grid;
+  gap: 0.4rem;
+}
+
+.contact-form .field span{
+  font-size: 16px;
+  color: var(--muted);
+}
+
+.contact-form input,
+.contact-form textarea{
+  width: 100%;
+  padding: 12px 12px;
+  font: inherit;
+  border-radius: 12px;
+  border: 1px solid var(--rule);
+  background: #FFFFFF;
+  color: var(--text);
+}
+
+.contact-form input:focus,
+.contact-form textarea:focus{
+  outline: none;
+  border-color: rgba(32,157,80,0.55);
+  box-shadow: 0 0 0 3px rgba(32,157,80,0.12);
+}
+
+.contact-form button{
+  justify-self: start;
+  padding: 10px 14px;
+  font: inherit;
+  font-weight: 600;
+  border-radius: 12px;
+  border: none;
+  background: var(--text);
+  color: var(--accent);
+  cursor: pointer;
+}
+
+.contact-form button:hover{
+  background: var(--accent);
+  color: #FFFFFF;
+}
+
+/* Honeypot should not be visible */
+.contact-form .hp{
+  position: absolute;
+  left: -10000px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
