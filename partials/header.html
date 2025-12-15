@@ -1,0 +1,22 @@
+<header class="site-header">
+  <div class="header-inner">
+    <a href="/" class="brand">
+      <div class="brand-title">Liberating Scripture Collective</div>
+      <div class="brand-subtitle">The Table We’re Building</div>
+    </a>
+
+    <button class="menu-toggle" aria-label="Toggle menu" onclick="toggleMenu()">☰</button>
+
+    <nav class="primary-nav" id="primaryNav">
+      <a href="/">Home</a>
+      <a href="/table-were-building.html">Podcast</a>
+      <a href="/about.html">About</a>
+    </nav>
+  </div>
+</header>
+
+<script>
+  function toggleMenu() {
+    document.getElementById('primaryNav').classList.toggle('open');
+  }
+</script>
