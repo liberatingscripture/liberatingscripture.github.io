@@ -104,3 +104,40 @@ nav a[aria-current="page"] {
   text-decoration-thickness: 2px;
   text-underline-offset: 3px;
 }
+
+/* Header */
+.site-header {
+  border-bottom: 1px solid rgba(29, 35, 28, 0.1);
+  margin-bottom: 3rem;
+  padding-bottom: 1.25rem;
+}
+
+.site-title {
+  font-family: 'Roboto Slab', Georgia, serif;
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin-bottom: 0.75rem;
+}
+
+/* Footer */
+.site-footer {
+  border-top: 1px solid rgba(29, 35, 28, 0.1);
+  margin-top: 4rem;
+  padding-top: 1.5rem;
+  font-size: 0.9rem;
+  color: #4A5A4E;
+}
+
+.site-footer p {
+  margin-bottom: 0.75rem;
+}
+
+.site-footer a {
+  color: #209D50;
+  text-decoration: none;
+}
+
+.site-footer a:hover {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
