@@ -7,7 +7,7 @@
   --maxw: 720px;
 
   /* Header-specific tokens (mapped to your palette) */
-  --header-bg: var(--bg);
+  --header-bg: #FFFFFF;
   --header-ink: var(--text);
   --header-muted: var(--muted);
   --header-accent: var(--accent);
