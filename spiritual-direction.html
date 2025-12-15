@@ -20,6 +20,8 @@
 
 <body>
 
+  <div id="siteHeader"></div>
+
   <main class="main-content">
 
 
@@ -34,6 +36,15 @@
     </p>
 
   </main>
+
+  <script>
+  fetch('/partials/header.html')
+    .then(r => r.text())
+    .then(html => {
+      document.getElementById('siteHeader').innerHTML = html;
+    })
+    .catch(err => console.error('Header failed to load:', err));
+</script>
 
 </body>
 </html>
