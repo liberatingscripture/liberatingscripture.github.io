@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Contact | Liberating Scripture Collective</title>
+  <meta name="description" content="Contact the Liberating Scripture Collective." />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+
+  <div id="siteHeader"></div>
+
+  <main class="main-content">
+
+    <h1>Contact</h1>
+
+    <p>
+      Send a message to the Liberating Scripture Collective. We’ll respond as soon as we can.
+    </p>
+
+    <form class="contact-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+      <label class="field">
+        <span>Your name</span>
+        <input type="text" name="name" autocomplete="name" />
+      </label>
+
+      <label class="field">
+        <span>Your email</span>
+        <input type="email" name="email" required autocomplete="email" />
+      </label>
+
+      <label class="field">
+        <span>Message</span>
+        <textarea name="message" rows="7" required></textarea>
+      </label>
+
+      <!-- Optional: subject line for nicer inbox scanning -->
+      <input type="hidden" name="_subject" value="New message — Liberating Scripture Collective" />
+
+      <!-- Honeypot anti-spam (Formspree respects this) -->
+      <label class="hp" aria-hidden="true">
+        <span>Leave this field empty</span>
+        <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" />
+      </label>
+
+      <button type="submit">Send message</button>
+    </form>
+
+    <p class="small-text">
+      This form sends your message to our email inbox. Please don’t include sensitive personal information.
+    </p>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-identity">
+        <strong>Liberating Scripture Collective</strong><br />
+        © 2025
+      </div>
+
+      <nav class="footer-nav" aria-label="Footer">
+        <a href="/table-were-building.html">The Table We’re Building</a>
+        <a href="/spiritual-direction.html">Spiritual Direction</a>
+        <a href="https://litbible.net" target="_blank" rel="noopener noreferrer">LIT Bible</a>
+        <a href="https://litbible.net/podcast" target="_blank" rel="noopener noreferrer">Found in Translation</a>
+        <a href="/contact.html">Contact</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script>
+    function toggleMenu() {
+      const nav = document.getElementById('primaryNav');
+      if (nav) nav.classList.toggle('open');
+    }
+
+    function setAriaCurrent() {
+      const path = (window.location.pathname.replace(/\/+$/, '') || '/');
+      const links = document.querySelectorAll('#primaryNav a');
+
+      links.forEach(a => {
+        const hrefPath =
+          (new URL(a.getAttribute('href'), window.location.origin).pathname.replace(/\/+$/, '') || '/');
+
+        if (hrefPath === path) {
+          a.setAttribute('aria-current', 'page');
+        } else {
+          a.removeAttribute('aria-current');
+        }
+      });
+    }
+
+    fetch('partials/header.html')
+      .then(r => r.text())
+      .then(html => {
+        document.getElementById('siteHeader').innerHTML = html;
+        setAriaCurrent();
+      })
+      .catch(err => console.error('Header failed to load:', err));
+  </script>
+
+</body>
+</html>
