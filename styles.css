@@ -225,3 +225,29 @@ header.site-header .menu-toggle:hover{
 
 header.site-header { position: sticky; top: 0; }
 header.site-header .header-inner { position: relative; }
+
+/* =========================
+   Text Logo
+   ========================= */
+
+.site-logo{
+  font-family: "Fraunces", serif;
+  font-weight: 700;
+  font-size: 1.35rem;
+  letter-spacing: 0.02em;
+  color: var(--text);
+  text-decoration: none;
+  line-height: 1.1;
+}
+
+.site-logo:hover{
+  color: var(--accent);
+  text-decoration: none;
+}
+
+@media (max-width: 640px){
+  .site-logo{
+    font-size: 1.2rem;
+  }
+}
+
