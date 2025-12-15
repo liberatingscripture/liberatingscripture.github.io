@@ -81,3 +81,26 @@ a:hover{ text-decoration-thickness: 2px; }
   h2{ margin-top: 1.75em; }
   .main-content{ padding: 2rem 1.25rem; }
 }
+
+/* Nav (simple, calm, consistent) */
+nav {
+  margin-bottom: 3rem;
+}
+
+nav a {
+  font-weight: 500;
+  margin-right: 1.5rem;
+  text-decoration: none;
+}
+
+nav a:hover {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* Optional: show which page you're on */
+nav a[aria-current="page"] {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
