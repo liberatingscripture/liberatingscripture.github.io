@@ -273,7 +273,7 @@ header.site-header nav.primary-nav a[aria-current="page"]{
 
 .site-footer{
   margin-top: 4rem;
-  padding: 2.5rem 1.5rem;
+  padding: 2.5rem 0;              /* changed: vertical padding only */
   border-top: 1px solid var(--rule);
   background: #FFFFFF;
 }
@@ -281,9 +281,16 @@ header.site-header nav.primary-nav a[aria-current="page"]{
 .footer-inner{
   max-width: var(--maxw);
   margin: 0 auto;
+  padding: 0 1.5rem;              /* changed: match main-content horizontal padding */
   display: grid;
   grid-template-columns: 1fr;
   gap: 1.25rem;
+}
+
+@media (max-width: 640px){
+  .footer-inner{
+    padding: 0 1.25rem;           /* changed: match mobile main-content padding */
+  }
 }
 
 .footer-identity{
