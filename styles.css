@@ -271,10 +271,6 @@ header.site-header nav.primary-nav a[aria-current="page"]{
    Footer
    ========================= */
 
-/* =========================
-   Footer
-   ========================= */
-
 .site-footer{
   margin-top: 4rem;
   padding: 2.5rem 0;
@@ -292,16 +288,21 @@ header.site-header nav.primary-nav a[aria-current="page"]{
   align-items: start;
 }
 
-/* Identity block */
-.footer-identity{
+/* Footer meta line (org + copyright + attribution) */
+.footer-meta{
   font-size: 16px;
   line-height: 1.5;
   color: var(--muted);
 }
 
-.footer-identity strong{
+.footer-meta strong{
   font-weight: 600;
   color: var(--text);
+}
+
+.footer-sep{
+  margin: 0 0.4rem;
+  color: var(--rule);
 }
 
 /* Footer nav columns (two separate <nav> blocks) */
@@ -327,41 +328,21 @@ header.site-header nav.primary-nav a[aria-current="page"]{
   text-underline-offset: 2px;
 }
 
-/* Attribution line on its own row */
-.footer-attrib{
-  font-size: 16px;
-  line-height: 1.5;
-  color: var(--muted);
-}
-
-/* Desktop layout: 3 columns + attribution spanning full width */
+/* Desktop layout: meta spans full width above two nav columns */
 @media (min-width: 720px){
   .footer-inner{
-    grid-template-columns: minmax(220px, 360px) 1fr 1fr;
-    column-gap: 2rem;
-    row-gap: 1rem;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 2.5rem;
+    row-gap: 1.25rem;
   }
 
-  .footer-identity{
-    grid-column: 1;
-  }
-
-  /* If you added these helper classes in HTML, use them */
-  .footer-nav-primary{
-    grid-column: 2;
-  }
-
-  .footer-nav-secondary{
-    grid-column: 3;
-  }
-
-  /* If you did NOT add helper classes, the navs will still fall into cols 2 & 3 naturally.
-     The attribution span below is the key piece. */
-
-  .footer-attrib{
+  .footer-meta{
     grid-column: 1 / -1;
-    margin-top: 0.25rem;
   }
+
+  /* If you used helper classes in HTML, lock placement in */
+  .footer-nav-primary{ grid-column: 1; }
+  .footer-nav-secondary{ grid-column: 2; }
 }
 
 /* Mobile padding match */
