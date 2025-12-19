@@ -305,6 +305,10 @@ header.site-header nav.primary-nav a[aria-current="page"]{
   color: var(--rule);
 }
 
+.footer-byline{
+  white-space: nowrap;
+}
+
 /* Footer nav columns (two separate <nav> blocks) */
 .site-footer nav.footer-nav-col{
   margin-bottom: 0; /* prevent your global nav margin from leaking in */
