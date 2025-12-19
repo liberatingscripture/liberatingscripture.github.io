@@ -271,9 +271,13 @@ header.site-header nav.primary-nav a[aria-current="page"]{
    Footer
    ========================= */
 
+/* =========================
+   Footer
+   ========================= */
+
 .site-footer{
   margin-top: 4rem;
-  padding: 2.5rem 0;              /* changed: vertical padding only */
+  padding: 2.5rem 0;
   border-top: 1px solid var(--rule);
   background: #FFFFFF;
 }
@@ -281,18 +285,14 @@ header.site-header nav.primary-nav a[aria-current="page"]{
 .footer-inner{
   max-width: var(--maxw);
   margin: 0 auto;
-  padding: 0 1.5rem;              /* changed: match main-content horizontal padding */
+  padding: 0 1.5rem; /* match .main-content horizontal padding */
   display: grid;
   grid-template-columns: 1fr;
   gap: 1.25rem;
+  align-items: start;
 }
 
-@media (max-width: 640px){
-  .footer-inner{
-    padding: 0 1.25rem;           /* changed: match mobile main-content padding */
-  }
-}
-
+/* Identity block */
 .footer-identity{
   font-size: 16px;
   line-height: 1.5;
@@ -304,30 +304,73 @@ header.site-header nav.primary-nav a[aria-current="page"]{
   color: var(--text);
 }
 
-.footer-nav{
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem 1.5rem;
+/* Footer nav columns (two separate <nav> blocks) */
+.site-footer nav.footer-nav-col{
+  margin-bottom: 0; /* prevent your global nav margin from leaking in */
 }
 
-.footer-nav a{
+.footer-nav-col{
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.footer-nav-col a{
   font-size: 16px;
   font-weight: 500;
-  color: var(--text);
+  color: var(--accent);
   text-decoration: none;
 }
 
-.footer-nav a:hover{
+.footer-nav-col a:hover{
   text-decoration: underline;
   text-underline-offset: 2px;
 }
 
+/* Attribution line on its own row */
+.footer-attrib{
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+/* Desktop layout: 3 columns + attribution spanning full width */
 @media (min-width: 720px){
   .footer-inner{
-    grid-template-columns: auto 1fr;
-    align-items: baseline;
+    grid-template-columns: minmax(220px, 360px) 1fr 1fr;
+    column-gap: 2rem;
+    row-gap: 1rem;
+  }
+
+  .footer-identity{
+    grid-column: 1;
+  }
+
+  /* If you added these helper classes in HTML, use them */
+  .footer-nav-primary{
+    grid-column: 2;
+  }
+
+  .footer-nav-secondary{
+    grid-column: 3;
+  }
+
+  /* If you did NOT add helper classes, the navs will still fall into cols 2 & 3 naturally.
+     The attribution span below is the key piece. */
+
+  .footer-attrib{
+    grid-column: 1 / -1;
+    margin-top: 0.25rem;
   }
 }
+
+/* Mobile padding match */
+@media (max-width: 640px){
+  .footer-inner{
+    padding: 0 1.25rem; /* match mobile .main-content padding */
+  }
+}
+
 
 /* =========================
    Contact Form
