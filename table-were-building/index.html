@@ -140,36 +140,46 @@
 
 
 
-  <script>
-    function toggleMenu() {
-      const nav = document.getElementById('primaryNav');
-      if (nav) nav.classList.toggle('open');
-    }
+<script>
+  function toggleMenu() {
+    const nav = document.getElementById('primaryNav');
+    if (nav) nav.classList.toggle('open');
+  }
 
-    function setAriaCurrent() {
-      const path = (window.location.pathname.replace(/\/+$/, '') || '/');
-      const links = document.querySelectorAll('#primaryNav a');
+  function setAriaCurrent() {
+    const currentPath = (window.location.pathname.replace(/\/+$/, '') || '/');
+    const links = document.querySelectorAll('#primaryNav a');
 
-      links.forEach(a => {
-        const hrefPath =
-          (new URL(a.getAttribute('href'), window.location.origin).pathname.replace(/\/+$/, '') || '/');
+    links.forEach(a => {
+      const href = a.getAttribute('href');
+      if (!href) return;
 
-        if (hrefPath === path) {
-          a.setAttribute('aria-current', 'page');
-        } else {
-          a.removeAttribute('aria-current');
-        }
-      });
-    }
+      const url = new URL(href, window.location.origin);
 
-    fetch('/partials/header.html')
-      .then(r => r.text())
-      .then(html => {
-        document.getElementById('siteHeader').innerHTML = html;
-        setAriaCurrent();
-      })
-      .catch(err => console.error('Header failed to load:', err));
-  </script>
+      // ✅ Ignore external links (litbible.net, etc.)
+      if (url.origin !== window.location.origin) {
+        a.removeAttribute('aria-current');
+        return;
+      }
+
+      const linkPath = (url.pathname.replace(/\/+$/, '') || '/');
+
+      if (linkPath === currentPath) {
+        a.setAttribute('aria-current', 'page');
+      } else {
+        a.removeAttribute('aria-current');
+      }
+    });
+  }
+
+  fetch('/partials/header.html')
+    .then(r => r.text())
+    .then(html => {
+      document.getElementById('siteHeader').innerHTML = html;
+      setAriaCurrent();
+    })
+    .catch(err => console.error('Header failed to load:', err));
+</script>
 
 </body>
 </html>
