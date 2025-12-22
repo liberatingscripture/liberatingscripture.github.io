@@ -62,17 +62,16 @@
       button.setAttribute('aria-expanded', String(isOpen));
     });
 
-    // Close after clicking a link (mobile sanity)
+    // Close after clicking a link
     nav.addEventListener('click', (e) => {
       const target = e.target;
-      // Works even if target is a text node or SVG element
       if (target && typeof target.closest === 'function' && target.closest('a')) {
         nav.classList.remove('open');
         button.setAttribute('aria-expanded', 'false');
       }
     });
 
-    // Close on Escape (keyboard sanity)
+    // Close on Escape
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         nav.classList.remove('open');
@@ -80,7 +79,7 @@
       }
     });
 
-    // Close when clicking outside nav + toggle (expected behavior)
+    // Close when clicking outside nav + toggle
     document.addEventListener('click', (e) => {
       if (!nav.classList.contains('open')) return;
 
@@ -130,4 +129,10 @@
     }
   }
 
-  // ✅ Robust
+  // ✅ Robust init: don't miss DOMContentLoaded
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initSiteChrome);
+  } else {
+    initSiteChrome();
+  }
+})();
