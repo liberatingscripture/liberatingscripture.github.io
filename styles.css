@@ -429,3 +429,11 @@ header.site-header nav.primary-nav a[aria-current="page"]{
   margin: 2rem auto 3rem auto;
   border-radius: 12px;
 }
+
+.podcast-subtitle{
+  margin: 0.5rem 0 0.25rem;
+}
+
+.podcast-hosts{
+  margin: 0 0 1.25rem;
+}
