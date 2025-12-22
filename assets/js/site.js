@@ -65,9 +65,8 @@
     // Close after clicking a link (mobile sanity)
     nav.addEventListener('click', (e) => {
       const target = e.target;
-      if (!(target instanceof Element)) return;
-
-      if (target.closest('a')) {
+      // Works even if target is a text node or SVG element
+      if (target && typeof target.closest === 'function' && target.closest('a')) {
         nav.classList.remove('open');
         button.setAttribute('aria-expanded', 'false');
       }
@@ -86,7 +85,7 @@
       if (!nav.classList.contains('open')) return;
 
       const target = e.target;
-      if (!(target instanceof Element)) return;
+      if (!target) return;
 
       // Ignore clicks inside nav or on the toggle button
       if (nav.contains(target) || button.contains(target)) return;
@@ -131,5 +130,4 @@
     }
   }
 
-  document.addEventListener('DOMContentLoaded', initSiteChrome);
-})();
+  // ✅ Robust
