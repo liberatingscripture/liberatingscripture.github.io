@@ -421,3 +421,11 @@ header.site-header nav.primary-nav a[aria-current="page"]{
   height: 1px;
   overflow: hidden;
 }
+
+.twb-hero {
+  display: block;
+  width: 100%;
+  max-width: 960px;   /* match your content width if you have one */
+  margin: 2rem auto 3rem auto;
+  border-radius: 12px;
+}
