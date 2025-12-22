@@ -159,72 +159,7 @@
 
 <div id="siteFooter"></div>
 
-<script>
-  function toggleMenu() {
-    const nav = document.getElementById('primaryNav');
-    const button = document.querySelector('.menu-toggle');
-    if (!nav) return;
-
-    nav.classList.toggle('open');
-
-    // Keep aria-expanded in sync
-    if (button) {
-      const expanded = button.getAttribute('aria-expanded') === 'true';
-      button.setAttribute('aria-expanded', String(!expanded));
-    }
-  }
-
-  function setAriaCurrent() {
-    const currentPath = (window.location.pathname.replace(/\/+$/, '') || '/');
-    const links = document.querySelectorAll('#primaryNav a');
-
-    links.forEach(a => {
-      const href = a.getAttribute('href');
-      if (!href) return;
-
-      const url = new URL(href, window.location.origin);
-
-      // Ignore external links (litbible.net, etc.)
-      if (url.origin !== window.location.origin) {
-        a.removeAttribute('aria-current');
-        return;
-      }
-
-      const linkPath = (url.pathname.replace(/\/+$/, '') || '/');
-
-      if (linkPath === currentPath) {
-        a.setAttribute('aria-current', 'page');
-      } else {
-        a.removeAttribute('aria-current');
-      }
-    });
-  }
-
-  function setFooterYear() {
-    const y = document.getElementById('footerYear');
-    if (y) y.textContent = new Date().getFullYear();
-  }
-
-  // Header partial
-  fetch('/partials/header.html')
-    .then(r => r.text())
-    .then(html => {
-      const mount = document.getElementById('siteHeader');
-      if (mount) mount.innerHTML = html;
-      setAriaCurrent();
-    })
-    .catch(err => console.error('Header failed to load:', err));
-
-  // Footer partial
-  fetch('/partials/footer.html')
-    .then(r => r.text())
-    .then(html => {
-      const mount = document.getElementById('siteFooter');
-      if (mount) mount.innerHTML = html;
-      setFooterYear();
-    })
-    .catch(err => console.error('Footer failed to load:', err));
-</script>
+<script src="/assets/js/site.js" defer></script>
 
 </body>
 </html>
