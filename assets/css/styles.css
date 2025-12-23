@@ -129,17 +129,19 @@ header.site-header{
 
 /* IMPORTANT: minmax(0, 1fr) lets the left column shrink instead of forcing overlap */
 header.site-header .header-inner{
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 16px 20px;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 16px 16px; /* reduce side space */
 
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   gap: 16px;
 
-  position: relative; /* ensures dropdown is positioned correctly */
+  position: relative;
 }
+
 
 header.site-header nav.primary-nav{
   display: flex;
