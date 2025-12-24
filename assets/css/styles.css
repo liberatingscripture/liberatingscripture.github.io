@@ -500,7 +500,7 @@ header.site-header .menu-toggle:hover{
 /* Logo: keep it right, keep it bounded */
 .contact-logo{
   flex: 0 0 auto;
-  width: min(100%, 240px);  /* cap its size */
+  width: min(25%, 160);  /* cap its size */
   height: auto;
   margin-left: auto;        /* pushes it to the right in flex */
 }
