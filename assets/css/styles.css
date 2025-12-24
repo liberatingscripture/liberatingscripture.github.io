@@ -470,3 +470,18 @@ header.site-header .menu-toggle:hover{
 .podcast-hosts{
   margin: 0 0 1.25rem;
 }
+
+/* Inline images that should match the text column width */
+.content-figure{
+  display: block;
+  width: 100%;
+  max-width: 100%;   /* ensures it never exceeds the text column */
+  height: auto;
+  margin: 1.75rem 0 2.25rem;
+  border-radius: 12px;
+}
+
+@media (max-width: 640px){
+  .content-figure{ margin: 1.5rem 0 2rem; border-radius: 10px; }
+}
+
