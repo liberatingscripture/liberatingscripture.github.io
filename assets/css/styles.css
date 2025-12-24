@@ -496,14 +496,11 @@ header.site-header .menu-toggle:hover{
   min-width: 0;
 }
 
-/* Override the full-width behavior for this specific image */
 .contact-logo{
-  flex: 0 0 auto;
-  width: 220px;          /* adjust to taste */
-  max-width: 35%;
+  width: 100%;
   height: auto;
-  margin: 0;             /* undo .content-figure margins */
-  border-radius: 0;      /* wordmark probably shouldn’t be rounded */
+  max-width: 340px;   /* adjust: 300–380px is the sweet spot */
+  justify-self: end;  /* or center */
 }
 
 /* Stack nicely on small screens */
