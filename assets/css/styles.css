@@ -491,16 +491,18 @@ header.site-header .menu-toggle:hover{
   gap: 1.5rem;
 }
 
+/* Make the copy a little less dominant */
 .contact-copy{
-  flex: 1 1 auto;
+  flex: 1 1 50%;
   min-width: 0;
 }
 
+/* Logo: keep it right, keep it bounded */
 .contact-logo{
-  width: 100%;
+  flex: 0 0 auto;
+  width: min(100%, 240px);  /* cap its size */
   height: auto;
-  max-width: 340px;   /* adjust: 300–380px is the sweet spot */
-  justify-self: end;  /* or center */
+  margin-left: auto;        /* pushes it to the right in flex */
 }
 
 /* Stack nicely on small screens */
@@ -509,8 +511,8 @@ header.site-header .menu-toggle:hover{
     flex-direction: column;
   }
   .contact-logo{
-    width: 260px;
-    max-width: 100%;
+    width: min(100%, 260px);
+    margin-left: 0;
   }
 }
 
