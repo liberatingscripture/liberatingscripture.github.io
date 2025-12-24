@@ -486,23 +486,34 @@ header.site-header .menu-toggle:hover{
 }
 
 .contact-intro{
-  display: grid;
-  grid-template-columns: 1fr 1fr; /* equal columns */
+  display: flex;
+  align-items: flex-start;
   gap: 1.5rem;
-  align-items: start;
 }
 
+.contact-copy{
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* Override the full-width behavior for this specific image */
 .contact-logo{
-  width: 100%;
+  flex: 0 0 auto;
+  width: 220px;          /* adjust to taste */
+  max-width: 35%;
   height: auto;
-  margin: 0;
-  border-radius: 0;
-  justify-self: end;   /* keeps it visually “to the right” */
-  align-self: start;
+  margin: 0;             /* undo .content-figure margins */
+  border-radius: 0;      /* wordmark probably shouldn’t be rounded */
 }
 
+/* Stack nicely on small screens */
 @media (max-width: 640px){
-  .contact-intro{ grid-template-columns: 1fr; }
-  .contact-logo{ justify-self: start; }
+  .contact-intro{
+    flex-direction: column;
+  }
+  .contact-logo{
+    width: 260px;
+    max-width: 100%;
+  }
 }
 
