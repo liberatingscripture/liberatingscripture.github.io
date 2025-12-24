@@ -485,3 +485,34 @@ header.site-header .menu-toggle:hover{
   .content-figure{ margin: 1.5rem 0 2rem; border-radius: 10px; }
 }
 
+.contact-intro{
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+}
+
+.contact-copy{
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* Override the full-width behavior for this specific image */
+.contact-logo{
+  flex: 0 0 auto;
+  width: 220px;          /* adjust to taste */
+  max-width: 35%;
+  height: auto;
+  margin: 0;             /* undo .content-figure margins */
+  border-radius: 0;      /* wordmark probably shouldn’t be rounded */
+}
+
+/* Stack nicely on small screens */
+@media (max-width: 640px){
+  .contact-intro{
+    flex-direction: column;
+  }
+  .contact-logo{
+    width: 260px;
+    max-width: 100%;
+  }
+}
