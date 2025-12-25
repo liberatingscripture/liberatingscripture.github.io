@@ -506,14 +506,21 @@ header.site-header .menu-toggle:hover{
   margin-left: auto;        /* pushes it to the right in flex */
 }
 
-/* Stack nicely on small screens */
 @media (max-width: 640px){
   .contact-intro{
     flex-direction: column;
+    align-items: center;   /* centers flex children horizontally */
+    text-align: left;      /* keeps your paragraph text normal */
   }
+
+  .contact-copy{
+    width: 100%;
+  }
+
   .contact-logo{
     width: min(100%, 260px);
-    margin-left: 0;
+    margin: 0.75rem auto 0; /* centers the image */
+    align-self: center;     /* belt + suspenders */
   }
 }
 
