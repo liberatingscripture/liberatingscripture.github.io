@@ -524,3 +524,21 @@ header.site-header .menu-toggle:hover{
   margin: 2rem auto 3rem auto;
   border-radius: 12px;
 }
+
+.float-right-logo{
+  float: right;
+  width: 160px;       /* tweak: 120–200px usually feels right */
+  height: auto;
+  margin: 0.2rem 0 0.8rem 1.2rem; /* top, right, bottom, left */
+  border-radius: 16px;            /* optional */
+}
+
+/* Mobile: stop floating so it doesn’t crush the text */
+@media (max-width: 700px){
+  .float-right-logo{
+    float: none;
+    display: block;
+    margin: 0.5rem auto 1rem;
+    width: 140px; /* tweak */
+  }
+}
