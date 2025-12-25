@@ -517,3 +517,10 @@ header.site-header .menu-toggle:hover{
   }
 }
 
+.sd-hero {
+  display: block;
+  width: 100%;
+  max-width: 960px;   /* match your content width if you have one */
+  margin: 2rem auto 3rem auto;
+  border-radius: 12px;
+}
