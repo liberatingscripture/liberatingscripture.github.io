@@ -1,0 +1,285 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout
+  title="Podcasts | Liberating Scripture Collective"
+  description="Podcasts from the Liberating Scripture Collective — Found in Translation and The Table We're Building."
+  canonical="https://liberatingscripture.org/podcasts/"
+>
+  <div class="podcasts-page">
+    <header class="podcasts-hero">
+      <div class="content">
+        <p class="eyebrow">Audio</p>
+        <h1>Podcasts</h1>
+        <p class="lede">
+          Two conversations rooted in the same commitments: liberation, healing,
+          honest engagement with spiritual experiences, and the refusal to allow
+          forces of control and religious abuse to have the last word.
+        </p>
+      </div>
+    </header>
+
+    <div class="podcasts-content content">
+      <!-- Found in Translation -->
+      <section class="podcast-section" aria-labelledby="fit-title">
+        <div class="podcast-card podcast-card--fit">
+          <div class="podcast-card__info">
+            <p class="eyebrow">Bible translation · Liberation · Healing</p>
+            <h2 id="fit-title">Found in Translation</h2>
+            <p class="podcast-card__hosts">
+              Brandon Vélez Johnson and Brandon Rhodes
+            </p>
+            <p class="podcast-card__tagline">
+              <em>armchair bible banter for liberation and healing</em>
+            </p>
+            <p>
+              Found in Translation works through the LIT Bible one chapter or
+              big idea at a time, uncovering what liberation-centered,
+              trauma-informed translation reveals in familiar texts. A mix of
+              scholarship, pastoral honesty, and genuine curiosity.
+            </p>
+            <div class="podcast-card__platforms">
+              <a
+                href="https://podcasts.apple.com/us/podcast/found-in-translation/id1586737797"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="platform-link">Apple Podcasts</a
+              >
+              <a
+                href="https://open.spotify.com/show/6S2wWaM5oqknwncPfOEyZ6"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="platform-link">Spotify</a
+              >
+              <a
+                href="https://www.youtube.com/@foundintranslationpodcast"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="platform-link">YouTube</a
+              >
+            </div>
+            <a
+              href="https://litbible.net/found-in-translation-podcast"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="btn podcast-card__cta"
+            >
+              <span>All episodes and embeds ↗</span>
+            </a>
+          </div>
+          <div class="podcast-card__cover" aria-hidden="true">
+            <img
+              src="/assets/images/fit-cover.webp"
+              alt="Found in Translation podcast cover"
+              width="320"
+              height="320"
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
+        </div>
+      </section>
+
+      <!-- The Table We're Building -->
+      <section class="podcast-section" aria-labelledby="twb-title">
+        <div class="podcast-card podcast-card--twb">
+          <div class="podcast-card__info">
+            <div class="podcast-card__info-header">
+              <p class="eyebrow">Faith · Trauma · Belonging</p>
+              <span class="coming-soon-badge">Coming soon</span>
+            </div>
+            <h2 id="twb-title">The Table We're Building</h2>
+            <p class="podcast-card__hosts">
+              Brandon Vélez Johnson and Aaron J. Smith
+            </p>
+            <p class="podcast-card__tagline">
+              <em
+                >A trauma therapist and a spiritual director building a bigger,
+                braver table for belonging.</em
+              >
+            </p>
+            <p>
+              Wounded healers reclaiming faith after abuse, naming harm without
+              shame, and crafting space for people who refuse to surrender Jesus
+              and his work to the forces that weaponized them. Candid stories
+              from fellow survivors, therapists, theologians, and activists.
+              Consent-based spirituality, chosen family, and faith wide enough
+              for everybody.
+            </p>
+            <p class="podcast-notify">
+              Episodes and listening links are coming soon. Want to know when it
+              launches?
+            </p>
+            <a href="/contact/" class="btn btn--outline"
+              ><span>Get notified</span></a
+            >
+          </div>
+          <div
+            class="podcast-card__cover podcast-card__cover--twb"
+            aria-hidden="true"
+          >
+            <img
+              src="/assets/images/twb-banner.png"
+              alt="The Table We're Building"
+              width="320"
+              height="320"
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .podcasts-hero {
+    background: var(--green);
+    padding: clamp(3.5rem, 7vw, 6rem) 0;
+  }
+
+  .podcasts-hero h1 {
+    font-family: "Crimson Text", Georgia, serif;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    color: var(--cream);
+    margin: 0.75rem 0 1.25rem;
+  }
+
+  .podcasts-hero .eyebrow {
+    color: rgba(225, 223, 217, 0.7);
+  }
+  .podcasts-hero .lede {
+    color: var(--cream);
+    max-width: 52ch;
+  }
+
+  .podcasts-content {
+    padding: clamp(3rem, 6vw, 5rem) 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4rem;
+  }
+
+  /* Podcast card */
+  .podcast-card {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 3rem;
+    align-items: start;
+    background: var(--surface-raised);
+    border-radius: 20px;
+    padding: clamp(2rem, 4vw, 3rem);
+    box-shadow: 0 4px 32px rgba(0, 0, 0, 0.07);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .podcast-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--green);
+  }
+
+  .podcast-card__info-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .podcast-card h2 {
+    font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+    margin: 0.25rem 0 0.5rem;
+  }
+
+  .podcast-card__hosts {
+    font-size: 0.9rem;
+    color: #6a6864;
+    margin: 0 0 0.75rem;
+    font-style: normal;
+  }
+
+  .podcast-card__tagline {
+    font-family: "Fraunces", serif;
+    font-size: 1.05rem;
+    color: var(--text);
+    margin: 0 0 1rem;
+  }
+
+  .podcast-card p {
+    max-width: 58ch;
+  }
+
+  .podcast-card__platforms {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin: 1.25rem 0;
+  }
+
+  .platform-link {
+    font-family: Inter, sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text);
+    background: var(--page-bg);
+    padding: 6px 14px;
+    border-radius: 6px;
+    text-decoration: none;
+    border: 1px solid var(--border);
+    transition:
+      border-color 160ms,
+      color 160ms;
+  }
+
+  .platform-link:hover {
+    border-color: var(--green);
+    color: var(--green);
+    text-decoration: none;
+  }
+
+  .podcast-card__cta {
+    margin-top: 0.5rem;
+  }
+
+  .podcast-card__cover img {
+    width: clamp(140px, 18vw, 240px);
+    height: auto;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  }
+
+  .coming-soon-badge {
+    font-family: Inter, sans-serif;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #8a8882;
+    background: rgba(29, 35, 28, 0.07);
+    padding: 3px 10px;
+    border-radius: 4px;
+  }
+
+  .podcast-notify {
+    font-size: 0.95rem;
+    color: #6a6864;
+    font-style: italic;
+    margin: 1rem 0 0.75rem;
+  }
+
+  @media (max-width: 700px) {
+    .podcast-card {
+      grid-template-columns: 1fr;
+    }
+    .podcast-card__cover {
+      display: none;
+    }
+  }
+</style>

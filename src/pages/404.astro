@@ -1,0 +1,61 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout
+  title="Page Not Found | Liberating Scripture Collective"
+  description="The page you were looking for doesn't exist."
+>
+  <div class="notfound">
+    <div class="content">
+      <p class="eyebrow">404</p>
+      <h1>Page not found</h1>
+      <p class="lede">That page doesn't seem to exist. It may have moved.</p>
+      <div class="notfound__actions">
+        <a href="/" class="btn"><span>Home</span></a>
+        <a href="https://litbible.net" target="_blank" rel="noopener noreferrer" class="btn btn--outline">
+          <span>Read the LIT Bible ↗</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .notfound {
+    background: var(--green);
+    min-height: 60vh;
+    display: flex;
+    align-items: center;
+    padding: 4rem 0;
+  }
+
+  .notfound h1 {
+    font-family: "Crimson Text", Georgia, serif;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    color: var(--cream);
+    margin: 0.75rem 0 1.25rem;
+  }
+
+  .notfound .eyebrow { color: rgba(225,223,217,0.7); }
+  .notfound .lede { color: var(--cream); }
+
+  .notfound__actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+  }
+
+  .notfound .btn {
+    background: var(--cream);
+    border-color: var(--cream);
+    color: var(--ink);
+  }
+
+  .notfound .btn--outline {
+    background: transparent;
+    border-color: var(--cream);
+    color: var(--cream);
+  }
+</style>

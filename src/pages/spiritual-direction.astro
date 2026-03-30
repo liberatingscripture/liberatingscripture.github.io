@@ -1,0 +1,217 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout
+  title="Spiritual Direction | Liberating Scripture Collective"
+  description="A growing network of spiritual directors whose practice is explicitly liberationist, trauma-informed, and radically inclusive. Consent-based accompaniment."
+  canonical="https://liberatingscripture.org/spiritual-direction/"
+>
+  <div class="sd-page">
+    <header class="sd-hero">
+      <div class="content">
+        <p class="eyebrow">Accompaniment</p>
+        <h1>Spiritual Direction</h1>
+        <p class="lede">
+          Consent-based, trauma-aware spiritual accompaniment, walking alongside
+          people with presence, attentiveness, and care.
+        </p>
+      </div>
+    </header>
+
+    <div class="sd-content content">
+      <section class="sd-section" aria-labelledby="sd-what">
+        <h2 id="sd-what">What is spiritual direction?</h2>
+        <p>
+          Spiritual direction is a practice of attentive presence, a shared
+          listening for what is alive, stirring, or asking to be named in a
+          person's life. It makes space for prayer, reflection, silence, and
+          honest exploration, trusting that God meets people as they are. At its
+          heart, spiritual direction is about listening for the Spirit together
+          and joining in a posture of openness to Christ.
+        </p>
+        <p>
+          It is not advice, correction, diagnosis, or spiritual performance. It
+          is not about fixing faith, managing behavior, or submitting to an
+          expert or authority figure.
+        </p>
+        <p>
+          Within the Liberating Scripture Collective, spiritual direction
+          explicitly resists shame, coercion, and the use of religious language
+          as a means of control. It honors agency, attends to the body and lived
+          experience, and trusts that the Spirit's work unfolds over time
+          through relationship, honesty, and consent.
+        </p>
+      </section>
+
+      <section class="sd-section" aria-labelledby="sd-lsc">
+        <h2 id="sd-lsc">Spiritual direction and LSC</h2>
+        <p>
+          We are in the early stages of building a directory of spiritual
+          directors whose practice is explicitly liberationist, trauma-informed,
+          and radically inclusive. These directors will not share a single
+          method, style, or spiritual perspective, but they will share core
+          commitments: to consent, to respect for boundaries, to restorative
+          justice, and to an understanding of spiritual growth that does not
+          require fear, shame, or erasure.
+        </p>
+      </section>
+
+      <section class="sd-section sd-questions" aria-labelledby="sd-for-whom">
+        <h2 id="sd-for-whom">The directory</h2>
+        <p>
+          This future directory is being built for people asking questions like:
+        </p>
+        <ul class="sd-questions__list">
+          <li>
+            How do I remain open to God after religious harm or exhaustion?
+          </li>
+          <li>
+            How do I discern what is life-giving without surrendering my agency?
+          </li>
+          <li>
+            How do I pray or listen for the Spirit without reenacting old
+            patterns of pressure or performance?
+          </li>
+          <li>
+            How do I integrate faith, justice, healing, and honesty in a way
+            that honors my body and story?
+          </li>
+        </ul>
+        <p>
+          As this work develops, this space will host a curated list of
+          spiritual directors whose practice aligns with the commitments of the
+          LIT and the broader work of the Collective. Participation will not be
+          based on credentials alone, but on demonstrated ethical clarity,
+          theological transparency, and respect for the dignity and autonomy of
+          those they accompany.
+        </p>
+      </section>
+
+      <div class="sd-cta-grid">
+        <div class="sd-cta-card">
+          <h3>Are you a spiritual director?</h3>
+          <p>
+            If your work is rooted in liberation, inclusion, and trauma-aware
+            care, you're welcome to reach out about joining the directory when
+            it launches.
+          </p>
+          <a href="/contact/" class="btn"><span>Get in touch</span></a>
+        </div>
+        <div class="sd-cta-card">
+          <h3>Are you seeking accompaniment?</h3>
+          <p>
+            This space will evolve as the work takes shape. Just as spiritual
+            direction is an experience of careful relationship, so too will this
+            gathering of directors be built with care. Stay with us.
+          </p>
+          <a href="/contact/" class="btn btn--outline"
+            ><span>Stay in touch</span></a
+          >
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .sd-hero {
+    background: var(--cream);
+    border-bottom: 1px solid var(--border);
+    padding: clamp(3.5rem, 7vw, 6rem) 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .sd-hero::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: var(--green);
+  }
+
+  .sd-hero h1 {
+    font-family: "Crimson Text", Georgia, serif;
+    font-size: clamp(2.2rem, 4.5vw, 3.8rem);
+    color: var(--text-strong);
+    margin: 0.75rem 0 1.25rem;
+  }
+
+  .sd-hero .eyebrow {
+    color: var(--green);
+  }
+
+  .sd-content {
+    padding: clamp(3rem, 6vw, 5rem) 0;
+    display: flex;
+    flex-direction: column;
+    gap: 3.5rem;
+  }
+
+  .sd-section h2 {
+    font-size: clamp(1.5rem, 2.5vw, 2rem);
+    margin: 0 0 1.25rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--green);
+    display: inline-block;
+  }
+
+  .sd-section p {
+    max-width: 68ch;
+  }
+
+  .sd-questions__list {
+    margin: 1rem 0 1.5rem;
+    padding-left: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .sd-questions__list li {
+    font-family: "Fraunces", serif;
+    font-size: 1.05rem;
+    line-height: 1.5;
+    color: var(--text-strong);
+  }
+
+  .sd-cta-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+
+  .sd-cta-card {
+    background: var(--surface-raised);
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.07);
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .sd-cta-card h3 {
+    font-size: 1.2rem;
+    margin: 0;
+  }
+  .sd-cta-card p {
+    font-size: 0.95rem;
+    line-height: 1.65;
+    margin: 0;
+    flex: 1;
+  }
+  .sd-cta-card .btn {
+    align-self: flex-start;
+    margin-top: 0.5rem;
+  }
+
+  @media (max-width: 640px) {
+    .sd-cta-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

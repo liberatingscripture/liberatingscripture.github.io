@@ -1,0 +1,220 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout
+  title="Community & Courses | Liberating Scripture Collective"
+  description="Courses, study companions, and community spaces for reading scripture with context, care, and critical honesty. Built together, not delivered from above."
+  canonical="https://liberatingscripture.org/community/"
+>
+  <div class="community-page">
+    <header class="community-hero">
+      <div class="content">
+        <p class="eyebrow">Collective</p>
+        <h1>Community &amp; Courses</h1>
+        <p class="lede">
+          This is where the "Collective" part is most literal. Not a service you
+          subscribe to, but a space we build together.
+        </p>
+      </div>
+    </header>
+
+    <div class="community-content content">
+      <section class="community-section" aria-labelledby="community-what">
+        <h2 id="community-what">What this is</h2>
+        <p>
+          Most religious education runs in one direction: expert to student,
+          institution to individual, producer to consumer. The Liberating
+          Scripture Collective is trying to build something different.
+        </p>
+        <p>
+          This space is for courses, study companions, and collaborative
+          learning environments where people contribute, not just receive. Think
+          of it as
+          <strong>spiritual mutual aid</strong>: people with different
+          backgrounds and experiences coming together around scripture,
+          theology, liberation, and healing, each bringing what they know, each
+          learning from others.
+        </p>
+        <p>
+          Accessibility is built in, not bolted on. No seminary degree required.
+          No gatekeeping. No paywalls for core content.
+        </p>
+      </section>
+
+      <section class="community-section" aria-labelledby="community-developing">
+        <h2 id="community-developing">What's taking shape</h2>
+
+        <div class="community-grid">
+          <article class="community-card">
+            <h3>Study companions</h3>
+            <p>
+              Reading guides for the LIT Bible that provide context, questions,
+              and connections, designed for individuals, small groups, and
+              communities.
+            </p>
+            <span class="status-label">In development</span>
+          </article>
+
+          <article class="community-card">
+            <h3>Short courses</h3>
+            <p>
+              Focused, accessible courses on translation, biblical history,
+              liberation theology, and trauma-informed faith. Built to be
+              digestible, honest, and practically useful.
+            </p>
+            <span class="status-label">In development</span>
+          </article>
+
+          <article class="community-card">
+            <h3>Collaborative spaces</h3>
+            <p>
+              Places for readers, scholars, practitioners, artists, and people
+              with lived experience to think together, contribute insights,
+              raise questions, and shape the work.
+            </p>
+            <span class="status-label">Coming soon</span>
+          </article>
+
+          <article class="community-card">
+            <h3>Peer learning</h3>
+            <p>
+              Structured conversations and cohorts where people learn from one
+              another, not just from content. Because interpretation happens in
+              community.
+            </p>
+            <span class="status-label">Coming soon</span>
+          </article>
+        </div>
+      </section>
+
+      <section
+        class="community-section community-section--contribute"
+        aria-labelledby="community-contribute"
+      >
+        <h2 id="community-contribute">Help build it</h2>
+        <p>
+          This space is genuinely unfinished, and that's intentional. The people
+          who show up get to help shape what it becomes.
+        </p>
+        <p>
+          If you have something to contribute—experience with adult education,
+          community organizing, biblical scholarship, accessibility, curriculum
+          development, or just clarity about what you've needed and couldn't
+          find—reach out. This is an invitation to collaborate, not a waiting
+          list.
+        </p>
+        <div class="community-actions">
+          <a href="/contact/" class="btn"><span>Get in touch</span></a>
+          <a href="/support/" class="btn btn--outline"
+            ><span>Support the work</span></a
+          >
+        </div>
+      </section>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .community-hero {
+    background: var(--ink);
+    color: #c8c6c0;
+    padding: clamp(3.5rem, 7vw, 6rem) 0;
+  }
+
+  .community-hero h1 {
+    font-family: "Crimson Text", Georgia, serif;
+    font-size: clamp(2.2rem, 4.5vw, 3.8rem);
+    color: var(--cream);
+    margin: 0.75rem 0 1.25rem;
+  }
+
+  .community-hero .eyebrow {
+    color: var(--green);
+  }
+  .community-hero .lede {
+    color: #c8c6c0;
+    max-width: 52ch;
+  }
+
+  .community-content {
+    padding: clamp(3rem, 6vw, 5rem) 0;
+    display: flex;
+    flex-direction: column;
+    gap: 3.5rem;
+  }
+
+  .community-section h2 {
+    font-size: clamp(1.5rem, 2.5vw, 2rem);
+    margin: 0 0 1.25rem;
+  }
+
+  .community-section p {
+    max-width: 68ch;
+  }
+
+  .community-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+    margin-top: 0.5rem;
+  }
+
+  .community-card {
+    background: var(--surface-raised);
+    border-radius: 16px;
+    padding: 1.75rem;
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .community-card h3 {
+    font-size: 1.15rem;
+    margin: 0;
+  }
+
+  .community-card p {
+    font-size: 0.95rem;
+    line-height: 1.65;
+    color: var(--text);
+    margin: 0;
+    max-width: none;
+    flex: 1;
+  }
+
+  .status-label {
+    font-family: Inter, sans-serif;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--green);
+    margin-top: 0.5rem;
+  }
+
+  .community-section--contribute {
+    background: var(--surface-raised);
+    border-radius: 20px;
+    padding: 2.5rem;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.07);
+  }
+
+  .community-section--contribute h2 {
+    margin-top: 0;
+  }
+
+  .community-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 1.5rem;
+  }
+
+  @media (max-width: 640px) {
+    .community-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

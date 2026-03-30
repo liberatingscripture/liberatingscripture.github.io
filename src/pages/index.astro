@@ -1,0 +1,525 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+const projects = [
+  {
+    key: "lit",
+    eyebrow: "Flagship translation",
+    name: "LIT Bible",
+    full: "Liberation and Inclusion Translation",
+    description:
+      "A trauma-informed, justice-oriented translation from the original Greek. Freely available, thoroughly annotated, built to surface what traditional translations obscure.",
+    href: "https://litbible.net",
+    cta: "Read the translation",
+    external: true,
+    status: "live",
+  },
+  {
+    key: "fit",
+    eyebrow: "Podcast",
+    name: "Found in Translation",
+    full: "Found in Translation podcast",
+    description:
+      "Brandon Vélez Johnson and Brandon Rhodes work through the LIT one chapter or big idea at a time, discovering what's there to be found in translation.",
+    href: "https://litbible.net/found-in-translation-podcast",
+    cta: "Listen now",
+    external: true,
+    status: "live",
+  },
+  {
+    key: "twb",
+    eyebrow: "Podcast",
+    name: "The Table We're Building",
+    full: "The Table We're Building",
+    description:
+      "A trauma therapist and a spiritual director, wounded healers reclaiming faith after abuse, naming harm without shame, and crafting a bigger, braver table for belonging.",
+    href: "/podcasts/",
+    cta: "Learn more",
+    external: false,
+    status: "coming-soon",
+  },
+  {
+    key: "sd",
+    eyebrow: "Accompaniment",
+    name: "Spiritual Direction",
+    full: "Spiritual Direction",
+    description:
+      "We're assembling a network of spiritual directors whose practice is explicitly liberationist, trauma-informed, and radically inclusive.",
+    href: "/spiritual-direction/",
+    cta: "Learn more",
+    external: false,
+    status: "developing",
+  },
+  {
+    key: "community",
+    eyebrow: "Collective",
+    name: "Community & Courses",
+    full: "Community & Courses",
+    description:
+      "This is where the Collective part is most literal. Open courses, study companions, collaborative spaces, and peer learning built together.",
+    href: "/community/",
+    cta: "Get involved",
+    external: false,
+    status: "developing",
+  },
+];
+---
+
+<Layout
+  title="Liberating Scripture Collective"
+  description="The Liberating Scripture Collective creates open-access, trauma-informed scripture translation, learning resources, and pathways of spiritual support."
+  canonical="https://liberatingscripture.org/"
+>
+  <Fragment slot="head">
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Organization",
+            "@id": "https://liberatingscripture.org/#organization",
+            name: "Liberating Scripture Collective",
+            url: "https://liberatingscripture.org/",
+            logo: "https://liberatingscripture.org/assets/images/lsc-logo.png",
+            sameAs: ["https://litbible.net/"],
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://liberatingscripture.org/#website",
+            url: "https://liberatingscripture.org/",
+            name: "Liberating Scripture Collective",
+            publisher: {
+              "@id": "https://liberatingscripture.org/#organization",
+            },
+          },
+        ],
+      })}
+    />
+  </Fragment>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero__inner content">
+      <div class="hero__text">
+        <p class="eyebrow">The Liberating Scripture Collective</p>
+        <h1 class="hero__headline">
+          Scripture that<br />liberates rather<br />than controls.
+        </h1>
+        <p class="hero__lede lede">
+          We're a growing collective devoted to reading the Christian scriptures
+          with honesty about power, trauma, liberation, and human dignity.
+        </p>
+        <div class="hero__actions">
+          <a
+            href="https://litbible.net/read"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn"
+          >
+            <span>Read the LIT Bible</span>
+          </a>
+          <a href="/about/" class="btn btn--outline">
+            <span>About LSC</span>
+          </a>
+        </div>
+      </div>
+      <div class="hero__logo" aria-hidden="true">
+        <img
+          src="/assets/images/lsc-logo.png"
+          alt=""
+          width="320"
+          height="320"
+          loading="eager"
+          decoding="async"
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- EXPLAINER BAND -->
+  <section class="explainer section--sm" aria-label="About this site">
+    <div class="explainer__inner content">
+      <div class="explainer__text">
+        <p>
+          <strong>Liberating Scripture Collective</strong> is the people behind the
+          work. Our flagship project is the
+          <a
+            href="https://litbible.net"
+            target="_blank"
+            rel="noopener noreferrer">LIT Bible</a
+          >—a trauma-informed, justice-oriented New Testament translation—which
+          lives at litbible.net. This site is where the rest of what we do takes
+          shape: podcasts, spiritual direction, courses, and the community that
+          makes it a collective.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJECTS GRID -->
+  <section class="projects section" aria-labelledby="projects-title">
+    <div class="content">
+      <p class="eyebrow" id="projects-title">What we're building</p>
+      <h2 class="projects__heading">Here's what we're cooking up so far</h2>
+
+      <div class="projects__grid">
+        {
+          projects.map((p) => (
+            <article
+              class={`project-card project-card--${p.key}`}
+              data-status={p.status}
+            >
+              <div class="project-card__top">
+                <p class="eyebrow project-card__eyebrow">{p.eyebrow}</p>
+                {p.status !== "live" && (
+                  <span class="project-card__badge">
+                    {p.status === "coming-soon"
+                      ? "Coming soon"
+                      : "In development"}
+                  </span>
+                )}
+              </div>
+              <h3 class="project-card__name">{p.name}</h3>
+              <p class="project-card__desc">{p.description}</p>
+              <a
+                href={p.href}
+                class="project-card__cta"
+                {...(p.external
+                  ? { target: "_blank", rel: "noopener noreferrer" }
+                  : {})}
+              >
+                {p.cta}
+                {p.external && " ↗"}
+              </a>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- SUPPORT STRIP -->
+  <section class="support-strip" aria-labelledby="support-strip-title">
+    <div class="support-strip__inner content">
+      <div class="support-strip__text">
+        <p class="eyebrow" style="color: var(--green)">Support the work</p>
+        <h2 id="support-strip-title" class="support-strip__heading">
+          This work stays free because people make it possible.
+        </h2>
+        <p>
+          The LIT Bible, the podcasts, the courses, and all the core offerings
+          are available without paywalls. Donations cover infrastructure,
+          publishing, and the capacity to keep building.
+        </p>
+      </div>
+      <div class="support-strip__action">
+        <a href="/support/" class="btn btn--green"
+          ><span>Support this work</span></a
+        >
+        <p class="support-strip__hint">Give Lively · Coming 2026</p>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  /* ===== HERO ===== */
+  .hero {
+    background: var(--green);
+    padding: clamp(4rem, 9vw, 8rem) 0 clamp(3rem, 7vw, 6rem);
+    overflow: hidden;
+    position: relative;
+  }
+
+  .hero__inner {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 3rem 4rem;
+    align-items: center;
+  }
+
+  .hero__headline {
+    font-family: "Crimson Text", Georgia, serif;
+    font-size: clamp(3rem, 6.5vw, 6rem);
+    font-weight: 700;
+    line-height: 1.04;
+    color: var(--cream);
+    margin: 0.75rem 0 1.5rem;
+    letter-spacing: -0.01em;
+  }
+
+  .hero .eyebrow {
+    color: rgba(225, 223, 217, 0.7);
+  }
+  .hero .lede {
+    color: var(--cream);
+    max-width: 46ch;
+  }
+
+  .hero__actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 2.5rem;
+  }
+
+  /* Hero buttons on green */
+  .hero .btn {
+    background: var(--cream);
+    border-color: var(--cream);
+    color: var(--ink);
+  }
+
+  .hero .btn::before {
+    background: var(--ink);
+  }
+  .hero .btn:hover,
+  .hero .btn:focus-visible {
+    color: var(--green);
+  }
+
+  .hero .btn--outline {
+    background: transparent;
+    border-color: var(--cream);
+    color: var(--cream);
+  }
+
+  .hero .btn--outline::before {
+    background: var(--cream);
+  }
+  .hero .btn--outline:hover,
+  .hero .btn--outline:focus-visible {
+    color: var(--ink);
+  }
+
+  .hero__logo {
+    flex-shrink: 0;
+  }
+
+  .hero__logo img {
+    width: clamp(140px, 18vw, 280px);
+    height: auto;
+    opacity: 0.92;
+    filter: drop-shadow(0 8px 32px rgba(0, 0, 0, 0.22));
+  }
+
+  @media (max-width: 700px) {
+    .hero__inner {
+      grid-template-columns: 1fr;
+    }
+    .hero__logo {
+      display: none;
+    }
+  }
+
+  /* ===== EXPLAINER ===== */
+  .explainer {
+    background: var(--surface-raised);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .explainer__inner {
+    padding: 1.75rem 0;
+  }
+
+  .explainer__text p {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    max-width: 72ch;
+    color: var(--text);
+    margin: 0;
+  }
+
+  /* ===== PROJECTS ===== */
+  .projects {
+    background: var(--page-bg);
+  }
+
+  .projects__heading {
+    font-size: clamp(2rem, 3.5vw, 3rem);
+    margin: 0.5rem 0 2.5rem;
+  }
+
+  .projects__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+
+  /* Make last two cards span proportionally on 3-col */
+  .projects__grid .project-card:nth-child(4) {
+    grid-column: 1 / 2;
+  }
+  .projects__grid .project-card:nth-child(5) {
+    grid-column: 2 / 4;
+  }
+
+  .project-card {
+    background: var(--surface-raised);
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06);
+    display: grid;
+    grid-template-rows: auto auto 1fr auto;
+    gap: 0.5rem;
+    transition:
+      box-shadow 200ms,
+      transform 200ms;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .project-card::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: var(--green);
+    opacity: 0;
+    transition: opacity 200ms;
+  }
+
+  .project-card:hover {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+  }
+
+  .project-card:hover::after {
+    opacity: 1;
+  }
+
+  /* First card (LIT Bible) gets green accent always */
+  .project-card--lit::after {
+    opacity: 1;
+  }
+
+  .project-card__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+
+  .project-card__eyebrow {
+    margin: 0;
+    font-size: 0.72rem;
+  }
+
+  .project-card__badge {
+    font-family: Inter, sans-serif;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #8a8882;
+    background: rgba(29, 35, 28, 0.07);
+    padding: 2px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+
+  .project-card__name {
+    font-size: clamp(1.35rem, 2vw, 1.65rem);
+    margin: 0.25rem 0 0;
+  }
+
+  .project-card__desc {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--text);
+    margin: 0.5rem 0 0;
+  }
+
+  .project-card__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    margin-top: 1.25rem;
+    font-family: Inter, sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--green);
+    text-decoration: none;
+    transition: gap 160ms;
+  }
+
+  .project-card__cta:hover {
+    text-decoration: underline;
+    gap: 0.5rem;
+  }
+
+  @media (max-width: 900px) {
+    .projects__grid {
+      grid-template-columns: 1fr 1fr;
+    }
+    .projects__grid .project-card:nth-child(4),
+    .projects__grid .project-card:nth-child(5) {
+      grid-column: auto;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .projects__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ===== SUPPORT STRIP ===== */
+  .support-strip {
+    background: var(--ink);
+    color: #c8c6c0;
+    padding: clamp(3.5rem, 7vw, 6rem) 0;
+    border-bottom: 4px solid var(--green);
+  }
+
+  .support-strip__inner {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 2.5rem 4rem;
+    align-items: center;
+  }
+
+  .support-strip__heading {
+    font-family: "Fraunces", serif;
+    font-size: clamp(1.6rem, 3vw, 2.4rem);
+    font-weight: 500;
+    line-height: 1.25;
+    color: var(--cream);
+    margin: 0.5rem 0 1rem;
+  }
+
+  .support-strip p {
+    font-size: 0.95rem;
+    line-height: 1.7;
+    max-width: 58ch;
+    color: #c8c6c0;
+    margin: 0;
+  }
+
+  .support-strip__action {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    flex-shrink: 0;
+  }
+
+  .support-strip__hint {
+    font-size: 0.75rem;
+    color: #6a6864;
+    margin: 0;
+    text-align: center;
+  }
+
+  @media (max-width: 760px) {
+    .support-strip__inner {
+      grid-template-columns: 1fr;
+    }
+    .support-strip__action {
+      align-items: flex-start;
+    }
+  }
+</style>

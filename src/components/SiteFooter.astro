@@ -1,0 +1,170 @@
+---
+---
+
+<footer class="site-footer">
+  <div class="footer-inner container">
+
+    <div class="footer-brand">
+      <img
+        src="/assets/images/lsc-logo.png"
+        alt="Liberating Scripture Collective"
+        width="80"
+        height="80"
+        loading="lazy"
+        decoding="async"
+      />
+      <p class="footer-tagline">
+        Open-access, trauma-informed scripture translation, teaching, and community.
+      </p>
+      <p class="footer-legal">
+        © <span id="footerYear"></span> Liberating Scripture Collective<br />
+        Founded and curated by Brandon&nbsp;Vélez&nbsp;Johnson
+      </p>
+    </div>
+
+    <nav class="footer-col" aria-label="Projects">
+      <h2 class="footer-col__heading">Projects</h2>
+      <ul>
+        <li><a href="https://litbible.net" target="_blank" rel="noopener noreferrer">LIT Bible ↗</a></li>
+        <li><a href="https://litbible.net/found-in-translation-podcast" target="_blank" rel="noopener noreferrer">Found in Translation ↗</a></li>
+        <li><a href="/podcasts/">The Table We're Building</a></li>
+        <li><a href="/spiritual-direction/">Spiritual Direction</a></li>
+        <li><a href="/community/">Community &amp; Courses</a></li>
+      </ul>
+    </nav>
+
+    <nav class="footer-col" aria-label="Organization">
+      <h2 class="footer-col__heading">Organization</h2>
+      <ul>
+        <li><a href="/about/">About LSC</a></li>
+        <li><a href="https://litbible.net/liberating-scripture-collective" target="_blank" rel="noopener noreferrer">LSC on litbible.net ↗</a></li>
+        <li><a href="/support/">Support the Work</a></li>
+        <li><a href="/contact/">Contact</a></li>
+      </ul>
+    </nav>
+
+    <div class="footer-col footer-col--cta">
+      <a href="/support/" class="btn footer-cta-btn"><span>Support the Work</span></a>
+      <a href="https://litbible.net/read" target="_blank" rel="noopener noreferrer" class="btn btn--outline footer-cta-btn">
+        <span>Read the LIT Bible ↗</span>
+      </a>
+    </div>
+
+  </div>
+</footer>
+
+<script>
+  const el = document.getElementById("footerYear");
+  if (el) el.textContent = String(new Date().getFullYear());
+</script>
+
+<style>
+  .site-footer {
+    background: var(--ink);
+    color: #c8c6c0;
+    padding: clamp(3rem, 6vw, 5rem) 0 2rem;
+    margin-top: 0;
+  }
+
+  .footer-inner {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr 1fr 1fr;
+    gap: 3rem 2.5rem;
+    align-items: start;
+  }
+
+  /* Brand column */
+  .footer-brand img {
+    display: block;
+    width: auto;
+    margin-bottom: 1rem;
+    opacity: 0.9;
+  }
+
+  .footer-tagline {
+    font-family: "Fraunces", serif;
+    font-size: 1rem;
+    line-height: 1.55;
+    color: #c8c6c0;
+    margin: 0 0 1rem 0;
+  }
+
+  .footer-legal {
+    font-size: 0.8rem;
+    line-height: 1.6;
+    color: #8a8882;
+    margin: 0;
+  }
+
+  /* Nav columns */
+  .footer-col__heading {
+    font-family: Inter, sans-serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #8a8882;
+    margin: 0 0 1rem 0;
+  }
+
+  .footer-col ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .footer-col ul a {
+    font-size: 0.95rem;
+    color: #c8c6c0;
+    text-decoration: none;
+    transition: color 160ms;
+  }
+
+  .footer-col ul a:hover { color: var(--green); text-decoration: none; }
+
+  /* CTA column */
+  .footer-col--cta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding-top: 0.25rem;
+  }
+
+  .footer-cta-btn {
+    width: 100%;
+    justify-content: center;
+    font-size: 0.82rem;
+    padding: 12px 18px;
+  }
+
+  .btn--outline {
+    background: transparent;
+    border-color: rgba(200, 198, 192, 0.4);
+    color: #c8c6c0;
+  }
+
+  .btn--outline:hover,
+  .btn--outline:focus-visible {
+    color: var(--ink);
+  }
+
+  /* Responsive */
+  @media (max-width: 960px) {
+    .footer-inner {
+      grid-template-columns: 1fr 1fr;
+      gap: 2.5rem 2rem;
+    }
+    .footer-brand { grid-column: 1 / -1; }
+    .footer-col--cta { flex-direction: row; flex-wrap: wrap; }
+    .footer-cta-btn { width: auto; }
+  }
+
+  @media (max-width: 560px) {
+    .footer-inner { grid-template-columns: 1fr; gap: 2rem; }
+    .footer-col--cta { flex-direction: column; }
+    .footer-cta-btn { width: 100%; }
+  }
+</style>

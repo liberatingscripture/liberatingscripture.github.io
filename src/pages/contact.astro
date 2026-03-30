@@ -1,0 +1,260 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout
+  title="Contact | Liberating Scripture Collective"
+  description="Contact the Liberating Scripture Collective with questions, collaboration ideas, or media inquiries."
+  canonical="https://liberatingscripture.org/contact/"
+>
+  <div class="contact-page">
+
+    <header class="contact-hero">
+      <div class="content">
+        <p class="eyebrow">Get in touch</p>
+        <h1>Contact</h1>
+        <p class="lede">
+          Questions, collaboration ideas, media inquiries, or just a note:
+          send it our way. We'll respond as soon as we can.
+        </p>
+      </div>
+    </header>
+
+    <div class="contact-content content">
+      <div class="contact-grid">
+
+        <div class="contact-form-wrap">
+          <form
+            class="contact-form"
+            action="https://formspree.io/f/xdkqvlkj"
+            method="POST"
+            novalidate
+          >
+            <div class="field">
+              <label for="contact-name">Your name</label>
+              <input
+                type="text"
+                id="contact-name"
+                name="name"
+                autocomplete="name"
+              />
+            </div>
+
+            <div class="field">
+              <label for="contact-email">Your email</label>
+              <input
+                type="email"
+                id="contact-email"
+                name="email"
+                required
+                autocomplete="email"
+              />
+            </div>
+
+            <div class="field">
+              <label for="contact-message">Message</label>
+              <textarea
+                id="contact-message"
+                name="message"
+                rows="7"
+                required
+              ></textarea>
+            </div>
+
+            <input type="hidden" name="_subject" value="LSC Contact Form" />
+            <input type="hidden" name="_format" value="plain" />
+
+            <!-- Honeypot -->
+            <div class="hp" aria-hidden="true">
+              <label>Leave this empty <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" /></label>
+            </div>
+
+            <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+            <div class="cf-turnstile" data-sitekey="0x4AAAAAACJ446flkL7Rwf8i"></div>
+
+            <button type="submit" class="btn contact-submit"><span>Send message</span></button>
+
+            <p class="contact-notice">
+              This form is not for sensitive personal information.
+              We will never sell or share your information.
+            </p>
+          </form>
+        </div>
+
+        <aside class="contact-sidebar">
+          <div class="contact-sidebar__section">
+            <h2>What to expect</h2>
+            <p>
+              We're a small team and this work is part of a larger life.
+              We'll do our best to respond within a week, often sooner.
+            </p>
+          </div>
+          <div class="contact-sidebar__section">
+            <h2>Common reasons to write</h2>
+            <ul>
+              <li>You want to collaborate on a project</li>
+              <li>You're a spiritual director interested in joining the directory</li>
+              <li>You have feedback on a translation choice</li>
+              <li>You want to support the work and have questions</li>
+              <li>You're a journalist, researcher, or podcaster</li>
+              <li>You just want to say something</li>
+            </ul>
+          </div>
+          <div class="contact-sidebar__section">
+            <h2>Other paths</h2>
+            <ul class="contact-sidebar__links">
+              <li><a href="https://litbible.net" target="_blank" rel="noopener noreferrer">litbible.net ↗</a></li>
+              <li><a href="/about/">About LSC</a></li>
+              <li><a href="/support/">Support the work</a></li>
+            </ul>
+          </div>
+        </aside>
+
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .contact-hero {
+    background: var(--cream);
+    border-bottom: 1px solid var(--border);
+    padding: clamp(3rem, 6vw, 5rem) 0;
+    position: relative;
+  }
+
+  .contact-hero::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 5px;
+    background: var(--green);
+  }
+
+  .contact-hero h1 {
+    font-family: "Crimson Text", Georgia, serif;
+    font-size: clamp(2.2rem, 4.5vw, 3.5rem);
+    color: var(--text-strong);
+    margin: 0.75rem 0 1rem;
+  }
+
+  .contact-hero .eyebrow { color: var(--green); }
+
+  .contact-content {
+    padding: clamp(2.5rem, 5vw, 4.5rem) 0;
+  }
+
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: 4rem;
+    align-items: start;
+  }
+
+  /* Form */
+  .contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .field label {
+    font-family: Inter, sans-serif;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text-strong);
+  }
+
+  .required { color: var(--green); }
+
+  .field input,
+  .field select,
+  .field textarea {
+    background: var(--surface-raised);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    font-family: Inter, sans-serif;
+    font-size: 1rem;
+    color: var(--text);
+    transition: border-color 160ms, box-shadow 160ms;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  .field input:focus,
+  .field select:focus,
+  .field textarea:focus {
+    outline: none;
+    border-color: var(--green);
+    box-shadow: 0 0 0 3px rgba(32,157,80,0.15);
+  }
+
+  .field textarea { resize: vertical; min-height: 160px; }
+
+  .hp { display: none; }
+
+  .contact-submit { align-self: flex-start; }
+
+  .contact-notice {
+    font-size: 0.8rem;
+    color: #8a8882;
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  .cf-turnstile { margin-top: 0.25rem; }
+
+  /* Sidebar */
+  .contact-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .contact-sidebar__section h2 {
+    font-size: 1rem;
+    margin: 0 0 0.6rem;
+    font-family: Inter, sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+
+  .contact-sidebar__section p,
+  .contact-sidebar__section ul {
+    font-size: 0.9rem;
+    line-height: 1.65;
+    color: var(--text);
+    margin: 0;
+  }
+
+  .contact-sidebar__section ul { padding-left: 1.2rem; }
+  .contact-sidebar__section li { margin-bottom: 0.3rem; }
+
+  .contact-sidebar__links {
+    list-style: none;
+    padding: 0;
+  }
+
+  .contact-sidebar__links li { margin: 0; }
+  .contact-sidebar__links a {
+    font-size: 0.9rem;
+    color: var(--green);
+    display: block;
+    padding: 0.3rem 0;
+  }
+
+  @media (max-width: 900px) {
+    .contact-grid {
+      grid-template-columns: 1fr;
+      gap: 3rem;
+    }
+    .contact-sidebar { position: static; }
+  }
+</style>
