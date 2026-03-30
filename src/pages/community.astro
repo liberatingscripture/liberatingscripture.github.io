@@ -7,6 +7,19 @@ import Layout from "../layouts/Layout.astro";
   description="Courses, study companions, and community spaces for reading scripture with context, care, and critical honesty. Built together, not delivered from above."
   canonical="https://liberatingscripture.org/community/"
 >
+  <Fragment slot="head">
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "@id": "https://liberatingscripture.org/community/#webpage",
+        url: "https://liberatingscripture.org/community/",
+        name: "Community & Courses | Liberating Scripture Collective",
+        isPartOf: { "@id": "https://liberatingscripture.org/#website" },
+      })}
+    />
+  </Fragment>
   <div class="community-page">
     <header class="community-hero">
       <div class="content">
@@ -130,7 +143,7 @@ import Layout from "../layouts/Layout.astro";
   }
 
   .community-hero .eyebrow {
-    color: var(--green);
+    color: #3abf6a;
   }
   .community-hero .lede {
     color: #c8c6c0;

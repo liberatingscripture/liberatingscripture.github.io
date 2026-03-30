@@ -7,6 +7,19 @@ import Layout from "../layouts/Layout.astro";
   description="Contact the Liberating Scripture Collective with questions, collaboration ideas, or media inquiries."
   canonical="https://liberatingscripture.org/contact/"
 >
+  <Fragment slot="head">
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "ContactPage",
+        "@id": "https://liberatingscripture.org/contact/#webpage",
+        url: "https://liberatingscripture.org/contact/",
+        name: "Contact | Liberating Scripture Collective",
+        isPartOf: { "@id": "https://liberatingscripture.org/#website" },
+      })}
+    />
+  </Fragment>
   <div class="contact-page">
 
     <header class="contact-hero">
@@ -28,20 +41,20 @@ import Layout from "../layouts/Layout.astro";
             class="contact-form"
             action="https://formspree.io/f/xdkqvlkj"
             method="POST"
-            novalidate
           >
             <div class="field">
-              <label for="contact-name">Your name</label>
+              <label for="contact-name">Your name <span class="required" aria-hidden="true">*</span></label>
               <input
                 type="text"
                 id="contact-name"
                 name="name"
+                required
                 autocomplete="name"
               />
             </div>
 
             <div class="field">
-              <label for="contact-email">Your email</label>
+              <label for="contact-email">Your email <span class="required" aria-hidden="true">*</span></label>
               <input
                 type="email"
                 id="contact-email"
@@ -52,7 +65,7 @@ import Layout from "../layouts/Layout.astro";
             </div>
 
             <div class="field">
-              <label for="contact-message">Message</label>
+              <label for="contact-message">Message <span class="required" aria-hidden="true">*</span></label>
               <textarea
                 id="contact-message"
                 name="message"
@@ -72,13 +85,59 @@ import Layout from "../layouts/Layout.astro";
             <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
             <div class="cf-turnstile" data-sitekey="0x4AAAAAACJ446flkL7Rwf8i"></div>
 
+            <div id="form-status" class="form-status" role="status" aria-live="polite" aria-atomic="true"></div>
+
             <button type="submit" class="btn contact-submit"><span>Send message</span></button>
 
             <p class="contact-notice">
+              Fields marked <span aria-hidden="true">*</span><span class="sr-only">with an asterisk</span> are required.
               This form is not for sensitive personal information.
               We will never sell or share your information.
             </p>
           </form>
+
+          <script>
+            (() => {
+              const form = document.querySelector(".contact-form") as HTMLFormElement | null;
+              const statusEl = document.getElementById("form-status");
+              const submitBtn = form?.querySelector("button[type='submit']") as HTMLButtonElement | null;
+              if (!form || !statusEl || !submitBtn) return;
+
+              form.addEventListener("submit", async (e) => {
+                e.preventDefault();
+                if (!form.checkValidity()) { form.reportValidity(); return; }
+
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = "<span>Sending…</span>";
+                statusEl.textContent = "";
+                statusEl.className = "form-status";
+
+                try {
+                  const res = await fetch(form.action, {
+                    method: "POST",
+                    body: new FormData(form),
+                    headers: { Accept: "application/json" },
+                  });
+
+                  if (res.ok) {
+                    statusEl.textContent = "Message sent — we'll be in touch soon.";
+                    statusEl.className = "form-status form-status--success";
+                    form.reset();
+                  } else {
+                    const data = await res.json().catch(() => ({})) as { errors?: { message: string }[] };
+                    statusEl.textContent = data?.errors?.[0]?.message ?? "Something went wrong. Please try again.";
+                    statusEl.className = "form-status form-status--error";
+                  }
+                } catch {
+                  statusEl.textContent = "Couldn't send the message. Check your connection and try again.";
+                  statusEl.className = "form-status form-status--error";
+                }
+
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = "<span>Send message</span>";
+              });
+            })();
+          </script>
         </div>
 
         <aside class="contact-sidebar">
@@ -188,12 +247,12 @@ import Layout from "../layouts/Layout.astro";
     appearance: none;
   }
 
-  .field input:focus,
-  .field select:focus,
-  .field textarea:focus {
-    outline: none;
+  .field input:focus-visible,
+  .field select:focus-visible,
+  .field textarea:focus-visible {
+    outline: 2px solid var(--green);
+    outline-offset: 2px;
     border-color: var(--green);
-    box-shadow: 0 0 0 3px rgba(32,157,80,0.15);
   }
 
   .field textarea { resize: vertical; min-height: 160px; }
@@ -204,9 +263,33 @@ import Layout from "../layouts/Layout.astro";
 
   .contact-notice {
     font-size: 0.8rem;
-    color: #8a8882;
+    color: #5c5b57;
     line-height: 1.5;
     margin: 0;
+  }
+
+  .form-status {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    border-radius: 8px;
+    padding: 0;
+    min-height: 0;
+  }
+
+  .form-status:not(:empty) {
+    padding: 0.75rem 1rem;
+  }
+
+  .form-status--success {
+    background: rgba(32, 157, 80, 0.1);
+    color: #166b39;
+    border: 1px solid rgba(32, 157, 80, 0.3);
+  }
+
+  .form-status--error {
+    background: rgba(200, 50, 50, 0.08);
+    color: #8b1a1a;
+    border: 1px solid rgba(200, 50, 50, 0.25);
   }
 
   .cf-turnstile { margin-top: 0.25rem; }

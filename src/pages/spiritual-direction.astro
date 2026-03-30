@@ -7,6 +7,33 @@ import Layout from "../layouts/Layout.astro";
   description="A growing network of spiritual directors whose practice is explicitly liberationist, trauma-informed, and radically inclusive. Consent-based accompaniment."
   canonical="https://liberatingscripture.org/spiritual-direction/"
 >
+  <Fragment slot="head">
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Service",
+            "@id": "https://liberatingscripture.org/spiritual-direction/#service",
+            name: "Spiritual Direction",
+            description:
+              "A growing network of spiritual directors whose practice is explicitly liberationist, trauma-informed, and radically inclusive.",
+            url: "https://liberatingscripture.org/spiritual-direction/",
+            serviceType: "Spiritual Direction",
+            provider: { "@id": "https://liberatingscripture.org/#organization" },
+          },
+          {
+            "@type": "WebPage",
+            "@id": "https://liberatingscripture.org/spiritual-direction/#webpage",
+            url: "https://liberatingscripture.org/spiritual-direction/",
+            name: "Spiritual Direction | Liberating Scripture Collective",
+            isPartOf: { "@id": "https://liberatingscripture.org/#website" },
+          },
+        ],
+      })}
+    />
+  </Fragment>
   <div class="sd-page">
     <header class="sd-hero">
       <div class="content">

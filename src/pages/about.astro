@@ -7,7 +7,33 @@ import Layout from "../layouts/Layout.astro";
   description="The Liberating Scripture Collective is a nonprofit organization building open-access scripture translation, teaching, and community centered on liberation, healing, and belonging."
   canonical="https://liberatingscripture.org/about/"
 >
-  <article class="about-page">
+  <Fragment slot="head">
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "AboutPage",
+            "@id": "https://liberatingscripture.org/about/#webpage",
+            url: "https://liberatingscripture.org/about/",
+            name: "About | Liberating Scripture Collective",
+            isPartOf: { "@id": "https://liberatingscripture.org/#website" },
+            about: { "@id": "https://liberatingscripture.org/#organization" },
+          },
+          {
+            "@type": "Person",
+            "@id": "https://liberatingscripture.org/about/#brandon",
+            name: "Brandon C. Vélez Johnson",
+            jobTitle: "Bible Translator and Mental Health Counselor",
+            worksFor: { "@id": "https://liberatingscripture.org/#organization" },
+            url: "https://litbible.net/about",
+          },
+        ],
+      })}
+    />
+  </Fragment>
+  <div class="about-page">
     <header class="about-hero">
       <div class="about-hero__inner content">
         <p class="eyebrow">About</p>
@@ -195,7 +221,7 @@ import Layout from "../layouts/Layout.astro";
         </div>
       </section>
     </div>
-  </article>
+  </div>
 </Layout>
 
 <style>
@@ -216,7 +242,7 @@ import Layout from "../layouts/Layout.astro";
   }
 
   .about-hero .eyebrow {
-    color: rgba(225, 223, 217, 0.7);
+    color: var(--cream);
   }
 
   .about-hero .lede {
