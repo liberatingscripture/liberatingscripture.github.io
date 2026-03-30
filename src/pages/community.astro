@@ -135,6 +135,10 @@ import Layout from "../layouts/Layout.astro";
     padding: clamp(3.5rem, 7vw, 6rem) 0;
   }
 
+  .community-hero .content {
+    max-width: 64ch;
+  }
+
   .community-hero h1 {
     font-family: "Crimson Text", Georgia, serif;
     font-size: clamp(2.2rem, 4.5vw, 3.8rem);
@@ -155,6 +159,11 @@ import Layout from "../layouts/Layout.astro";
     display: flex;
     flex-direction: column;
     gap: 3.5rem;
+  }
+
+  .community-content .community-section:first-child {
+    max-width: 64ch;
+    margin-inline: auto;
   }
 
   .community-section h2 {

@@ -150,6 +150,10 @@ import Layout from "../layouts/Layout.astro";
     overflow: hidden;
   }
 
+  .sd-hero .content {
+    max-width: 64ch;
+  }
+
   .sd-hero::before {
     content: "";
     position: absolute;
@@ -176,6 +180,11 @@ import Layout from "../layouts/Layout.astro";
     display: flex;
     flex-direction: column;
     gap: 3.5rem;
+  }
+
+  .sd-section {
+    max-width: 64ch;
+    margin-inline: auto;
   }
 
   .sd-section h2 {
