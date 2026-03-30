@@ -133,7 +133,7 @@ li { margin-bottom: 0.4rem; }
 /* ---------- Accessibility ---------- */
 .sr-only {
   position: absolute; width: 1px; height: 1px; padding: 0;
-  margin: -1px; overflow: hidden; clip: rect(0,0,0,0);
+  margin: -1px; overflow: hidden; clip-path: inset(50%);
   white-space: nowrap; border: 0;
 }
 
@@ -237,6 +237,12 @@ li { margin-bottom: 0.4rem; }
 
 @media (prefers-reduced-motion: reduce) {
   .btn::before { transition: none; }
+  .skip-link { transition: none; }
+  .project-card,
+  .project-card::after { transition: none; }
+  .menu-icon,
+  .menu-icon::before,
+  .menu-icon::after { transition: none; }
 }
 
 /* ---------- Eyebrow label ---------- */

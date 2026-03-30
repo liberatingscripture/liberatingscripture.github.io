@@ -4,9 +4,48 @@ import Layout from "../layouts/Layout.astro";
 
 <Layout
   title="Podcasts | Liberating Scripture Collective"
-  description="Podcasts from the Liberating Scripture Collective — Found in Translation and The Table We're Building."
+  description="Found in Translation unpacks the LIT Bible one chapter at a time. The Table We're Building is a conversation about faith, trauma, and belonging. Both from the Liberating Scripture Collective."
   canonical="https://liberatingscripture.org/podcasts/"
 >
+  <Fragment slot="head">
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "PodcastSeries",
+            "@id": "https://liberatingscripture.org/podcasts/#fit",
+            name: "Found in Translation",
+            description:
+              "Brandon Vélez Johnson and Brandon Rhodes work through the LIT Bible one chapter or big idea at a time, uncovering what liberation-centered, trauma-informed translation reveals in familiar texts.",
+            url: "https://litbible.net/found-in-translation-podcast",
+            image: "https://liberatingscripture.org/assets/images/fit-cover.webp",
+            inLanguage: "en",
+            author: { "@id": "https://liberatingscripture.org/#organization" },
+            producer: { "@id": "https://liberatingscripture.org/#organization" },
+            sameAs: [
+              "https://podcasts.apple.com/us/podcast/found-in-translation/id1586737797",
+              "https://open.spotify.com/show/6S2wWaM5oqknwncPfOEyZ6",
+              "https://www.youtube.com/@foundintranslationpodcast",
+            ],
+          },
+          {
+            "@type": "PodcastSeries",
+            "@id": "https://liberatingscripture.org/podcasts/#twb",
+            name: "The Table We're Building",
+            description:
+              "A trauma therapist and a spiritual director, wounded healers reclaiming faith after abuse, naming harm without shame, and crafting a bigger, braver table for belonging.",
+            url: "https://liberatingscripture.org/podcasts/",
+            image: "https://liberatingscripture.org/assets/images/twb-banner.png",
+            inLanguage: "en",
+            author: { "@id": "https://liberatingscripture.org/#organization" },
+            producer: { "@id": "https://liberatingscripture.org/#organization" },
+          },
+        ],
+      })}
+    />
+  </Fragment>
   <div class="podcasts-page">
     <header class="podcasts-hero">
       <div class="content">
@@ -148,7 +187,7 @@ import Layout from "../layouts/Layout.astro";
   }
 
   .podcasts-hero .eyebrow {
-    color: rgba(225, 223, 217, 0.7);
+    color: var(--cream);
   }
   .podcasts-hero .lede {
     color: var(--cream);
@@ -200,7 +239,7 @@ import Layout from "../layouts/Layout.astro";
 
   .podcast-card__hosts {
     font-size: 0.9rem;
-    color: #6a6864;
+    color: #5c5b57;
     margin: 0 0 0.75rem;
     font-style: normal;
   }
@@ -261,7 +300,7 @@ import Layout from "../layouts/Layout.astro";
     font-weight: 600;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: #8a8882;
+    color: #5c5b57;
     background: rgba(29, 35, 28, 0.07);
     padding: 3px 10px;
     border-radius: 4px;
@@ -269,7 +308,7 @@ import Layout from "../layouts/Layout.astro";
 
   .podcast-notify {
     font-size: 0.95rem;
-    color: #6a6864;
+    color: #5c5b57;
     font-style: italic;
     margin: 1rem 0 0.75rem;
   }

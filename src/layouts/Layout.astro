@@ -8,6 +8,8 @@ const {
   description = "The Liberating Scripture Collective creates open-access, trauma-informed scripture translation, learning resources, and pathways of spiritual support.",
   canonical,
   ogImage,
+  ogImageAlt = "Liberating Scripture Collective — open-access, trauma-informed scripture translation and spiritual community",
+  noindex = false,
   bg = "cream",
 } = Astro.props;
 
@@ -24,6 +26,7 @@ const ogImageUrl = ogImage ?? `${siteOrigin}/assets/og/og-default.png`;
     <title>{title}</title>
     <meta name="description" content={description} />
     {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
@@ -33,6 +36,7 @@ const ogImageUrl = ogImage ?? `${siteOrigin}/assets/og/og-default.png`;
     <meta property="og:site_name" content="Liberating Scripture Collective" />
     <meta property="og:locale" content="en_US" />
     <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:alt" content={ogImageAlt} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
 
@@ -41,6 +45,7 @@ const ogImageUrl = ogImage ?? `${siteOrigin}/assets/og/og-default.png`;
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImageUrl} />
+    <meta name="twitter:image:alt" content={ogImageAlt} />
 
     <!-- Favicons -->
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />

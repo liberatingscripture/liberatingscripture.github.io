@@ -7,6 +7,19 @@ import Layout from "../layouts/Layout.astro";
   description="Support the Liberating Scripture Collective. Help keep liberation-centered, trauma-informed scripture work free, open, and community-shaped."
   canonical="https://liberatingscripture.org/support/"
 >
+  <Fragment slot="head">
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "@id": "https://liberatingscripture.org/support/#webpage",
+        url: "https://liberatingscripture.org/support/",
+        name: "Support the Work | Liberating Scripture Collective",
+        isPartOf: { "@id": "https://liberatingscripture.org/#website" },
+      })}
+    />
+  </Fragment>
   <div class="support-page">
     <!-- HERO -->
     <header class="support-hero">
@@ -168,7 +181,7 @@ import Layout from "../layouts/Layout.astro";
   }
 
   .support-hero .eyebrow {
-    color: var(--green);
+    color: #3abf6a;
   }
   .support-hero .lede {
     color: #c8c6c0;
@@ -249,7 +262,7 @@ import Layout from "../layouts/Layout.astro";
 
   .donate-band__sub {
     font-size: 0.9rem;
-    color: #8a8882;
+    color: #5c5b57;
     margin: 0.25rem 0 0;
   }
 
@@ -267,7 +280,7 @@ import Layout from "../layouts/Layout.astro";
     font-weight: 600;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: #8a8882;
+    color: #5c5b57;
     margin: 0 0 0.75rem;
   }
 
