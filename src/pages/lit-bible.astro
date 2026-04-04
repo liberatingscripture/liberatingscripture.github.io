@@ -1,0 +1,480 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout
+  title="The LIT Bible | Liberating Scripture Collective"
+  description="The Liberation and Inclusion Translation (LIT Bible) is a trauma-informed, liberationist New Testament translation from the Greek, freely available at litbible.net. Created by Brandon Vélez Johnson."
+  canonical="https://liberatingscripture.org/lit-bible/"
+>
+  <Fragment slot="head">
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebPage",
+            "@id": "https://liberatingscripture.org/lit-bible/#webpage",
+            url: "https://liberatingscripture.org/lit-bible/",
+            name: "The LIT Bible | Liberating Scripture Collective",
+            isPartOf: { "@id": "https://liberatingscripture.org/#website" },
+            about: { "@id": "https://litbible.net/#translation" },
+          },
+          {
+            "@type": "CreativeWork",
+            "@id": "https://litbible.net/#translation",
+            name: "Liberation and Inclusion Translation",
+            alternateName: "LIT Bible",
+            author: {
+              "@type": "Person",
+              name: "Brandon C. Vélez Johnson",
+              url: "https://litbible.net/about",
+            },
+            publisher: {
+              "@type": "Organization",
+              name: "Liberating Scripture Collective",
+              url: "https://liberatingscripture.org",
+            },
+            url: "https://litbible.net",
+            inLanguage: "en",
+            license: "https://creativecommons.org/licenses/by-nc-nd/4.0/",
+            genre: "Bible translation",
+            description:
+              "A trauma-informed, liberationist New Testament translation from the Greek, freely available online with extensive footnotes and annotations.",
+          },
+        ],
+      })}
+    />
+  </Fragment>
+
+  <div class="lit-page">
+    <header class="lit-hero">
+      <div class="lit-hero__inner content">
+        <p class="eyebrow">Flagship Translation</p>
+        <h1>The Liberation and Inclusion Translation</h1>
+        <p class="lede lit-hero__lede">
+          A trauma-informed, liberationist Bible translation from the
+          original language: freely available, thoroughly annotated, and built to surface
+          what traditional translations obscure.
+        </p>
+        <div class="lit-hero__actions">
+          <a
+            href="https://litbible.net/read"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn btn--green"
+          >
+            <span>Read the LIT Bible ↗</span>
+          </a>
+          <a
+            href="https://litbible.net"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn btn--hero-outline"
+          >
+            <span>Visit litbible.net ↗</span>
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <div class="lit-body content">
+      <section class="lit-section" aria-labelledby="lit-what">
+        <h2 id="lit-what">What the LIT Bible is</h2>
+        <p>
+          The LIT Bible is a New Testament translation by
+          <a href="https://litbible.net/about" target="_blank" rel="noopener noreferrer"
+            >Brandon Vélez Johnson</a
+          >, translated word-by-word from the Greek with attention to grammar,
+          syntax, and historical context. It is not a paraphrase and not what most "literal" translations are: oversimplified attempts to substitute predetermined English words for Greek ones. It's an annotated translation where the interpretive work
+          is made visible rather than hidden behind a facade of neutrality.
+        </p>
+        <p>
+          The full name—Liberation and Inclusion Translation—reflects the
+          conviction that the Bible's core movements are liberating, restorative,
+          and radically inclusive, and that how we translate shapes how people
+          experience God, themselves, and one another.
+        </p>
+        <p>
+          The LIT Bible is published under a
+          <a
+            href="https://creativecommons.org/licenses/by-nc-nd/4.0/"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Creative Commons BY-NC-ND 4.0</a
+          > license, ensuring it remains freely accessible for non-commercial use.
+        </p>
+      </section>
+
+      <section class="lit-section" aria-labelledby="lit-approach">
+        <h2 id="lit-approach">Translation approach</h2>
+        <p>
+          Every translation is an interpretation, and interpretation always
+          reflects values. Rather than disguising those values, the LIT names
+          them so readers can engage the text with awareness.
+        </p>
+
+        <h3>Faithfulness to the text</h3>
+        <p>
+          Translation choices are grounded in grammar, syntax, and historical
+          context, not doctrinal shortcuts. Where a choice might raise
+          questions, footnotes show the Greek term, its range of meanings, and
+          the reasoning behind the rendering.
+        </p>
+
+        <h3>Clarity over religious jargon</h3>
+        <p>
+          Traditional theological terms are reconsidered when they obscure
+          meaning, import later doctrine, or soften the text's original force.
+          You'll see terms rendered in ways that may feel unfamiliar at first,
+          because the goal is to let the original meaning breathe.
+        </p>
+
+        <h3>Attention to harm</h3>
+        <p>
+          Where scripture has been used to shame, exclude, or justify harm, the
+          translation asks whether that harm comes from the text itself or from
+          how it has been rendered and taught.
+        </p>
+
+        <h3>God looks like Jesus</h3>
+        <p>
+          The character of God is interpreted consistently with Jesus' life,
+          teaching, and self-giving love rather than through abstract or
+          punitive frameworks.
+        </p>
+
+        <h3>Belonging</h3>
+        <p>
+          The translation takes seriously the Bible's recurring insistence that belonging is always bigger than we've been taught and that the truest thing about humanity is our belovedness.
+        </p>
+      </section>
+
+      <section class="lit-section" aria-labelledby="lit-examples">
+        <h2 id="lit-examples">Why the language sounds different</h2>
+        <p>
+          Many English translations rely on traditional church vocabulary that
+          has accumulated centuries of doctrinal meaning. The LIT often lets go
+          of familiar phrasing to communicate what the Greek is actually doing
+          in context.
+        </p>
+        <div class="lit-examples">
+          <div class="lit-example">
+            <p class="lit-example__greek"><em>ekklēsia</em></p>
+            <p class="lit-example__traditional">Traditional: "church"</p>
+            <p class="lit-example__lit">LIT: <strong>"called community"</strong></p>
+          </div>
+          <div class="lit-example">
+            <p class="lit-example__greek"><em>pneuma</em></p>
+            <p class="lit-example__traditional">Traditional: "spirit"</p>
+            <p class="lit-example__lit">LIT: <strong>"life-breath"</strong></p>
+          </div>
+          <div class="lit-example">
+            <p class="lit-example__greek"><em>euangelion</em></p>
+            <p class="lit-example__traditional">Traditional: "gospel"</p>
+            <p class="lit-example__lit">LIT: <strong>"triumphant message"</strong></p>
+          </div>
+          <div class="lit-example">
+            <p class="lit-example__greek"><em>sōtērion</em></p>
+            <p class="lit-example__traditional">Traditional: "salvation"</p>
+            <p class="lit-example__lit">LIT: <strong>"liberation"</strong></p>
+          </div>
+        </div>
+        <p>
+          These choices aren't meant to be provocative. They're attempts to
+          surface what the text was doing socially, relationally, and
+          politically before religious shorthand smoothed it over.
+        </p>
+      </section>
+
+      <section class="lit-section" aria-labelledby="lit-available">
+        <h2 id="lit-available">What's available</h2>
+        <p>
+          The translation lives at
+          <a
+            href="https://litbible.net"
+            target="_blank"
+            rel="noopener noreferrer">litbible.net</a
+          >, where it is freely available to read, search, and study.
+          The site includes:
+        </p>
+        <div class="lit-features">
+          <div class="lit-feature">
+            <h3>The translation itself</h3>
+            <p>
+              24 of 27 New Testament books are currently published, with all 260
+              chapters planned for completion by 2027. Every chapter includes
+              extensive footnotes explaining translation decisions.
+            </p>
+          </div>
+          <div class="lit-feature">
+            <h3>Full-text search</h3>
+            <p>
+              Search across every published chapter by keyword, topic, or Greek
+              term.
+            </p>
+          </div>
+          <div class="lit-feature">
+            <h3>Multiple reading modes</h3>
+            <p>
+              Read with or without footnotes, adjust text size and theme, and
+              navigate by book, chapter, or search results.
+            </p>
+          </div>
+          <div class="lit-feature">
+            <h3>Translation commitments</h3>
+            <p>
+              A transparent account of the values and principles guiding every
+              translation decision.
+            </p>
+          </div>
+          <div class="lit-feature">
+            <h3>Glossary</h3>
+            <p>
+              Key Greek terms and their LIT renderings, with explanations of
+              why the translation departs from traditional vocabulary.
+            </p>
+          </div>
+          <div class="lit-feature">
+            <h3>Articles</h3>
+            <p>
+              Longer explorations of specific translation decisions, themes, and
+              the scholarship behind them.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="lit-section" aria-labelledby="lit-relationship">
+        <h2 id="lit-relationship">The LIT Bible and the Collective</h2>
+        <p>
+          The LIT Bible is the flagship project of the Liberating Scripture
+          Collective. The translation came first; it's the seed from which the
+          rest of the Collective's work grew. LSC was founded to support and
+          steward the LIT Bible and build the wider ecosystem around it:
+          teaching, public conversation, spiritual accompaniment, and community.
+        </p>
+        <p>
+          <strong>litbible.net</strong> is where the translation lives.
+          <strong>liberatingscripture.org</strong> is where the organization
+          lives. The two sites are companions, different
+          homes for different parts of the same work.
+        </p>
+      </section>
+
+      <section class="lit-section" aria-labelledby="lit-cta">
+        <h2 id="lit-cta">Explore the translation</h2>
+        <p>
+          The best way to understand the LIT Bible is to read it. Start with a
+          familiar passage and notice what feels different and why.
+        </p>
+        <div class="lit-actions">
+          <a
+            href="https://litbible.net/read"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn"
+          >
+            <span>Read the LIT Bible ↗</span>
+          </a>
+          <a
+            href="https://litbible.net/about"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn btn--outline"
+          >
+            <span>About the translator ↗</span>
+          </a>
+          <a
+            href="https://litbible.net/translation-commitments"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn btn--outline"
+          >
+            <span>Translation commitments ↗</span>
+          </a>
+          <a href="/support/" class="btn btn--outline">
+            <span>Support the work</span>
+          </a>
+        </div>
+      </section>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  /* ---- Hero ---- */
+  .lit-hero {
+    background: var(--green);
+    padding: clamp(3.5rem, 7vw, 6rem) 0;
+  }
+
+  .lit-hero__inner {
+    max-width: 64ch;
+  }
+
+  .lit-hero h1 {
+    font-family: "Crimson Text", Georgia, serif;
+    font-size: clamp(2.2rem, 4.5vw, 3.8rem);
+    color: var(--cream);
+    margin: 0.75rem 0 1.25rem;
+  }
+
+  .lit-hero .eyebrow {
+    color: var(--cream);
+  }
+
+  .lit-hero .lede {
+    color: var(--cream);
+  }
+
+  .lit-hero__actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+  }
+
+  .btn--hero-outline {
+    background: transparent;
+    border-color: var(--cream);
+    color: var(--cream);
+  }
+
+  .btn--hero-outline::before {
+    background: var(--cream);
+  }
+
+  .btn--hero-outline:hover,
+  .btn--hero-outline:focus-visible {
+    color: var(--green);
+  }
+
+  /* ---- Body ---- */
+  .lit-body {
+    padding: clamp(3rem, 6vw, 5rem) 0;
+    display: flex;
+    flex-direction: column;
+    gap: 3.5rem;
+  }
+
+  .lit-section {
+    max-width: 64ch;
+    margin-inline: auto;
+  }
+
+  .lit-section h2 {
+    font-size: clamp(1.5rem, 2.5vw, 2rem);
+    margin: 0 0 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--green);
+    display: inline-block;
+  }
+
+  .lit-section h3 {
+    font-size: clamp(1.15rem, 1.8vw, 1.35rem);
+    font-weight: 600;
+    margin: 2rem 0 0.4rem;
+  }
+
+  .lit-section h3:first-of-type {
+    margin-top: 1.5rem;
+  }
+
+  .lit-section p {
+    max-width: 68ch;
+  }
+
+  /* ---- Translation examples grid ---- */
+  .lit-examples {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1rem;
+    margin: 1.5rem 0;
+  }
+
+  .lit-example {
+    background: var(--surface-raised);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  }
+
+  .lit-example p {
+    margin: 0 0 0.35rem 0;
+    font-size: 0.95rem;
+    line-height: 1.4;
+  }
+
+  .lit-example p:last-child {
+    margin-bottom: 0;
+  }
+
+  .lit-example__greek {
+    font-family: "Crimson Text", Georgia, serif;
+    font-size: 1.15rem !important;
+    color: var(--green);
+    margin-bottom: 0.5rem !important;
+  }
+
+  .lit-example__traditional {
+    color: rgba(29, 35, 28, 0.55);
+    font-size: 0.85rem !important;
+  }
+
+  .lit-example__lit {
+    font-size: 1rem !important;
+    color: var(--text-strong);
+  }
+
+  /* ---- Features grid ---- */
+  .lit-features {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.25rem;
+    margin: 1.5rem 0;
+  }
+
+  .lit-feature {
+    background: var(--surface-raised);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  }
+
+  .lit-feature h3 {
+    font-size: 1.1rem !important;
+    margin: 0 0 0.5rem !important;
+    color: var(--green);
+  }
+
+  .lit-feature p {
+    font-size: 0.95rem;
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  /* ---- CTA section ---- */
+  .lit-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 1.5rem;
+  }
+
+  .lit-actions .btn {
+    padding: 10px 20px;
+  }
+
+  /* ---- Dark mode adjustments ---- */
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .lit-example__traditional {
+      color: rgba(228, 226, 220, 0.45);
+    }
+  }
+
+  :root[data-theme="dark"] .lit-example__traditional {
+    color: rgba(228, 226, 220, 0.45);
+  }
+</style>
