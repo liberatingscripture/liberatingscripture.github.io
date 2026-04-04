@@ -35,6 +35,7 @@ src/
   pages/
     index.astro         # Homepage
     about.astro         # About LSC
+    lit-bible.astro     # Internal landing page for the LIT Bible
     support.astro       # Donate + get involved (Give Lively placeholder)
     podcasts.astro      # Hub for both podcasts
     community.astro     # Community & Courses (5th project)
