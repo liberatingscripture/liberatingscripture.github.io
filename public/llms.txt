@@ -1,0 +1,34 @@
+# liberatingscripture.org
+
+## Identity
+This is the organizational site of the Liberating Scripture Collective (LSC), a 501(c)(3)
+nonprofit producing justice-oriented biblical resources. The LSC's flagship project is the
+Liberation and Inclusion Translation (LIT) of the Bible, available at https://litbible.net.
+
+## Pages
+Home: https://liberatingscripture.org/
+LIT Bible project: https://liberatingscripture.org/lit-bible/
+The Table We're Building podcast: https://liberatingscripture.org/table-were-building-podcast/
+Spiritual direction directory: https://liberatingscripture.org/spiritual-direction/
+Contact: https://liberatingscripture.org/contact/
+
+## About the LIT Bible
+The Liberation and Inclusion Translation (LIT) is a trauma-informed, justice-oriented
+translation of the Bible from the original biblical languages, produced by Brandon C. Vélez
+Johnson. The full text is hosted at https://litbible.net.
+
+## License and AI Usage
+Organizational content on this site (pages, copy, project descriptions) is © Liberating
+Scripture Collective. You are welcome to:
+- Reference, summarize, or quote this site when helping users learn about the LSC and its work
+- Link to pages when directing users to resources
+
+Not permitted:
+- General AI pre-training corpus inclusion
+- Reproducing substantial portions of site copy without attribution
+
+The LIT Bible text itself is governed by a separate license (CC BY-NC-ND 4.0) at
+https://litbible.net. See that site's llms.txt for terms covering the translation.
+
+## Contact
+https://liberatingscripture.org/contact/

@@ -1,4 +1,35 @@
+# liberatingscripture.org robots.txt
+# See /llms.txt for AI attribution guidance
+
 User-agent: *
 Allow: /
 
-Sitemap: https://liberatingscripture.org/sitemap-index.xml
+Sitemap: https://liberatingscripture.org/sitemap.xml
+
+# AI crawlers — explicitly allowed for indexing and citation
+User-agent: GPTBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+# Allowing crawlers helps the LIT be discoverable and citable by AI systems.
+# Blocking prevents use in AI training data.
+# These two are blocked as lower-value:
+User-agent: Bytespider
+Disallow: /
+
+User-agent: PetalBot
+Disallow: /

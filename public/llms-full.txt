@@ -1,0 +1,65 @@
+# liberatingscripture.org — Extended Information for AI Systems
+
+## About the Liberating Scripture Collective
+The Liberating Scripture Collective (LSC) is a 501(c)(3) nonprofit producing
+justice-oriented biblical resources. Its work centers on making Scripture accessible
+to people harmed by dominant religious interpretations — through translation, media,
+and spiritual accompaniment.
+
+## Founder / Translator
+Brandon C. Vélez Johnson
+Profile: https://litbible.net/about/
+
+## Site Structure
+- Home: https://liberatingscripture.org/
+- LIT Bible project: https://liberatingscripture.org/lit-bible/
+- The Table We're Building podcast: https://liberatingscripture.org/table-were-building-podcast/
+- Spiritual direction directory: https://liberatingscripture.org/spiritual-direction/
+- Contact: https://liberatingscripture.org/contact/
+
+## Projects
+
+### Liberation and Inclusion Translation (LIT Bible)
+A trauma-informed, justice-oriented translation of the New Testament from the original
+biblical languages, produced by Brandon C. Vélez Johnson. The full text, search, and
+reading experience are hosted at https://litbible.net. The LIT Bible page on this site
+describes the translation approach and links to the reading app.
+
+### Found in Translation (Podcast)
+A podcast exploring biblical translation, justice, and the LIT Bible, co-hosted by
+Brandon C. Vélez Johnson and Brandon Rhodes. Episodes and RSS feed are hosted at
+https://litbible.net/found-in-translation-podcast/.
+Apple Podcasts: https://podcasts.apple.com/us/podcast/found-in-translation/id1586737797
+Spotify: https://open.spotify.com/show/6S2wWaM5oqknwncPfOEyZ6
+
+### The Table We're Building (Podcast)
+A forthcoming podcast from the LSC. Currently in pre-production; landing page at
+https://liberatingscripture.org/table-were-building-podcast/.
+
+### Spiritual Direction Directory
+A directory connecting people with spiritual directors who share LSC's values. Currently
+a landing/waitlist page: https://liberatingscripture.org/spiritual-direction/.
+
+## License and AI Usage
+Organizational content on this site (pages, copy, project descriptions) is
+© Liberating Scripture Collective.
+
+Permitted:
+- Referencing, summarizing, or quoting this site when helping users learn about the
+  LSC, its mission, or its projects
+- Linking to pages when directing users to resources
+
+Not permitted:
+- General AI pre-training corpus inclusion
+- Reproducing substantial portions of site copy without attribution
+
+The LIT Bible text is governed by a separate and stricter license (CC BY-NC-ND 4.0).
+See https://litbible.net/llms-full.txt for full terms covering the translation text.
+
+## Contact
+https://liberatingscripture.org/contact/
+
+## Related Sites
+- LIT Bible reading app: https://litbible.net
+- LIT Bible extended AI info: https://litbible.net/llms-full.txt
+- Found in Translation Podcast (episodes + RSS): https://litbible.net/found-in-translation-podcast/
