@@ -1,9 +1,9 @@
 ---
+
 ---
 
 <footer class="site-footer">
   <div class="footer-inner container">
-
     <div class="footer-brand">
       <img
         src="/assets/images/lsc-logo.png"
@@ -14,11 +14,12 @@
         decoding="async"
       />
       <p class="footer-tagline">
-        Open-access, trauma-informed scripture translation, teaching, and community.
+        Open-access, trauma-informed scripture translation, teaching, and
+        community.
       </p>
       <p class="footer-legal">
         © <span id="footerYear"></span> Liberating Scripture Collective<br />
-        Founded and curated by Brandon&nbsp;Vélez&nbsp;Johnson
+        Founded by Brandon&nbsp;Vélez&nbsp;Johnson
       </p>
     </div>
 
@@ -26,7 +27,12 @@
       <h2 class="footer-col__heading">Projects</h2>
       <ul>
         <li><a href="/lit-bible/">LIT Bible</a></li>
-        <li><a href="https://litbible.net/found-in-translation-podcast" target="_blank" rel="noopener noreferrer">Found in Translation ↗</a></li>
+        <li>
+          <a
+            href="https://litbible.net/found-in-translation-podcast"
+            target="_blank"
+            rel="noopener noreferrer">Found in Translation ↗</a>
+        </li>
         <li><a href="/podcasts/">The Table We're Building</a></li>
         <li><a href="/spiritual-direction/">Spiritual Direction</a></li>
         <li><a href="/community/">Community &amp; Courses</a></li>
@@ -37,19 +43,30 @@
       <h2 class="footer-col__heading">Organization</h2>
       <ul>
         <li><a href="/about/">About LSC</a></li>
-        <li><a href="https://litbible.net/liberating-scripture-collective" target="_blank" rel="noopener noreferrer">LSC on litbible.net ↗</a></li>
+        <li>
+          <a
+            href="https://litbible.net/liberating-scripture-collective"
+            target="_blank"
+            rel="noopener noreferrer">LSC on litbible.net ↗</a>
+        </li>
         <li><a href="/support/">Support the Work</a></li>
         <li><a href="/contact/">Contact</a></li>
       </ul>
     </nav>
 
     <div class="footer-col footer-col--cta">
-      <a href="/support/" class="btn footer-cta-btn"><span>Support the Work</span></a>
-      <a href="https://litbible.net/read" target="_blank" rel="noopener noreferrer" class="btn btn--outline footer-cta-btn">
+      <a href="/support/" class="btn footer-cta-btn"
+        ><span>Support the Work</span></a
+      >
+      <a
+        href="https://litbible.net/read"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="btn btn--outline footer-cta-btn"
+      >
         <span>Read the LIT Bible ↗</span>
       </a>
     </div>
-
   </div>
 </footer>
 
@@ -123,7 +140,10 @@
     transition: color 160ms;
   }
 
-  .footer-col ul a:hover { color: var(--green); text-decoration: none; }
+  .footer-col ul a:hover {
+    color: var(--green);
+    text-decoration: none;
+  }
 
   /* CTA column */
   .footer-col--cta {
@@ -157,14 +177,28 @@
       grid-template-columns: 1fr 1fr;
       gap: 2.5rem 2rem;
     }
-    .footer-brand { grid-column: 1 / -1; }
-    .footer-col--cta { flex-direction: row; flex-wrap: wrap; }
-    .footer-cta-btn { width: auto; }
+    .footer-brand {
+      grid-column: 1 / -1;
+    }
+    .footer-col--cta {
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+    .footer-cta-btn {
+      width: auto;
+    }
   }
 
   @media (max-width: 560px) {
-    .footer-inner { grid-template-columns: 1fr; gap: 2rem; }
-    .footer-col--cta { flex-direction: column; }
-    .footer-cta-btn { width: 100%; }
+    .footer-inner {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+    .footer-col--cta {
+      flex-direction: column;
+    }
+    .footer-cta-btn {
+      width: 100%;
+    }
   }
 </style>
