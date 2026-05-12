@@ -77,11 +77,11 @@ const projects = [
         "@context": "https://schema.org",
         "@graph": [
           {
-            "@type": "Organization",
+            "@type": ["Organization", "NGO"],
             "@id": "https://liberatingscripture.org/#organization",
             name: "Liberating Scripture Collective",
             alternateName: "LSC",
-            description: "A nonprofit organization creating open-access, trauma-informed scripture translation, learning resources, and pathways of spiritual support.",
+            description: "A 501(c)(3) nonprofit organization creating open-access, trauma-informed scripture translation, learning resources, and pathways of spiritual support.",
             url: "https://liberatingscripture.org/",
             logo: {
               "@type": "ImageObject",
@@ -90,6 +90,8 @@ const projects = [
               height: 512,
             },
             foundingDate: "2020",
+            nonprofitStatus: "Nonprofit501c3",
+            taxID: "41-5314350",
             knowsAbout: ["Bible translation", "Liberation theology", "Trauma-informed care", "Spiritual direction"],
             contactPoint: {
               "@type": "ContactPoint",
@@ -98,6 +100,10 @@ const projects = [
             },
             founder: {
               "@id": "https://liberatingscripture.org/about/#brandon",
+            },
+            potentialAction: {
+              "@type": "DonateAction",
+              target: "https://liberatingscripture.org/support/",
             },
             sameAs: [
               "https://litbible.net/",
