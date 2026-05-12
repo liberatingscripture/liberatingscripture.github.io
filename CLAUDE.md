@@ -87,12 +87,9 @@ Fonts: Crimson Text (headings) · Inter (body) · Fraunces (display text)
 
 ## Things to Replace Before Launch
 
-1. **Give Lively embed** in `src/pages/support.astro` — find the
-   `.give-lively-placeholder` div and replace it with the actual Give Lively
-   widget embed code.
+1. ~~**Give Lively embed**~~ — live as of 2026-05-11. Widget embedded in `src/pages/support.astro`.
 
-2. **501(c)(3) language** — search for "501(c)(3) status pending" and update
-   in `src/pages/about.astro` and `src/pages/support.astro` once confirmed.
+2. ~~**501(c)(3) language**~~ — updated 2026-05-11 in both `support.astro` and `about.astro`; status is active.
 
 3. **Formspree ID** — the contact form uses `https://formspree.io/f/xdkqvlkj`.
    Update in `src/pages/contact.astro` if the ID changes.
@@ -115,7 +112,7 @@ Fonts: Crimson Text (headings) · Inter (body) · Fraunces (display text)
 
 - **Formspree**: contact form submissions → email
 - **Cloudflare Turnstile**: bot protection on contact form
-- **Give Lively**: donation platform (embed pending)
+- **Give Lively**: donation platform (live — slug: liberating-scripture-collective)
 - **Apple Podcasts**: FIT podcast ID 1586737797
 - **Spotify**: FIT podcast ID 6S2wWaM5oqknwncPfOEyZ6
 - **YouTube**: @foundintranslationpodcast
