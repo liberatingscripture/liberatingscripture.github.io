@@ -59,7 +59,7 @@ import Layout from "../layouts/Layout.astro";
             <div>
               <h2>Donate</h2>
               <p class="donate-band__sub">
-                Via <strong>Give Lively</strong> — launching soon
+                Via <strong>Give Lively</strong>
               </p>
             </div>
           </div>
@@ -83,28 +83,16 @@ import Layout from "../layouts/Layout.astro";
             <li>Makes it possible to keep imagining what comes next.</li>
           </ul>
 
-          <!-- Give Lively widget placeholder -->
-          <div
-            class="give-lively-placeholder"
-            aria-label="Donation form coming soon"
-          >
-            <div class="give-lively-placeholder__inner">
-              <p class="give-lively-placeholder__label">
-                Give Lively donation form
-              </p>
-              <p class="give-lively-placeholder__hint">
-                Our donation portal is being set up and will be live shortly. In
-                the meantime, <a href="/contact/">contact us</a> if you'd like to
-                give now and we'll make it work.
-              </p>
-            </div>
-          </div>
+          <!-- Begin Give Lively Fundraising Widget -->
+          <script is:inline>gl=document.createElement('script');gl.src='https://secure.givelively.org/widgets/simple_donation/liberating-scripture-collective.js?show_suggested_amount_buttons=false&show_in_honor_of=false&address_required=false&has_required_custom_question=null';document.getElementsByTagName('head')[0].appendChild(gl);</script>
+          <div id="give-lively-widget" class="gl-simple-donation-widget"></div>
+          <!-- End Give Lively Fundraising Widget -->
 
           <div class="donate-band__status">
             <p>
               <strong>501(c)(3) status:</strong> The Liberating Scripture Collective
-              is actively pursuing 501(c)(3) nonprofit status. Once confirmed, donations
-              will be tax-deductible. We'll update this page as soon as that's confirmed.
+              is a registered 501(c)(3) nonprofit. Donations are tax-deductible to
+              the extent permitted by law.
             </p>
           </div>
         </div>
@@ -264,31 +252,6 @@ import Layout from "../layouts/Layout.astro";
     font-size: 0.9rem;
     color: #5c5b57;
     margin: 0.25rem 0 0;
-  }
-
-  /* Give Lively placeholder */
-  .give-lively-placeholder {
-    border: 2px dashed var(--border);
-    border-radius: 12px;
-    padding: 2.5rem;
-    text-align: center;
-  }
-
-  .give-lively-placeholder__label {
-    font-family: Inter, sans-serif;
-    font-size: 0.8rem;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: #5c5b57;
-    margin: 0 0 0.75rem;
-  }
-
-  .give-lively-placeholder__hint {
-    font-size: 0.95rem;
-    color: var(--text);
-    max-width: 44ch;
-    margin: 0 auto;
   }
 
   .donate-band__status {
