@@ -71,15 +71,9 @@ public/                 # Served as-is at the site root:
   deploy.yml            # Build + deploy to GitHub Pages on push to main
 ```
 
-> **Stale root-level files (don't be fooled).** The repo root still tracks a few
-> leftovers from an older "deploy from root" setup — `sitemap.xml`, `CNAME`,
-> `site.webmanifest`, and an *outdated* favicon set (`favicon-16x16.png`,
-> `favicon-32x32.png`, `android-chrome-*.png`). These are **not** what ships:
-> deployment builds `dist/` via Actions, and `Layout.astro` references the
-> favicons in `public/`. The current favicons live in `public/`. The empty
-> `contact/`, `spiritual-direction/`, `table-were-building-podcast/`, and
-> `partials/` directories at root are also leftovers. Safe to ignore; a cleanup
-> commit removing them would be reasonable.
+> Everything that ships lives in `src/` and `public/`; the repo root holds only
+> config and docs. Favicons, `CNAME`, the manifest, and the sitemap all come
+> from `public/` (or are generated into `dist/`), not the repo root.
 
 ## Deployment
 
