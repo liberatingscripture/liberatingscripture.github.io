@@ -4,7 +4,7 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://liberatingscripture.org/sitemap.xml
+Sitemap: https://liberatingscripture.org/sitemap-index.xml
 
 # AI crawlers — explicitly allowed for indexing and citation
 User-agent: GPTBot
