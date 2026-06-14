@@ -22,7 +22,8 @@ support and get in touch. The site is **live** at liberatingscripture.org.
 
 ## Tech Stack
 
-- **Framework**: Astro 5 (static site generator, `output` is static)
+- **Framework**: Astro 6 (static site generator, `output` is static).
+  Requires **Node 22.12+** (enforced via `engines` in `package.json`; CI uses Node 22)
 - **Language**: TypeScript (strict mode)
 - **Styling**: Vanilla CSS — a single design system in `src/styles/global.css`,
   shared visually with litbible.net (no utility framework)
