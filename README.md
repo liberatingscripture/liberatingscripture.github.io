@@ -1,87 +1,64 @@
 # liberatingscripture.org
 
-Site for the **Liberating Scripture Collective** — the organization behind the LIT Bible.
+The website for the **Liberating Scripture Collective** — the 501(c)(3) nonprofit
+behind the LIT Bible. This is the organization's home; the translation itself
+lives at **[litbible.net](https://litbible.net)**.
 
-Built with [Astro 5](https://astro.build). Deployed via GitHub Pages (CNAME → liberatingscripture.org).
+Live at **[liberatingscripture.org](https://liberatingscripture.org)**.
 
 ## Stack
 
-- **Framework**: Astro 5 (static)
+- **Framework**: [Astro](https://astro.build) 5 (static site)
 - **Language**: TypeScript (strict)
-- **Styling**: Vanilla CSS — shared design system with litbible.net
-- **Fonts**: Crimson Text, Inter, Fraunces (self-hosted via @fontsource)
-- **Forms**: Formspree + Cloudflare Turnstile
-- **Donations**: Give Lively (embed in `/support/`)
+- **Styling**: Vanilla CSS — a single design system, shared visually with litbible.net
+- **Fonts**: Crimson Text, Inter, Fraunces (self-hosted via `@fontsource`)
+- **Forms**: Formspree + Cloudflare Turnstile (contact page)
+- **Donations**: Give Lively (embed on the support page)
+- **Hosting**: GitHub Pages, deployed by GitHub Actions
+
+## Getting started
+
+You'll need [Node.js](https://nodejs.org) (v20 or newer).
+
+```sh
+npm install      # Install dependencies
+npm run dev      # Start the dev server at http://localhost:4321
+```
 
 ## Commands
 
-```bash
-npm install       # Install dependencies
-npm run dev       # Start dev server at localhost:4321
-npm run build     # Build to ./dist/
-npm run preview   # Preview build locally
-```
+| Command | What it does |
+| :------ | :----------- |
+| `npm run dev` | Start the local dev server at `localhost:4321` |
+| `npm run build` | Build the production site to `dist/` |
+| `npm run preview` | Preview the production build locally |
+| `npm run check` | Run `astro check` (type checking / diagnostics) |
 
 ## Structure
 
 ```
 src/
-  components/     # SiteHeader, SiteFooter
-  layouts/        # Layout.astro (base HTML shell)
-  pages/          # index, about, support, podcasts,
-                  # community, spiritual-direction,
-                  # contact, 404
-  styles/         # global.css (full design system)
-public/
-  assets/
-    images/       # ← Drop all images here
-    og/           # ← OG images here
-  CNAME
-  robots.txt
-  site.webmanifest
-  favicon*.png / favicon.ico / apple-touch-icon.png
+  components/   # SiteHeader, SiteFooter
+  layouts/      # Layout.astro (base HTML shell)
+  pages/        # One file per route: index, about, lit-bible, support,
+                #   podcasts, community, spiritual-direction, contact, 404
+  styles/       # global.css (the full design system)
+public/         # Served at the site root: images, OG images, favicons,
+                #   CNAME, robots.txt, site.webmanifest
+.github/workflows/deploy.yml   # Builds and deploys to GitHub Pages
 ```
 
-## Image assets needed
+## Deployment
 
-Place these in `public/assets/images/`:
-
-| File | Used on |
-|------|---------|
-| `lsc-logo.png` | Header, footer, homepage hero, about hero |
-| `fit-cover.webp` | Podcasts page (Found in Translation) |
-| `twb-banner.png` | Podcasts page (The Table We're Building) |
-
-Place OG images in `public/assets/og/`:
-
-| File | Used on |
-|------|---------|
-| `og-default.png` | All pages (1200×630) |
-| `og-square.png` | Square OG variant (1200×1200) |
-
-Place favicon files directly in `public/`:
-
-- `favicon.ico`
-- `favicon-16x16.png`
-- `favicon-32x32.png`
-- `apple-touch-icon.png`
-- `android-chrome-192x192.png`
-- `android-chrome-512x512.png`
-
-## Before going live
-
-- [ ] Drop all image assets into `public/assets/images/` and `public/assets/og/`
-- [ ] Drop favicon files into `public/`
-- [ ] Replace Give Lively placeholder in `src/pages/support.astro` with live embed
-- [ ] Update Formspree ID in `src/pages/contact.astro` if it changed
-- [ ] Update Cloudflare Turnstile sitekey if it changed
-- [ ] Update 501(c)(3) language in `src/pages/support.astro` and `src/pages/about.astro` when confirmed
-- [ ] Replace working values in `src/pages/index.astro` with finalized list
-- [ ] Verify social handles and external links
+Pushing to the `main` branch triggers `.github/workflows/deploy.yml`, which
+builds the site and deploys `dist/` to GitHub Pages. The custom domain is set by
+`public/CNAME`. There's nothing to deploy by hand — merging to `main` ships it.
 
 ## Design system
 
-Shared with litbible.net. See `src/styles/global.css`.
+A single design system in `src/styles/global.css`, kept visually consistent with
+litbible.net. **Token values shouldn't be changed** without coordinating across
+both sites.
 
 | Token | Value |
 |-------|-------|
@@ -91,8 +68,11 @@ Shared with litbible.net. See `src/styles/global.css`.
 | `--white` | `#FFFFFF` |
 | `--black` | `#000000` |
 
-Fonts: Crimson Text (headings) · Inter (body) · Fraunces (display/pull quotes)
+Fonts: Crimson Text (headings) · Inter (body) · Fraunces (display / pull quotes)
 
-## Deployment
+## Working with Claude Code
 
-Deploys from `main` branch to GitHub Pages. The `public/CNAME` file sets the custom domain.
+This repo includes a `CLAUDE.md` file with deeper operational guidance for the
+[Claude Code](https://claude.com/claude-code) AI assistant — deploy details,
+external integrations, design tokens, and known leftover files. It's a useful
+reference for humans too.

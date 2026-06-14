@@ -1,26 +1,42 @@
 # liberatingscripture.org — Claude Code Instructions
 
+> **Maintain this file.** It is the orientation doc for every future Claude Code
+> session, so keep it accurate to how the repo *actually* works — not a changelog.
+> When you change the tech stack, structure, pages, deploy setup, design tokens,
+> or external integrations, update the relevant section here in the same change.
+> Describe organizing principles and the "why," not one-off edits. If a section
+> here contradicts the code, the code wins — fix the doc. Prune anything stale.
+>
+> **Update `README.md` too when appropriate.** It's the human-facing front door
+> (lighter and friendlier; this file is the deep reference). When a change affects
+> the overview, setup steps, commands, or high-level structure, update `README.md`
+> in the same change, and keep it free of drift-prone specifics.
+
 ## Project Overview
 
-This is the **Liberating Scripture Collective** (LSC) website. LSC is the nonprofit
-organization behind the LIT Bible. The translation product lives at litbible.net;
-this site is the organizational home.
+The **Liberating Scripture Collective** (LSC) website — the organizational home of
+the 501(c)(3) nonprofit behind the LIT Bible. The translation product itself lives
+at **litbible.net** (a separate repo); this site is the org's front door: who LSC
+is, its projects (podcasts, courses/community, spiritual direction), and ways to
+support and get in touch. The site is **live** at liberatingscripture.org.
 
 ## Tech Stack
 
-- **Framework**: Astro 5 (static site generator)
+- **Framework**: Astro 5 (static site generator, `output` is static)
 - **Language**: TypeScript (strict mode)
-- **Styling**: Vanilla CSS — no utility framework
-- **Fonts**: Self-hosted via @fontsource (Crimson Text, Inter, Fraunces)
-- **Deploy**: GitHub Pages → liberatingscripture.org (CNAME in public/)
+- **Styling**: Vanilla CSS — a single design system in `src/styles/global.css`,
+  shared visually with litbible.net (no utility framework)
+- **Fonts**: Self-hosted via `@fontsource` (Crimson Text, Inter, Fraunces)
+- **Deploy**: GitHub Actions → GitHub Pages (see Deployment below)
 
 ## Commands
 
 ```bash
-npm install         # Install dependencies
-npm run dev         # Dev server at localhost:4321
-npm run build       # Production build to dist/
-npm run preview     # Preview the build
+npm install      # Install dependencies
+npm run dev      # Dev server at localhost:4321
+npm run build    # Production build to dist/
+npm run preview  # Preview the production build
+npm run check    # astro check (type/diagnostics)
 ```
 
 ## Structure
@@ -29,90 +45,87 @@ npm run preview     # Preview the build
 src/
   components/
     SiteHeader.astro    # Sticky header with mobile menu
-    SiteFooter.astro    # Dark footer, 4-column layout
+    SiteFooter.astro    # Dark footer
   layouts/
-    Layout.astro        # Base HTML shell (SEO, fonts, header/footer)
-  pages/
-    index.astro         # Homepage
-    about.astro         # About LSC
-    lit-bible.astro     # Internal landing page for the LIT Bible
-    support.astro       # Donate + get involved (Give Lively placeholder)
-    podcasts.astro      # Hub for both podcasts
-    community.astro     # Community & Courses (5th project)
+    Layout.astro        # Base HTML shell (SEO/OG, fonts, favicons, header/footer)
+  pages/                # One .astro per route (static):
+    index.astro         #   Homepage
+    about.astro         #   About LSC
+    lit-bible.astro     #   Landing page for the LIT Bible
+    support.astro       #   Donate + get involved (Give Lively embed)
+    podcasts.astro      #   Hub for both podcasts
+    community.astro     #   Community & Courses
     spiritual-direction.astro
-    contact.astro
+    contact.astro       #   Formspree + Turnstile contact form
     404.astro
   styles/
-    global.css          # Full design system — do not change token values
-public/
-  assets/
-    images/             # ← Image assets go here (see below)
-    og/                 # ← OG images go here
-  CNAME
-  robots.txt
-  site.webmanifest
-  favicon*.png etc.
+    global.css          # Full design system (see Design System below)
+public/                 # Served as-is at the site root:
+  assets/images/        # Logos, podcast art, hero images
+  assets/og/            # Open Graph share images
+  CNAME                 # Custom domain for GitHub Pages
+  favicon.svg, favicon.ico, favicon-96x96.png, apple-touch-icon.png,
+  web-app-manifest-*.png, site.webmanifest, robots.txt
+  llms.txt, llms-full.txt   # LLM-readable site description
+.github/workflows/
+  deploy.yml            # Build + deploy to GitHub Pages on push to main
 ```
 
-## Image Assets Needed
+> **Stale root-level files (don't be fooled).** The repo root still tracks a few
+> leftovers from an older "deploy from root" setup — `sitemap.xml`, `CNAME`,
+> `site.webmanifest`, and an *outdated* favicon set (`favicon-16x16.png`,
+> `favicon-32x32.png`, `android-chrome-*.png`). These are **not** what ships:
+> deployment builds `dist/` via Actions, and `Layout.astro` references the
+> favicons in `public/`. The current favicons live in `public/`. The empty
+> `contact/`, `spiritual-direction/`, `table-were-building-podcast/`, and
+> `partials/` directories at root are also leftovers. Safe to ignore; a cleanup
+> commit removing them would be reasonable.
 
-Drop these files into `public/assets/images/`:
+## Deployment
 
-- `lsc-logo.png` — main LSC logo (used in header, footer, homepage)
-- `fit-cover.webp` — Found in Translation podcast cover art
-- `twb-banner.png` — The Table We're Building banner/cover
-
-Drop these into `public/assets/og/`:
-- `og-default.png` — 1200×630 OG image
-- `og-square.png` — 1200×1200 OG image
-
-Drop these into `public/` (root):
-- `favicon.ico`
-- `favicon-16x16.png`
-- `favicon-32x32.png`
-- `apple-touch-icon.png`
-- `android-chrome-192x192.png`
-- `android-chrome-512x512.png`
+`.github/workflows/deploy.yml` runs on every push to `main` (and via manual
+dispatch): it `npm ci`s, `npm run build`s, uploads `dist/` as a Pages artifact,
+and deploys to GitHub Pages. The custom domain comes from `public/CNAME`
+(liberatingscripture.org). There is no separate hosting config — push to `main`
+is the deploy.
 
 ## Design System
 
-Colors (do not change):
+A single source of truth in `src/styles/global.css`. **Do not change token
+values** — they're shared with litbible.net for visual consistency.
+
+Colors:
 - `--cream: #E1DFD9` — page background
 - `--green: #209D50` — brand primary
-- `--ink: #1D231C` — text / dark CTA bg
-- `--white: #FFFFFF` — surface raised
+- `--ink: #1D231C` — text / dark CTA background
+- `--white: #FFFFFF` — raised surface
 - `--black: #000000` — strong text
 
-Fonts: Crimson Text (headings) · Inter (body) · Fraunces (display text)
+Fonts: Crimson Text (headings) · Inter (body) · Fraunces (display / pull quotes)
 
-## Things to Replace Before Launch
+## External Integrations
 
-1. ~~**Give Lively embed**~~ — live as of 2026-05-11. Widget embedded in `src/pages/support.astro`.
+These are configured in-page; update the IDs/keys here if they ever change:
 
-2. ~~**501(c)(3) language**~~ — updated 2026-05-11 in both `support.astro` and `about.astro`; status is active.
+- **Formspree** — contact form submissions → email. Form action
+  `https://formspree.io/f/xdkqvlkj` in `src/pages/contact.astro`.
+- **Cloudflare Turnstile** — bot protection on the contact form. Sitekey
+  `0x4AAAAAACJ446flkL7Rwf8i` in `src/pages/contact.astro`.
+- **Give Lively** — donations (live; slug `liberating-scripture-collective`).
+  Widget embedded in `src/pages/support.astro`.
+- **Apple Podcasts** — Found in Translation podcast ID `1586737797`.
+- **Spotify** — Found in Translation podcast ID `6S2wWaM5oqknwncPfOEyZ6`.
+- **YouTube** — `@foundintranslationpodcast`.
 
-3. **Formspree ID** — the contact form uses `https://formspree.io/f/xdkqvlkj`.
-   Update in `src/pages/contact.astro` if the ID changes.
+## Open Items
 
-4. **Cloudflare Turnstile sitekey** — `0x4AAAAAACJ446flkL7Rwf8i` in
-   `src/pages/contact.astro`. Update if it changes.
-
-5. **Working values** — the five placeholder values in `src/pages/index.astro`
-   (in the `values` array) should be replaced with the finalized LSC values
-   statement once drafted.
+- **Working values** — the placeholder values in the `values` array in
+  `src/pages/index.astro` should be replaced with the finalized LSC values
+  statement once drafted.
 
 ## Key Relationships
 
-- litbible.net is the LIT Bible product site (Astro 5, same design system)
-- liberatingscripture.org is the org site (this repo)
-- litbible.net/liberating-scripture-collective links here for more info
-- This site links to litbible.net for the translation, FIT podcast, and LSC page
-
-## Existing External Integrations
-
-- **Formspree**: contact form submissions → email
-- **Cloudflare Turnstile**: bot protection on contact form
-- **Give Lively**: donation platform (live — slug: liberating-scripture-collective)
-- **Apple Podcasts**: FIT podcast ID 1586737797
-- **Spotify**: FIT podcast ID 6S2wWaM5oqknwncPfOEyZ6
-- **YouTube**: @foundintranslationpodcast
+- **litbible.net** — the LIT Bible product site (separate repo, Astro, same
+  design system). This site's `lit-bible.astro` links there; litbible.net's
+  `/liberating-scripture-collective` page links back here.
+- This repo is the **organizational** site; litbible.net is the **product**.
