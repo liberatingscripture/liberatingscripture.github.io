@@ -112,6 +112,35 @@ These are configured in-page; update the IDs/keys here if they ever change:
 - **Spotify** — Found in Translation podcast ID `6S2wWaM5oqknwncPfOEyZ6`.
 - **YouTube** — `@foundintranslationpodcast`.
 
+## AI & Crawler Policy (`public/robots.txt`)
+
+The site's stance is **allow AI search & citation, disallow AI training** — we
+want the LIT discoverable and citable by AI systems, but not used as training
+data. AI vendors expose separate user-agents for these two purposes, so
+`robots.txt` treats them separately rather than blanket-allowing a vendor:
+
+- **Allowed (search/citation):** `OAI-SearchBot`, `ChatGPT-User`,
+  `Claude-SearchBot`, `Claude-User`, `PerplexityBot`, plus regular `Googlebot`
+  via the `User-agent: *` group.
+- **Disallowed (training):** `GPTBot`, `ClaudeBot`, `anthropic-ai`, `CCBot`.
+- **Disallowed (low-value):** `Bytespider`, `PetalBot`.
+- **`Google-Extended` is allowed on purpose.** It governs Google's Gemini AI use,
+  and Google does *not* separate citation from training in it — it's one toggle.
+  We keep it allowed to preserve AI citation, accepting that it also permits some
+  Gemini training. Don't "fix" this to `Disallow` without that tradeoff in mind.
+
+This is mirrored by a `Content-Signal: search=yes, ai-input=yes, ai-train=no`
+directive (contentsignals.org) in the same file. **Keep the per-bot rules and the
+Content-Signal line in agreement** — if one changes, change the other. Note these
+are all advisory; they bind only crawlers that choose to honor robots.txt.
+
+Why not the rest of the "agent readiness" checklist (Link headers, DNS-AID,
+markdown content negotiation, API catalog, OAuth/MCP discovery, WebMCP)? This is
+a **static GitHub Pages site with no APIs or auth** — those items are either
+impossible without server-side control / a different host (e.g. Cloudflare in
+front) or would advertise endpoints that don't exist. `llms.txt` / `llms-full.txt`
+are the right agent-discovery surface for a content site like this.
+
 ## Open Items
 
 - **Working values** — the placeholder values in the `values` array in

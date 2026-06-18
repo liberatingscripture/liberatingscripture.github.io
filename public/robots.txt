@@ -3,31 +3,56 @@
 
 User-agent: *
 Allow: /
+# Content Signals (contentsignals.org) — our AI-usage preferences:
+#   search   = indexing for search results
+#   ai-input = grounding/citation in AI answers (RAG)
+#   ai-train = use as AI training data
+# We allow search and citation to maximize discoverability of the LIT,
+# but opt out of use as AI training data.
+Content-Signal: search=yes, ai-input=yes, ai-train=no
 
 Sitemap: https://liberatingscripture.org/sitemap-index.xml
 
-# AI crawlers — explicitly allowed for indexing and citation
-User-agent: GPTBot
+# Our policy: allow AI search & citation, disallow AI training.
+# AI vendors use separate user-agents for these, so we treat them separately.
+
+# --- Search / citation crawlers: ALLOWED (so the LIT is discoverable & citable) ---
+User-agent: OAI-SearchBot
 Allow: /
 
-User-agent: Google-Extended
+User-agent: ChatGPT-User
 Allow: /
 
-User-agent: CCBot
+User-agent: Claude-SearchBot
 Allow: /
 
-User-agent: anthropic-ai
-Allow: /
-
-User-agent: ClaudeBot
+User-agent: Claude-User
 Allow: /
 
 User-agent: PerplexityBot
 Allow: /
 
-# Allowing crawlers helps the LIT be discoverable and citable by AI systems.
-# Blocking prevents use in AI training data.
-# These two are blocked as lower-value:
+# Google-Extended governs Gemini AI use. Google does NOT separate citation from
+# training here — it's a single toggle — so we keep it allowed to preserve AI
+# citation, accepting that it also permits some Gemini training. (Regular Google
+# Search indexing via Googlebot is unaffected and always allowed.)
+User-agent: Google-Extended
+Allow: /
+
+# --- Training-only crawlers: DISALLOWED (we opt out of AI training data) ---
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ClaudeBot
+Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+# --- Low-value crawlers: DISALLOWED ---
 User-agent: Bytespider
 Disallow: /
 
