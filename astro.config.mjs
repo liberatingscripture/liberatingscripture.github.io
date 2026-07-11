@@ -6,6 +6,9 @@ export default defineConfig({
   trailingSlash: 'always',
   compressHTML: true,
   integrations: [
-    sitemap(),
+    sitemap({
+      // noindex utility page (the contact form's no-JS success redirect)
+      filter: (page) => !page.includes('/contact/thanks/'),
+    }),
   ],
 });

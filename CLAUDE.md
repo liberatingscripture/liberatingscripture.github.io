@@ -57,7 +57,8 @@ src/
     podcasts.astro      #   Hub for both podcasts
     community.astro     #   Community & Courses
     spiritual-direction.astro
-    contact.astro       #   Formspree + Turnstile contact form
+    contact.astro       #   Contact form (posts to the contact Worker)
+    contact/thanks.astro #  No-JS success page (Worker 303s here; noindex)
     404.astro
   styles/
     global.css          # Full design system (see Design System below)
@@ -68,6 +69,10 @@ public/                 # Served as-is at the site root:
   favicon.svg, favicon.ico, favicon-96x96.png, apple-touch-icon.png,
   web-app-manifest-*.png, site.webmanifest, robots.txt
   llms.txt, llms-full.txt   # LLM-readable site description
+workers/
+  contact-form/         # Cloudflare Worker backing /contact/submit — NOT part
+                        #   of the site build; deployed separately via wrangler
+                        #   (see its README)
 .github/workflows/
   deploy.yml            # Build + deploy to GitHub Pages on push to main
 ```
@@ -81,8 +86,13 @@ public/                 # Served as-is at the site root:
 `.github/workflows/deploy.yml` runs on every push to `main` (and via manual
 dispatch): it `npm ci`s, `npm run build`s, uploads `dist/` as a Pages artifact,
 and deploys to GitHub Pages. The custom domain comes from `public/CNAME`
-(liberatingscripture.org). There is no separate hosting config — push to `main`
-is the deploy.
+(liberatingscripture.org). Push to `main` is the site deploy.
+
+One nuance: the domain's DNS is on **Cloudflare with the proxy enabled**, so
+Cloudflare sits in front of GitHub Pages. That's what lets the contact-form
+Worker (`workers/contact-form/`) own the `/contact/submit` path at the edge —
+it deploys separately via `wrangler` (owner-run, see its README), not with the
+site.
 
 ## Design System
 
@@ -102,10 +112,14 @@ Fonts: Crimson Text (headings) · Inter (body) · Fraunces (display / pull quote
 
 These are configured in-page; update the IDs/keys here if they ever change:
 
-- **Formspree** — contact form submissions → email. Form action
-  `https://formspree.io/f/xdkqvlkj` in `src/pages/contact.astro`.
+- **Contact form Worker** — the form posts to `/contact/submit`, a Cloudflare
+  Worker in `workers/contact-form/` (Turnstile verified server-side, per-IP
+  rate limit, delivery via Email Routing from `contact@liberatingscripture.org`).
+  No-JS POSTs land on `/contact/thanks/`. Replaced Formspree (`xdkqvlkj`,
+  retired).
 - **Cloudflare Turnstile** — bot protection on the contact form. Sitekey
-  `0x4AAAAAACJ446flkL7Rwf8i` in `src/pages/contact.astro`.
+  `0x4AAAAAACJ446flkL7Rwf8i` in `src/pages/contact.astro`; the matching
+  secret key lives in the Worker's `TURNSTILE_SECRET` secret.
 - **Give Lively** — donations (live; slug `liberating-scripture-collective`).
   Widget embedded in `src/pages/support.astro`.
 - **Apple Podcasts** — Found in Translation podcast ID `1586737797`.
@@ -136,9 +150,10 @@ are all advisory; they bind only crawlers that choose to honor robots.txt.
 
 Why not the rest of the "agent readiness" checklist (Link headers, DNS-AID,
 markdown content negotiation, API catalog, OAuth/MCP discovery, WebMCP)? This is
-a **static GitHub Pages site with no APIs or auth** — those items are either
-impossible without server-side control / a different host (e.g. Cloudflare in
-front) or would advertise endpoints that don't exist. `llms.txt` / `llms-full.txt`
+a **static site with no APIs or auth** — those items would advertise endpoints
+that don't exist. (Cloudflare does proxy the domain — that's how the contact
+Worker runs — so edge headers are *possible*; there's just nothing API-shaped
+to advertise. litbible.net is the repo with a real public API.) `llms.txt` / `llms-full.txt`
 are the right agent-discovery surface for a content site like this.
 
 ## Open Items
