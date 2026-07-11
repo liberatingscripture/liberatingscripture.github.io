@@ -41,7 +41,8 @@ src/
   components/   # SiteHeader, SiteFooter
   layouts/      # Layout.astro (base HTML shell)
   pages/        # One file per route: index, about, lit-bible, support,
-                #   podcasts, community, spiritual-direction, contact, 404
+                #   podcasts, community, spiritual-direction, contact,
+                #   privacy, 404
   styles/       # global.css (the full design system)
 public/         # Served at the site root: images, OG images, favicons,
                 #   CNAME, robots.txt, site.webmanifest
