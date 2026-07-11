@@ -12,7 +12,7 @@ Live at **[liberatingscripture.org](https://liberatingscripture.org)**.
 - **Language**: TypeScript (strict)
 - **Styling**: Vanilla CSS — a single design system, shared visually with litbible.net
 - **Fonts**: Crimson Text, Inter, Fraunces (self-hosted via `@fontsource`)
-- **Forms**: Formspree + Cloudflare Turnstile (contact page)
+- **Forms**: self-hosted Cloudflare Worker + Turnstile (contact page; see `workers/contact-form/`)
 - **Donations**: Give Lively (embed on the support page)
 - **Hosting**: GitHub Pages, deployed by GitHub Actions
 
@@ -45,6 +45,7 @@ src/
   styles/       # global.css (the full design system)
 public/         # Served at the site root: images, OG images, favicons,
                 #   CNAME, robots.txt, site.webmanifest
+workers/        # Cloudflare Worker for the contact form (deployed separately)
 .github/workflows/deploy.yml   # Builds and deploys to GitHub Pages
 ```
 

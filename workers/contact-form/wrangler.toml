@@ -1,0 +1,42 @@
+# liberatingscripture.org contact-form backend.
+#
+# A standalone Cloudflare Worker (NOT part of the site build — the site
+# deploys to GitHub Pages, but the domain's DNS is proxied through
+# Cloudflare, so this route intercepts /contact/submit at the edge before
+# requests ever reach GitHub). Adapted from litbible.net's contact Worker;
+# deployed separately with `npm run deploy` here — see README.md.
+
+name = "lsc-contact-form"
+main = "src/index.js"
+compatibility_date = "2026-06-01"
+
+routes = [
+  { pattern = "liberatingscripture.org/contact/submit", zone_name = "liberatingscripture.org" },
+  { pattern = "www.liberatingscripture.org/contact/submit", zone_name = "liberatingscripture.org" }
+]
+
+# Email Routing send binding. Recipient inbox lives in the DEST_EMAIL secret
+# so no personal address lands in the public repo; it must be a verified
+# Email Routing destination address on this Cloudflare account.
+[[send_email]]
+name = "CONTACT_EMAIL"
+
+# Per-IP cap on submissions (5/min -> 429). Distinct namespace_id from the
+# litbible contact Worker so the two forms never share counters.
+[[ratelimits]]
+name = "RATE_LIMITER"
+namespace_id = "1002"
+simple = { limit = 5, period = 60 }
+
+[vars]
+# Must be an address on a domain with Email Routing enabled (this zone).
+FROM_EMAIL = "contact@liberatingscripture.org"
+
+# Secrets (set once with `npx wrangler secret put <NAME>` — see README.md):
+#   TURNSTILE_SECRET — secret key of the site's existing Turnstile widget
+#   DEST_EMAIL       — the inbox that receives messages (a verified Email
+#                      Routing destination address)
+#   DISPLAY_TO       — optional: the address shown in the email's To: header
+#                      (e.g. the org-branded alias) while delivery still
+#                      goes to DEST_EMAIL; falls back to DEST_EMAIL if the
+#                      platform rejects the mismatch, or omit it entirely

@@ -37,9 +37,13 @@ import Layout from "../layouts/Layout.astro";
       <div class="contact-grid">
 
         <div class="contact-form-wrap">
+          {/* Posts to the contact-form Worker (workers/contact-form/), which
+              verifies the Turnstile token server-side and delivers via
+              Cloudflare Email Routing. A native no-JS POST works too: the
+              Worker 303-redirects to /contact/thanks/. */}
           <form
             class="contact-form"
-            action="https://formspree.io/f/xdkqvlkj"
+            action="/contact/submit"
             method="POST"
           >
             <div class="field">
@@ -74,9 +78,6 @@ import Layout from "../layouts/Layout.astro";
               ></textarea>
             </div>
 
-            <input type="hidden" name="_subject" value="LSC Contact Form" />
-            <input type="hidden" name="_format" value="plain" />
-
             <!-- Honeypot -->
             <div class="hp" aria-hidden="true">
               <label>Leave this empty <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" /></label>
@@ -103,9 +104,18 @@ import Layout from "../layouts/Layout.astro";
               const submitBtn = form?.querySelector("button[type='submit']") as HTMLButtonElement | null;
               if (!form || !statusEl || !submitBtn) return;
 
+              const turnstile = () => (window as any).turnstile;
+
               form.addEventListener("submit", async (e) => {
                 e.preventDefault();
                 if (!form.checkValidity()) { form.reportValidity(); return; }
+
+                const token = form.querySelector<HTMLInputElement>('input[name="cf-turnstile-response"]');
+                if (!token || !token.value) {
+                  statusEl.textContent = "Please complete the security check before sending.";
+                  statusEl.className = "form-status form-status--error";
+                  return;
+                }
 
                 submitBtn.disabled = true;
                 submitBtn.innerHTML = "<span>Sending…</span>";
@@ -124,10 +134,17 @@ import Layout from "../layouts/Layout.astro";
                     statusEl.className = "form-status form-status--success";
                     form.reset();
                   } else {
-                    const data = await res.json().catch(() => ({})) as { errors?: { message: string }[] };
-                    statusEl.textContent = data?.errors?.[0]?.message ?? "Something went wrong. Please try again.";
+                    statusEl.textContent =
+                      res.status === 403
+                        ? "The security check could not be verified. Please complete it again and resend."
+                        : res.status === 429
+                          ? "Several messages were sent in a short time. Please wait a minute and try again."
+                          : "Something went wrong. Please try again.";
                     statusEl.className = "form-status form-status--error";
                   }
+                  // Turnstile tokens are single-use: the server consumed this
+                  // one either way, so the next attempt needs a fresh pass.
+                  turnstile()?.reset();
                 } catch {
                   statusEl.textContent = "Couldn't send the message. Check your connection and try again.";
                   statusEl.className = "form-status form-status--error";

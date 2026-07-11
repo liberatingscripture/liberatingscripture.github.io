@@ -1,0 +1,73 @@
+---
+// Landing page for the contact-form Worker's no-JS success redirect
+// (workers/contact-form/ 303s native POSTs here). JS-enabled submits show an
+// inline status message on /contact instead and never see this page.
+import Layout from "../../layouts/Layout.astro";
+---
+
+<Layout
+  title="Message sent | Liberating Scripture Collective"
+  description="Your message to the Liberating Scripture Collective has been sent."
+  noindex={true}
+>
+  <div class="thanks-page">
+    <header class="thanks-hero">
+      <div class="content">
+        <p class="eyebrow">Message sent</p>
+        <h1>Thank you!</h1>
+        <p class="lede">
+          Your message is on its way. We're a small team, but we read
+          everything that comes in and will respond as soon as we can —
+          usually within a week, often sooner.
+        </p>
+        <div class="thanks-actions">
+          <a class="btn" href="/"><span>Back to the homepage</span></a>
+          <a class="thanks-link" href="/lit-bible/">Explore the LIT Bible</a>
+        </div>
+      </div>
+    </header>
+  </div>
+</Layout>
+
+<style>
+  .thanks-hero {
+    background: var(--cream);
+    border-bottom: 1px solid var(--border);
+    padding: clamp(4rem, 9vw, 7rem) 0;
+    position: relative;
+  }
+
+  .thanks-hero::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 5px;
+    background: var(--green);
+  }
+
+  .thanks-hero .content {
+    max-width: 64ch;
+  }
+
+  .thanks-hero .eyebrow { color: var(--green); }
+
+  .thanks-hero h1 {
+    font-family: "Crimson Text", Georgia, serif;
+    font-size: clamp(2.2rem, 4.5vw, 3.5rem);
+    color: var(--text-strong);
+    margin: 0.75rem 0 1rem;
+  }
+
+  .thanks-actions {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+  }
+
+  .thanks-link {
+    color: var(--green);
+    font-size: 0.95rem;
+  }
+</style>
