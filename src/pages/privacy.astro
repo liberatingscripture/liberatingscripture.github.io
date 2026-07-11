@@ -1,0 +1,209 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout
+  title="Privacy Policy | Liberating Scripture Collective"
+  description="How the Liberating Scripture Collective website handles your data: what little we collect, the services we rely on, and what we never do."
+  canonical="https://liberatingscripture.org/privacy/"
+>
+  <Fragment slot="head">
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "@id": "https://liberatingscripture.org/privacy/#webpage",
+        url: "https://liberatingscripture.org/privacy/",
+        name: "Privacy Policy | Liberating Scripture Collective",
+        dateModified: "2026-07-11",
+        isPartOf: { "@id": "https://liberatingscripture.org/#website" },
+      })}
+    />
+  </Fragment>
+
+  <div class="privacy-page">
+    <header class="privacy-hero">
+      <div class="content">
+        <p class="eyebrow">Privacy</p>
+        <h1>Privacy Policy</h1>
+        <p class="lede">
+          We built this site to hold as little of your data as possible. The
+          most trustworthy thing we can do with information about you is not
+          collect it in the first place.
+        </p>
+        <p class="privacy-effective">
+          Effective date: <time datetime="2026-07-11">July 11, 2026</time>
+        </p>
+      </div>
+    </header>
+
+    <div class="privacy-body content">
+      <section aria-labelledby="privacy-scope">
+        <h2 id="privacy-scope">Scope</h2>
+        <p>
+          This policy covers the Liberating Scripture Collective website at
+          liberatingscripture.org. The LIT Bible, our scripture translation
+          project, has its own website and companion mobile apps, and those
+          are covered by the
+          <a href="https://litbible.net/privacy/">litbible.net privacy policy</a>,
+          not this one. Nothing you do on this site is shared with those apps,
+          and nothing from them flows back here.
+        </p>
+      </section>
+
+      <section aria-labelledby="privacy-collect">
+        <h2 id="privacy-collect">What we collect</h2>
+        <p>
+          The site collects personal information only when you actively send
+          it to us:
+        </p>
+        <ul>
+          <li>
+            <strong>Contact form:</strong> Your name, email address, and
+            message are delivered directly to our inbox by Cloudflare, the
+            infrastructure this site runs behind. No separate form-processing
+            service handles them. We use what you send only to respond to you;
+            it is never sold or shared. The form is protected from spam by
+            Cloudflare Turnstile, a privacy-preserving alternative to CAPTCHAs
+            that does not track you across sites.
+          </li>
+          <li>
+            <strong>Donations:</strong> Gifts on the
+            <a href="/support/">support page</a> are processed by
+            <a href="https://www.givelively.org/">Give Lively</a>, a nonprofit
+            fundraising platform, and its payment processors, subject to
+            <a href="https://www.givelively.org/privacy">Give Lively's privacy policy</a>.
+            Your payment details go to them, not to us. This site never sees
+            or stores them. We receive what we need to acknowledge your gift
+            (like your name and email), and we don't sell or share donor
+            information.
+          </li>
+        </ul>
+        <p>
+          The site also uses Cloudflare Web Analytics, which is
+          privacy-preserving by design: it sets no cookies, does not track
+          individuals across sites or sessions, and does not build behavioral
+          profiles. We see only aggregated numbers like page views and general
+          geographic region, none of which can identify you.
+        </p>
+      </section>
+
+      <section aria-labelledby="privacy-not">
+        <h2 id="privacy-not">What we don't do</h2>
+        <p>
+          There are no accounts to create, no advertising networks, no
+          cross-site tracking, and no cookies set by this site. Our only
+          measurement is the cookie-free, aggregate analytics described
+          above. You can read every page without telling us anything about
+          yourself.
+        </p>
+      </section>
+
+      <section aria-labelledby="privacy-hosting">
+        <h2 id="privacy-hosting">Hosting and infrastructure</h2>
+        <p>
+          The site is hosted on GitHub Pages and served through Cloudflare.
+          Like nearly all web infrastructure, both may log basic request data
+          (such as IP addresses) at the network level for security and
+          performance, subject to
+          <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">GitHub's privacy statement</a>
+          and
+          <a href="https://www.cloudflare.com/privacypolicy/">Cloudflare's privacy policy</a>.
+          We don't have access to, and don't build anything on top of, those
+          logs.
+        </p>
+      </section>
+
+      <section aria-labelledby="privacy-changes">
+        <h2 id="privacy-changes">Changes to this policy</h2>
+        <p>
+          If the site gains features that touch your data, such as an
+          embedded podcast player or a newsletter signup, we'll describe them
+          here before they matter and update the effective date above.
+        </p>
+      </section>
+
+      <section aria-labelledby="privacy-contact">
+        <h2 id="privacy-contact">Questions</h2>
+        <p>
+          If anything here is unclear, or you want to know more about how
+          your information is handled, <a href="/contact/">contact us</a>.
+          A real person reads every message.
+        </p>
+      </section>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .privacy-hero {
+    background: var(--cream);
+    border-bottom: 1px solid var(--border);
+    padding: clamp(3rem, 6vw, 5rem) 0;
+    position: relative;
+  }
+
+  .privacy-hero::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 5px;
+    background: var(--green);
+  }
+
+  .privacy-hero .content {
+    max-width: 64ch;
+  }
+
+  .privacy-hero .eyebrow { color: var(--green); }
+
+  .privacy-hero h1 {
+    font-family: "Crimson Text", Georgia, serif;
+    font-size: clamp(2.2rem, 4.5vw, 3.5rem);
+    color: var(--text-strong);
+    margin: 0.75rem 0 1rem;
+  }
+
+  .privacy-effective {
+    font-size: 0.88rem;
+    color: #5c5b57;
+    margin: 1.25rem 0 0;
+  }
+
+  .privacy-body {
+    max-width: 64ch;
+    padding: clamp(2.5rem, 5vw, 4rem) 0 clamp(3rem, 6vw, 5rem);
+  }
+
+  .privacy-body section + section {
+    margin-top: 2.5rem;
+  }
+
+  .privacy-body h2 {
+    font-family: "Crimson Text", Georgia, serif;
+    font-size: 1.5rem;
+    color: var(--text-strong);
+    margin: 0 0 0.75rem;
+  }
+
+  .privacy-body p,
+  .privacy-body ul {
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--text);
+    margin: 0 0 1rem;
+  }
+
+  .privacy-body ul {
+    padding-left: 1.2rem;
+  }
+
+  .privacy-body li {
+    margin-bottom: 0.9rem;
+  }
+
+  .privacy-body a {
+    color: var(--green);
+  }
+</style>

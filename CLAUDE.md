@@ -59,6 +59,8 @@ src/
     spiritual-direction.astro
     contact.astro       #   Contact form (posts to the contact Worker)
     contact/thanks.astro #  No-JS success page (Worker 303s here; noindex)
+    privacy.astro       #   Privacy policy (covers this site only; LIT Bible
+                        #     site + apps are covered by litbible.net/privacy)
     404.astro
   styles/
     global.css          # Full design system (see Design System below)
