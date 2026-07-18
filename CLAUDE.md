@@ -160,9 +160,11 @@ are the right agent-discovery surface for a content site like this.
 
 ## Open Items
 
-- **Working values** — the placeholder values in the `values` array in
-  `src/pages/index.astro` should be replaced with the finalized LSC values
-  statement once drafted.
+Tracked work lives in **`FIXLIST.md`** (repo root) — a living checklist from
+the 2026-07-18 comprehensive audit, organized by which model should execute
+each item (Sonnet / Opus / Fable / Owner), in the same format as litbible's.
+Work from it, mark items done there, and add new audit findings to it rather
+than to this section.
 
 ## Key Relationships
 
