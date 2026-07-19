@@ -647,7 +647,12 @@ accessibility defects), then F2→OW1 (security headers).
   Verify: validator pass (opengraph.xyz or the socials' own debuggers)
   shows the right card per page; file sizes reasonable (< ~150 KB each).
 
-- [ ] **(F6) Donor-trust polish on /support/.**
+- [x] **(F6) Donor-trust polish on /support/.**
+  DONE 2026-07-18: moved the `.donate-band__status` 501(c)(3) note ABOVE the
+  Give Lively widget in `src/pages/support.astro` (was below it) and added the
+  EIN inline — "a registered 501(c)(3) nonprofit (EIN 41-5314350)". Owner
+  confirmed the EIN this session (satisfies the OW2 gate for this use). No CSS
+  change needed — `.donate-band` is a flex column, the block reflows cleanly.
   Problems (marketing/legal judgment involved): (a) the 501(c)(3)
   tax-deductibility reassurance sits BELOW the Give Lively widget — donors
   decide before they type an amount; (b) the EIN is published in the
@@ -659,7 +664,17 @@ accessibility defects), then F2→OW1 (security headers).
   band.
   Verify: owner sign-off; page reads naturally; contrast/dark-mode fine.
 
-- [ ] **(F7) Give "The Table We're Building" notify flow some context.**
+- [x] **(F7) Give "The Table We're Building" notify flow some context.**
+  DONE 2026-07-18: near-term version, owner-approved. The TWB "Get notified"
+  CTA in `src/pages/podcasts.astro` now links to `/contact/?topic=twb`.
+  `src/pages/contact.astro` reads the param client-side (progressive
+  enhancement): when `topic=twb`, it unhides a green context notice above the
+  form and pre-fills the empty message textarea with an editable starter
+  ("I'd like to be notified when The Table We're Building launches."). No
+  Worker change — the signal rides in the message body; the form posts
+  identically with or without the param, and no-JS visitors see the normal
+  form. Newsletter remains the eventual answer (owner backlog; ties to
+  litbible's Brevo setup).
   Problem: the "Get notified" CTA on /podcasts/ drops people into the
   generic contact form with no indication of why they came — friction and
   lost signal. A newsletter is the real answer eventually (the privacy

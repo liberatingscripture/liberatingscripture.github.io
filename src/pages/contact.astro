@@ -37,6 +37,15 @@ import Layout from "../layouts/Layout.astro";
       <div class="contact-grid">
 
         <div class="contact-form-wrap">
+          {/* Shown only when arriving from the "Get notified" CTA on /podcasts/
+              (/contact/?topic=twb). Progressive enhancement: the param is read
+              client-side, so no-JS visitors just see the normal form. */}
+          <p id="topic-hint" class="topic-hint" hidden>
+            Interested in <strong>The Table We're Building</strong>? We'll let
+            you know when it launches — the message below is ready to send, or
+            make it your own.
+          </p>
+
           {/* Posts to the contact-form Worker (workers/contact-form/), which
               verifies the Turnstile token server-side and delivers via
               Cloudflare Email Routing. A native no-JS POST works too: the
@@ -103,6 +112,15 @@ import Layout from "../layouts/Layout.astro";
               const statusEl = document.getElementById("form-status");
               const submitBtn = form?.querySelector("button[type='submit']") as HTMLButtonElement | null;
               if (!form || !statusEl || !submitBtn) return;
+
+              // Context for arrivals from the /podcasts/ "Get notified" CTA.
+              if (new URLSearchParams(location.search).get("topic") === "twb") {
+                document.getElementById("topic-hint")?.removeAttribute("hidden");
+                const message = form.querySelector<HTMLTextAreaElement>("#contact-message");
+                if (message && !message.value.trim()) {
+                  message.value = "I'd like to be notified when The Table We're Building launches.";
+                }
+              }
 
               const turnstile = () => (window as any).turnstile;
 
@@ -229,6 +247,17 @@ import Layout from "../layouts/Layout.astro";
     grid-template-columns: 1fr 360px;
     gap: 4rem;
     align-items: start;
+  }
+
+  .topic-hint {
+    font-size: 0.9rem;
+    line-height: 1.55;
+    background: rgba(32, 157, 80, 0.1);
+    color: #166b39;
+    border: 1px solid rgba(32, 157, 80, 0.3);
+    border-radius: 8px;
+    padding: 0.85rem 1.1rem;
+    margin: 0 0 1.75rem;
   }
 
   /* Form */
