@@ -148,15 +148,15 @@ function baseSVG(title, footerAlign = "right") {
     })
     .join("\n");
 
-  const siteW = width(inter, SITE, 30);
+  const siteW = width(inter, SITE, 38);
   const siteX = footerAlign === "left" ? MARGIN : WIDTH - MARGIN - siteW;
 
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${WIDTH}" height="${HEIGHT}" viewBox="0 0 ${WIDTH} ${HEIGHT}">
 <rect width="${WIDTH}" height="${HEIGHT}" fill="${INK}"/>
-<rect x="${MARGIN}" y="116" width="150" height="9" fill="${GREEN}"/>
-${textPath(inter, WORDMARK, MARGIN, 180, 32, `fill="${CREAM}" fill-opacity="0.74"`)}
+<rect x="${MARGIN}" y="114" width="160" height="10" fill="${GREEN}"/>
+${textPath(inter, WORDMARK, MARGIN, 188, 40, `fill="${CREAM}" fill-opacity="0.78"`)}
 ${titlePaths}
-${textPath(inter, SITE, siteX, 578, 30, `fill="${GREEN_LIGHT}"`)}
+${textPath(inter, SITE, siteX, 574, 38, `fill="${GREEN_LIGHT}"`)}
 </svg>`;
 }
 
