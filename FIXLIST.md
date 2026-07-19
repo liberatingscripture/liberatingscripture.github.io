@@ -688,30 +688,37 @@ accessibility defects), then F2→OW1 (security headers).
   Verify: following the CTA makes the purpose obvious; form still submits
   fine with and without the param.
 
-- [ ] **(F8) Editorial review: homepage title tag and register.**
-  Two owner-taste calls found in the audit: (a) the homepage `<title>`
-  ("Liberating Scripture Collective | Radically Inclusive Scripture,
-  Conversation & Community") is ~85 characters — search engines truncate
-  around 60; consider a shorter form that leads with the distinctive part.
-  (b) "Here's what we're cooking up so far" (index projects heading) is a
+- [x] **(F8) Editorial review: homepage title tag and register.**
+  DONE 2026-07-18: owner picked "lead with the distinctive part" for (a) —
+  `src/pages/index.astro`'s `<Layout title>` changed from
+  "Liberating Scripture Collective | Radically Inclusive Scripture,
+  Conversation & Community" (~85 chars) to "Radically Inclusive Scripture &
+  Community | Liberating Scripture Collective" (~76 chars total, but the
+  distinctive lead phrase now survives ~60-char truncation). `og:title` and
+  `twitter:title` in Layout.astro render the same prop, so they update
+  automatically; JSON-LD `name` fields are the org name, not the page
+  title, and were correctly left untouched. For (b), owner chose to keep
+  "Here's what we're cooking up so far" as intentional warmth — no change.
+  Problem: Two owner-taste calls found in the audit: (a) the homepage
+  `<title>` was ~85 characters — search engines truncate around 60. (b)
+  "Here's what we're cooking up so far" (index projects heading) is a
   register drop from the surrounding copy — may be intentional warmth;
-  flag, don't unilaterally change. Present options, let the owner pick,
-  implement.
-  Verify: owner sign-off; title under ~60 chars if changed; JSON-LD/OG
-  titles stay consistent with the page title.
+  flagged rather than unilaterally changed.
+  Verify: `npm run build`; `dist/index.html` `<title>` and `og:title` both
+  read the new string.
 
-- [ ] **(F9) Org social presence in the footer.**
+- [x] **(F9) Org social presence in the footer.**
+  DONE 2026-07-18: owner decided the Found in Translation podcast channels
+  (YouTube/Apple/Spotify) are not "the org's" channels in the sense this
+  item meant, and no other org-level social accounts exist. No footer
+  change made; JSON-LD `sameAs` left as-is (accurate as podcast-project
+  links, not claimed as org channels).
   Problem: the footer links litbible.net properties but no social channels
   for the org itself, even though the homepage JSON-LD `sameAs` claims
   YouTube/Apple/Spotify (all Found in Translation channels). Whether those
   count as "the org's channels" — and whether any org-level accounts exist
-  or are planned — is an owner question.
-  Fix: ask the owner which channels to surface; if the podcast channels
-  are it, add a compact "Listen/Follow" row to `SiteFooter.astro`
-  (litbible's footer + `simple-icons` usage is a pattern reference).
-  Keep `sameAs` in JSON-LD consistent with whatever the footer shows.
-  Verify: links correct, external-link affordances accessible, dark mode
-  fine.
+  or are planned — was an owner question.
+  Verify: owner decision recorded; no code change required.
 
 ## Owner — decisions & dashboard tasks (no model)
 
