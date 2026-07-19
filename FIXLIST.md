@@ -490,7 +490,12 @@ accessibility defects), then F2→OW1 (security headers).
 
 ## Fable — one session each, owner in the loop
 
-- [ ] **(F1) Decide and implement a hero text-contrast strategy.**
+- [x] **(F1) Decide and implement a hero text-contrast strategy.**
+  DONE 2026-07-18: owner chose option (a) — hero surfaces darkened to
+  litbible's theme-invariant `--green-deep: #0F6B33`, cream text kept
+  (5.0:1; outline buttons pass too). Token added to global.css, decision
+  documented in CLAUDE.md's Design System. Also fixed
+  `.btn--hero-outline:hover` on /lit-bible/ (green-on-cream 2.7:1 → ink).
   Problem: cream (#E1DFD9) text on the brand-green (#209D50) hero
   backgrounds measures ~2.6:1 — below even the 3:1 large-text AA bar, and
   far below 4.5:1 for the lede/eyebrow body text. Affected heroes:

@@ -104,6 +104,10 @@ values** — they're shared with litbible.net for visual consistency.
 Colors:
 - `--cream: #E1DFD9` — page background
 - `--green: #209D50` — brand primary
+- `--green-deep: #0F6B33` — deep green (shared with litbible): the green that
+  light text passes on. Green hero surfaces use it so cream text reaches
+  WCAG AA (5.0:1); plain `--green` never carries cream/white text (2.6:1 /
+  3.5:1). Theme-invariant — never redefined in the dark-mode blocks.
 - `--ink: #1D231C` — text / dark CTA background
 - `--white: #FFFFFF` — raised surface
 - `--black: #000000` — strong text
