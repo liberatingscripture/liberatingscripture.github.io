@@ -77,6 +77,9 @@ workers/
                         #   (see its README)
 .github/workflows/
   deploy.yml            # Build + deploy to GitHub Pages on push to main
+docs/
+  security-headers.md   # Cloudflare header setup the owner applies (FIXLIST OW1)
+DISASTER-RECOVERY.md    # Dashboards/secrets/redeploy path (repo root; not shipped)
 ```
 
 > Everything that ships lives in `src/` and `public/`; the repo root holds only
@@ -94,7 +97,13 @@ One nuance: the domain's DNS is on **Cloudflare with the proxy enabled**, so
 Cloudflare sits in front of GitHub Pages. That's what lets the contact-form
 Worker (`workers/contact-form/`) own the `/contact/submit` path at the edge —
 it deploys separately via `wrangler` (owner-run, see its README), not with the
-site.
+site. Security response headers (HSTS, CSP, etc.) are also Cloudflare edge
+config, not in the repo — the setup checklist is `docs/security-headers.md`.
+
+For the full picture of what lives only in third-party dashboards — every
+account, secret (by name), and the from-zero redeploy path — see
+`DISASTER-RECOVERY.md` in the repo root. Keep it current when a dashboard,
+secret, or integration changes.
 
 ## Design System
 

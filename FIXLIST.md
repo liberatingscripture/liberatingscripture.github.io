@@ -514,8 +514,21 @@ accessibility defects), then F2→OW1 (security headers).
   Verify: computed contrast on final pairs; owner sign-off on the look in
   light AND dark mode.
 
-- [ ] **(F2) Draft the Cloudflare security-header ruleset (owner applies in
+- [x] **(F2) Draft the Cloudflare security-header ruleset (owner applies in
   OW1).**
+  DONE 2026-07-18: wrote `docs/security-headers.md` — a paste-ready Cloudflare
+  checklist. Owner decisions this session: HSTS `max-age=31536000;
+  includeSubDomains` WITHOUT preload; CSP split like litbible (enforce only
+  structural directives `frame-ancestors 'none'; object-src 'none'; base-uri
+  'self'; form-action 'self'`, keep the resource allowlist permanently
+  Report-Only). Origin allowlist was built by loading /support/ and /contact/
+  live (2026-07-18) and inventorying actual third-party origins: Give Lively
+  (`secure.givelively.org` + Google Fonts it pulls in), Turnstile
+  (`challenges.cloudflare.com`), CF Web Analytics
+  (`static.cloudflareinsights.com`). Notably tighter than litbible's:
+  /podcasts/ links out to Apple/Spotify/YouTube rather than embedding them, so
+  no podcast `frame-src` needed. Remaining: OW1 (owner pastes it into
+  Cloudflare).
   Problem: the live site sends NO security headers — verified 2026-07-18
   with curl: no HSTS, no X-Content-Type-Options, no Referrer-Policy, no
   CSP, no Permissions-Policy. GitHub Pages can't set them, but Cloudflare
@@ -543,7 +556,29 @@ accessibility defects), then F2→OW1 (security headers).
   Verify: after OW1 applies it, `curl -sI https://liberatingscripture.org/`
   shows the headers; no CSP violations in console on any page.
 
-- [ ] **(F3) Write DISASTER-RECOVERY.md for this site.**
+- [x] **(F3) Write DISASTER-RECOVERY.md for this site.**
+  DONE 2026-07-18: wrote `DISASTER-RECOVERY.md` (repo root), adapted from
+  litbible's template to this site's simpler stack — GitHub Pages via
+  `deploy.yml` (not Cloudflare Pages) fronted by the Cloudflare proxy, one
+  Worker `lsc-contact-form`, one Turnstile widget, Email Routing send binding,
+  Give Lively embed, podcast accounts (linked not embedded), Apple Pay
+  domain-association file. Secrets listed BY NAME ONLY (`TURNSTILE_SECRET`,
+  `DEST_EMAIL`, `DISPLAY_TO`); noted there are no GitHub Actions secrets.
+  Cross-linked from CLAUDE.md and from `docs/security-headers.md`. Owner
+  supplied the live DNS inventory (14 records, captured 2026-07-18) — filled in;
+  this also corrected the mail story: inbound is Cloudflare Email Routing
+  (MX → route{1,2,3}.mx.cloudflare.net) forwarding to a verified destination,
+  not a Google-hosted mailbox (Google DKIM/verification exist for the Drive/
+  Workspace identity). Owner also confirmed inbound mail forwards cross-org into
+  the litbible.net Google Workspace (this org has no mailbox of its own) —
+  documented as architecture only; the specific address is the `DEST_EMAIL`
+  value and stays in the private doc, and a cross-org recovery note was added.
+  Owner filled the rest: registrar is Porkbun, owner manages Give Lively, BDR
+  manages the podcast accounts, and the private "Accounts & Recovery" Drive doc
+  exists. Only open marker left is a reminder to *confirm* the recovery-chain
+  mitigations (Porkbun auto-renew, out-of-chain recovery email/phone) are
+  actually configured — specifics live in the private doc. Public file carries
+  no secret values or login addresses.
   Problem: everything reader-facing rebuilds from the repo, but the deploy
   configuration and secrets live only in third-party dashboards and are
   documented nowhere: the Cloudflare zone (DNS records, proxy status, the
@@ -565,8 +600,19 @@ accessibility defects), then F2→OW1 (security headers).
   Verify: owner confirms every dashboard/secret is listed and nothing
   sensitive leaked; a cold-start reader could redeploy from it.
 
-- [ ] **(F4) Tighten the privacy policy's cookie claims around the Give
+- [x] **(F4) Tighten the privacy policy's cookie claims around the Give
   Lively embed.**
+  DONE 2026-07-18: verified reality first — loaded /support/ and /contact/
+  live and inspected storage: the SITE's own origin sets zero cookies /
+  localStorage / sessionStorage on both pages at render, and Turnstile set
+  nothing either; Give Lively runs its own third-party script + modal iframe
+  and can set its own storage during the donation flow. Reworded the "What we
+  don't do" paragraph in `src/pages/privacy.astro` to keep the honest "this
+  site sets no cookies of its own" claim while carving out the Give Lively
+  donation widget as the one exception (links to their privacy policy), in the
+  page's plain voice. Bumped the effective date and JSON-LD `dateModified` to
+  2026-07-18. The "responsible contact identity" question stays with OW5.
+  Owner should approve the final wording.
   Problem: `src/pages/privacy.astro` ("What we don't do") states flatly
   "no cookies set by this site", while /support/ embeds Give Lively's
   third-party script on our origin, which may set cookies/localStorage of
@@ -655,11 +701,14 @@ accessibility defects), then F2→OW1 (security headers).
 ## Owner — decisions & dashboard tasks (no model)
 
 - [ ] **(OW1) Apply the security headers in Cloudflare.**
-  Execute F2's checklist in the Cloudflare dashboard (Rules → Transform
-  Rules → Modify Response Header, plus SSL/TLS → Edge Certificates for
-  HSTS). Start CSP in Report-Only as F2 specifies. Afterwards run
+  Execute the checklist in `docs/security-headers.md` (written in F2) in the
+  Cloudflare dashboard: HSTS via SSL/TLS → Edge Certificates; the static
+  headers + split CSP via Rules → Transform Rules → Modify Response Header.
+  The enforced CSP is structural-only; the resource allowlist stays
+  Report-Only (owner decision). Afterwards run
   `curl -sI https://liberatingscripture.org/` and click through /support/
-  and /contact/ with the console open.
+  and /contact/ with the console open, adding any origin the Give Lively
+  payment step flags in Report-Only.
 
 - [ ] **(OW2) Verify the Organization schema facts: foundingDate and EIN.**
   `src/pages/index.astro` JSON-LD says `foundingDate: "2020"` and `taxID:
