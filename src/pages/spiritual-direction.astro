@@ -3,9 +3,11 @@ import Layout from "../layouts/Layout.astro";
 ---
 
 <Layout
-  title="Spiritual Direction | Liberating Scripture Collective"
-  description="A growing network of spiritual directors whose practice is explicitly liberationist, trauma-informed, and radically inclusive. Consent-based accompaniment."
+  title="Spiritual Companionship | Liberating Scripture Collective"
+  description="A growing network of spiritual companions and directors whose practice is explicitly liberationist, trauma-informed, and radically inclusive. Consent-based accompaniment."
   canonical="https://liberatingscripture.org/spiritual-direction/"
+  ogImage="https://liberatingscripture.org/assets/og/og-spiritual-direction.png"
+  ogImageAlt="Spiritual companionship with the Liberating Scripture Collective"
 >
   <Fragment slot="head">
     <script
@@ -16,18 +18,18 @@ import Layout from "../layouts/Layout.astro";
           {
             "@type": "Service",
             "@id": "https://liberatingscripture.org/spiritual-direction/#service",
-            name: "Spiritual Direction",
+            name: "Spiritual Companionship",
             description:
-              "A growing network of spiritual directors whose practice is explicitly liberationist, trauma-informed, and radically inclusive.",
+              "A growing network of spiritual companions and directors whose practice is explicitly liberationist, trauma-informed, and radically inclusive.",
             url: "https://liberatingscripture.org/spiritual-direction/",
-            serviceType: "Spiritual Direction",
+            serviceType: "Spiritual Companionship",
             provider: { "@id": "https://liberatingscripture.org/#organization" },
           },
           {
             "@type": "WebPage",
             "@id": "https://liberatingscripture.org/spiritual-direction/#webpage",
             url: "https://liberatingscripture.org/spiritual-direction/",
-            name: "Spiritual Direction | Liberating Scripture Collective",
+            name: "Spiritual Companionship | Liberating Scripture Collective",
             isPartOf: { "@id": "https://liberatingscripture.org/#website" },
           },
         ],
@@ -38,7 +40,7 @@ import Layout from "../layouts/Layout.astro";
     <header class="sd-hero">
       <div class="content">
         <p class="eyebrow">Accompaniment</p>
-        <h1>Spiritual Direction</h1>
+        <h1>Spiritual Companionship</h1>
         <p class="lede">
           Consent-based, trauma-aware spiritual accompaniment, walking alongside
           people with presence, attentiveness, and care.
@@ -48,14 +50,15 @@ import Layout from "../layouts/Layout.astro";
 
     <div class="sd-content content">
       <section class="sd-section" aria-labelledby="sd-what">
-        <h2 id="sd-what">What is spiritual direction?</h2>
+        <h2 id="sd-what">What is spiritual companionship?</h2>
         <p>
-          Spiritual direction is a practice of attentive presence, a shared
+          Spiritual companionship is a practice of attentive presence, a shared
           listening for what is alive, stirring, or asking to be named in a
-          person's life. It makes space for prayer, reflection, silence, and
-          honest exploration, trusting that God meets people as they are. At its
-          heart, spiritual direction is about listening for the Spirit together
-          and joining in a posture of openness to Christ.
+          person's life. It includes classical spiritual direction, and it makes
+          room for other consent-based forms of accompaniment too. It makes space
+          for prayer, reflection, silence, and honest exploration, trusting that
+          God meets people as they are. At its heart, it is about listening for
+          the Spirit together and joining in a posture of openness to Christ.
         </p>
         <p>
           It is not advice, correction, diagnosis, or spiritual performance. It
@@ -63,7 +66,7 @@ import Layout from "../layouts/Layout.astro";
           expert or authority figure.
         </p>
         <p>
-          Within the Liberating Scripture Collective, spiritual direction
+          Within the Liberating Scripture Collective, spiritual companionship
           explicitly resists shame, coercion, and the use of religious language
           as a means of control. It honors agency, attends to the body and lived
           experience, and trusts that the Spirit's work unfolds over time
@@ -72,10 +75,10 @@ import Layout from "../layouts/Layout.astro";
       </section>
 
       <section class="sd-section" aria-labelledby="sd-lsc">
-        <h2 id="sd-lsc">Spiritual direction and LSC</h2>
+        <h2 id="sd-lsc">Spiritual companionship and LSC</h2>
         <p>
           We are in the early stages of building a directory of spiritual
-          directors whose practice is explicitly liberationist, trauma-informed,
+          companions and directors whose practice is explicitly liberationist, trauma-informed,
           and radically inclusive. These directors will not share a single
           method, style, or spiritual perspective, but they will share core
           commitments: to consent, to respect for boundaries, to restorative
@@ -143,7 +146,7 @@ import Layout from "../layouts/Layout.astro";
 
 <style>
   .sd-hero {
-    background: var(--cream);
+    background: var(--surface);
     border-bottom: 1px solid var(--border);
     padding: clamp(3.5rem, 7vw, 6rem) 0;
     position: relative;

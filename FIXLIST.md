@@ -220,8 +220,15 @@ accessibility defects), then F2→OW1 (security headers).
   — matching litbible's Layout.astro lines 99–100.
   Verify: both metas present in `dist/index.html`.
 
-- [ ] **(S13) Only emit og:image dimensions for the default image; add a
+- [x] **(S13) Only emit og:image dimensions for the default image; add a
   `twitterCard` prop.**
+  DONE 2026-07-19 (landed with F5, which depends on it): in
+  `src/layouts/Layout.astro`, the `og:image:width`/`height` metas are now guarded
+  with `{!ogImage && …}` so pages passing their own card don't misreport 1200×630,
+  and a `twitterCard = "summary_large_image"` prop backs the `twitter:card` meta.
+  Verified: `dist/index.html` (default card) still carries the dimensions;
+  `dist/podcasts/index.html` (per-page card) omits them and both keep the twitter
+  card. Byte-identical for pages that don't pass `ogImage`.
   Problem: `src/layouts/Layout.astro` hardcodes
   `og:image:width=1200`/`height=630` even when a page passes its own
   `ogImage` of different dimensions — misreporting. litbible solved this
@@ -363,6 +370,11 @@ accessibility defects), then F2→OW1 (security headers).
   or DevTools emulation) with computed contrast ≥ 4.5:1; light mode
   unchanged; trigger a real form-status message (temporarily set text via
   DevTools) in both themes.
+  NOTE: the related cream-hero dark-mode bug (hero titles invisible on the
+  light band because the hero hardcoded `var(--cream)`) was already fixed during
+  F5 — `.sd-hero`, `.contact-hero`, `.privacy-hero`, `.thanks-hero` now use
+  `var(--surface)`. Still open here: the hardcoded grays, badges, and form-status
+  colors listed above.
 
 - [ ] **(O3) Right-size the images.**
   Problem: `public/assets/images/lsc-logo.png` is 2200×2200 / 177 KB and is
@@ -630,7 +642,41 @@ accessibility defects), then F2→OW1 (security headers).
   Verify: policy statements match observed storage behavior on every page;
   owner approves the wording.
 
-- [ ] **(F5) Per-page OG images for the pages with real art.**
+- [x] **(F5) Per-page OG images for the pages with real art.**
+  DONE 2026-07-19: owner picked five pages — the homepage, /podcasts/,
+  /lit-bible/, /support/, and /spiritual-direction/ — and the committed
+  one-shot-script route. Added
+  `scripts/build-og-images.mjs` (trimmed from litbible's recipe: sharp +
+  opentype.js, deterministic, run by hand via `npm run build:og`, NOT in the
+  build), with the two OG fonts + `OFL.txt` committed under `scripts/og/fonts/`
+  and litbible's `lit-logo.png` copied to `scripts/og/` as a card source asset.
+  Cards (all 1200×630, < 80 KB) written to `public/assets/og/`: house style is
+  the ink field (sampled to lsc-logo's exact corner `#1D231C` so the gold emblem
+  composites seamlessly), a green accent bar, the title in Fraunces, the org
+  wordmark in Inter, and `liberatingscripture.org` in green-light. og-support and
+  og-spiritual-direction carry the gold LSC emblem; og-lit-bible carries the LIT
+  Bible's own green-disc logo in a green ring (echoing litbible.net's cards);
+  og-podcasts shows the two podcast covers (`fit-cover.webp` + `twb-square.png`,
+  both already square so no title gets cropped) as rounded tiles with the footer
+  moved left to clear them. og-home carries the gold emblem with the hero thesis
+  line ("Scripture that liberates rather than controls") as its title. Wired via
+  Layout's `ogImage`/`ogImageAlt` props on the five pages (the homepage now has
+  its own card instead of the shared og-default.png, which stays the fallback
+  for the remaining pages). **S13 landed as its prerequisite** (see below). Also renamed the
+  spiritual-direction page's wording to **"Spiritual Companionship"** (owner
+  decision — umbrella term that includes classical spiritual direction): title,
+  H1, section headings, meta description, JSON-LD, and header/footer nav labels;
+  URL stays `/spiritual-direction/` (no redirects). NOTE for S4: `twb-square.png`
+  is now consumed by the OG generator — do NOT delete it. Remaining: owner runs
+  a social-debugger validator pass per page after deploy (opengraph.xyz or the
+  platforms' own debuggers).
+  Incidental dark-mode fix (found during review): the cream page heroes hardcoded
+  `background: var(--cream)` (a raw, theme-invariant token) while their heading/
+  lede text flips light in dark mode — so the titles were nearly invisible on the
+  light band. Swapped to `background: var(--surface)` (cream in light — byte-
+  identical there — and `#242824` in dark) on `.sd-hero`, `.contact-hero`,
+  `.privacy-hero`, and `.thanks-hero`. The other `var(--cream)` uses are cream
+  buttons ON green heroes (theme-invariant by design, per F1) and were left alone.
   Problem: every page shares one OG image; /podcasts/ and /lit-bible/ have
   distinctive art and would share far better with their own cards.
   litbible generates share cards programmatically

@@ -38,6 +38,7 @@ npm run dev      # Dev server at localhost:4321
 npm run build    # Production build to dist/
 npm run preview  # Preview the production build
 npm run check    # astro check (type/diagnostics)
+npm run build:og # Regenerate the per-page OG cards (one-shot; not in the build)
 ```
 
 ## Structure
@@ -56,7 +57,8 @@ src/
     support.astro       #   Donate + get involved (Give Lively embed)
     podcasts.astro      #   Hub for both podcasts
     community.astro     #   Community & Courses
-    spiritual-direction.astro
+    spiritual-direction.astro #  "Spiritual Companionship" page (URL kept as
+                        #     /spiritual-direction/; wording is the umbrella term)
     contact.astro       #   Contact form (posts to the contact Worker)
     contact/thanks.astro #  No-JS success page (Worker 303s here; noindex)
     privacy.astro       #   Privacy policy (covers this site only; LIT Bible
@@ -66,11 +68,18 @@ src/
     global.css          # Full design system (see Design System below)
 public/                 # Served as-is at the site root:
   assets/images/        # Logos, podcast art, hero images
-  assets/og/            # Open Graph share images
+  assets/og/            # Open Graph share images: og-default.png (site-wide
+                        #   fallback) + per-page cards from scripts/ (F5)
   CNAME                 # Custom domain for GitHub Pages
   favicon.svg, favicon.ico, favicon-96x96.png, apple-touch-icon.png,
   web-app-manifest-*.png, site.webmanifest, robots.txt
   llms.txt, llms-full.txt   # LLM-readable site description
+scripts/
+  build-og-images.mjs   # One-shot per-page OG-card generator (sharp +
+                        #   opentype.js). Run by hand: `npm run build:og`; NOT
+                        #   part of the build. Commits PNGs to public/assets/og/
+  og/                   # Card source assets: committed fonts (+ OFL) and
+                        #   lit-logo.png (copied from litbible, not shipped)
 workers/
   contact-form/         # Cloudflare Worker backing /contact/submit — NOT part
                         #   of the site build; deployed separately via wrangler
@@ -82,9 +91,10 @@ docs/
 DISASTER-RECOVERY.md    # Dashboards/secrets/redeploy path (repo root; not shipped)
 ```
 
-> Everything that ships lives in `src/` and `public/`; the repo root holds only
-> config and docs. Favicons, `CNAME`, the manifest, and the sitemap all come
-> from `public/` (or are generated into `dist/`), not the repo root.
+> Everything that ships lives in `src/` and `public/`; `scripts/` and the repo
+> root hold build-time tooling, config, and docs that don't ship. Favicons,
+> `CNAME`, the manifest, and the sitemap all come from `public/` (or are
+> generated into `dist/`), not the repo root.
 
 ## Deployment
 
