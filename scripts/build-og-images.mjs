@@ -63,8 +63,27 @@ function loadFont(file) {
 const fraunces = loadFont("fraunces-opsz144-500.ttf");
 const inter = loadFont("inter-400.ttf");
 
+// Serialize an opentype Path to SVG `d` with explicit, space-separated,
+// 2-decimal numbers. Do NOT use opentype's built-in toPathData(): its compact
+// formatting (a leading "-" doubling as a token delimiter) makes librsvg abort
+// mid-path for some glyph/size combinations, clipping the text (e.g. "Podcasts"
+// rendered as "Po" at size 100). Explicit spacing avoids that entirely.
+function pathToData(path) {
+  const n = (v) => Number(v.toFixed(2));
+  let d = "";
+  for (const c of path.commands) {
+    if (c.type === "M") d += `M${n(c.x)} ${n(c.y)} `;
+    else if (c.type === "L") d += `L${n(c.x)} ${n(c.y)} `;
+    else if (c.type === "C")
+      d += `C${n(c.x1)} ${n(c.y1)} ${n(c.x2)} ${n(c.y2)} ${n(c.x)} ${n(c.y)} `;
+    else if (c.type === "Q") d += `Q${n(c.x1)} ${n(c.y1)} ${n(c.x)} ${n(c.y)} `;
+    else if (c.type === "Z") d += "Z ";
+  }
+  return d.trim();
+}
+
 function textPath(font, text, x, y, size, attrs = "") {
-  const d = font.getPath(text, x, y, size).toPathData(2);
+  const d = pathToData(font.getPath(text, x, y, size));
   return `<path d="${d}" ${attrs}/>`;
 }
 
@@ -95,7 +114,7 @@ function wrap(font, text, size, maxW) {
  * site footer. Title auto-shrinks so the widest line fits the text column.
  */
 function baseSVG(title, footerAlign = "right") {
-  let size = 92;
+  let size = 100;
   const LH = () => Math.round(size * 1.06);
   let lines = wrap(fraunces, title, size, TEXT_MAX_W);
   // Shrink until every line fits and the block is at most two lines tall.
@@ -129,15 +148,15 @@ function baseSVG(title, footerAlign = "right") {
     })
     .join("\n");
 
-  const siteW = width(inter, SITE, 24);
+  const siteW = width(inter, SITE, 30);
   const siteX = footerAlign === "left" ? MARGIN : WIDTH - MARGIN - siteW;
 
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${WIDTH}" height="${HEIGHT}" viewBox="0 0 ${WIDTH} ${HEIGHT}">
 <rect width="${WIDTH}" height="${HEIGHT}" fill="${INK}"/>
-<rect x="${MARGIN}" y="118" width="140" height="8" fill="${GREEN}"/>
-${textPath(inter, WORDMARK, MARGIN, 174, 26, `fill="${CREAM}" fill-opacity="0.72"`)}
+<rect x="${MARGIN}" y="116" width="150" height="9" fill="${GREEN}"/>
+${textPath(inter, WORDMARK, MARGIN, 180, 32, `fill="${CREAM}" fill-opacity="0.74"`)}
 ${titlePaths}
-${textPath(inter, SITE, siteX, 580, 24, `fill="${GREEN_LIGHT}"`)}
+${textPath(inter, SITE, siteX, 578, 30, `fill="${GREEN_LIGHT}"`)}
 </svg>`;
 }
 
