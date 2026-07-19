@@ -17,5 +17,9 @@
     "@fontsource/fraunces": "^5.0.0",
     "@fontsource/inter": "^5.0.0",
     "astro": "^6.4.6"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.9",
+    "typescript": "^6.0.3"
   }
 }
