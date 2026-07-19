@@ -42,9 +42,11 @@ litbible Worker on this machine, you're already logged in. On the first
 `secret put`, wrangler offers to create the Worker — say yes.)
 
 Then merge the site changes that point the form at `/contact/submit` and
-smoke-test: one submit with JS (inline success message), one without
-(lands on `/contact/thanks/`), and confirm the emails arrive with a working
-Reply-To — and, if `DISPLAY_TO` is set, that the To: header shows it.
+smoke-test: one submit via `fetch` (inline success message), one via the
+native-POST fallback (lands on `/contact/thanks/` — note this still requires
+JS to render Turnstile, it's not a true no-JS path), and confirm the emails
+arrive with a working Reply-To — and, if `DISPLAY_TO` is set, that the To:
+header shows it.
 
 ## Abuse protection
 

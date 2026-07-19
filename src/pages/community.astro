@@ -10,6 +10,7 @@ import Layout from "../layouts/Layout.astro";
   <Fragment slot="head">
     <script
       type="application/ld+json"
+      is:inline
       set:html={JSON.stringify({
         "@context": "https://schema.org",
         "@type": "WebPage",
@@ -111,10 +112,10 @@ import Layout from "../layouts/Layout.astro";
           who show up get to help shape what it becomes.
         </p>
         <p>
-          If you have something to contribute—experience with adult education,
+          If you have something to contribute: experience with adult education,
           community organizing, biblical scholarship, accessibility, curriculum
           development, or just clarity about what you've needed and couldn't
-          find—reach out. This is an invitation to collaborate, not a waiting
+          find, reach out. This is an invitation to collaborate, not a waiting
           list.
         </p>
         <div class="community-actions">

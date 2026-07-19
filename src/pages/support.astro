@@ -12,6 +12,7 @@ import Layout from "../layouts/Layout.astro";
   <Fragment slot="head">
     <script
       type="application/ld+json"
+      is:inline
       set:html={JSON.stringify({
         "@context": "https://schema.org",
         "@type": "WebPage",
@@ -53,7 +54,7 @@ import Layout from "../layouts/Layout.astro";
               src="/assets/images/lsc-logo.png"
               alt=""
               width="84"
-              height="auto"
+              height="84"
               loading="lazy"
               decoding="async"
               aria-hidden="true"
@@ -128,8 +129,8 @@ import Layout from "../layouts/Layout.astro";
           <article class="involvement-card">
             <h3>Collaborate</h3>
             <p>
-              If you have relevant experience—biblical studies, accessibility,
-              design, education, community care—you can help shape the resources
+              If you have relevant experience: biblical studies, accessibility,
+              design, education, community care, you can help shape the resources
               and how they're built.
             </p>
           </article>

@@ -19,8 +19,11 @@
  *
  * Two client paths:
  *   - fetch() submits send `Accept: application/json` and get a JSON verdict;
- *   - native no-JS POSTs get a 303 to /contact/thanks/ on success, or a
- *     small self-contained HTML error page.
+ *   - native POSTs (the form's fallback when JS is available but `fetch`
+ *     fails or is blocked) get a 303 to /contact/thanks/ on success, or a
+ *     small self-contained HTML error page. Turnstile still requires JS to
+ *     render, so this path can't help a genuinely JS-less visitor pass the
+ *     check.
  *
  * The `_gotcha` honeypot is honored server-side: a filled honeypot
  * "succeeds" without sending anything.
@@ -198,12 +201,13 @@ async function verifyTurnstile(env, token, request) {
 const seeOther = (url) =>
   new Response(null, { status: 303, headers: { Location: url.href } });
 
-// Minimal branded error page for the no-JS path. Matches the site's cream/ink
-// palette; self-contained because the Worker can't reach into the static site.
+// Minimal branded error page for the native-POST fallback path. Matches the
+// site's cream/ink palette; self-contained because the Worker can't reach
+// into the static site.
 function errorPage(status, error) {
   const detail =
     error === "turnstile"
-      ? "The security check could not be verified. Please go back, complete the checkbox again, and resend."
+      ? "The security check could not be verified. Please go back, complete it again if it is shown, and resend. (The check requires JavaScript.)"
       : error === "missing-fields"
         ? "Please go back and fill in your name, a valid email address, and a message."
         : error === "rate-limited"

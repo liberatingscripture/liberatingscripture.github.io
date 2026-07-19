@@ -75,6 +75,7 @@ const projects = [
   <Fragment slot="head">
     <script
       type="application/ld+json"
+      is:inline
       set:html={JSON.stringify({
         "@context": "https://schema.org",
         "@graph": [
@@ -177,7 +178,7 @@ const projects = [
           work. Our flagship project is the
           <a
             href="/lit-bible/">LIT Bible</a
-          >—a trauma-informed, justice-oriented New Testament translation—which
+          >, a trauma-informed, justice-oriented New Testament translation, which
           lives at <a href="https://litbible.net" target="_blank" rel="noopener noreferrer">litbible.net</a>. This site is where the rest of what we do takes
           shape: podcasts, spiritual companionship, courses, and the community that
           makes it a collective.
@@ -214,7 +215,7 @@ const projects = [
               <a
                 href={p.href}
                 class="project-card__cta"
-                aria-label={`${p.cta}${p.external ? "" : ""} — ${p.name}`}
+                aria-label={`${p.cta}: ${p.name}`}
                 {...(p.external
                   ? { target: "_blank", rel: "noopener noreferrer" }
                   : {})}
@@ -536,13 +537,6 @@ const projects = [
     align-items: center;
     gap: 0.75rem;
     flex-shrink: 0;
-  }
-
-  .support-strip__hint {
-    font-size: 0.75rem;
-    color: #9a9893;
-    margin: 0;
-    text-align: center;
   }
 
   @media (max-width: 760px) {

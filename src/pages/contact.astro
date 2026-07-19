@@ -10,6 +10,7 @@ import Layout from "../layouts/Layout.astro";
   <Fragment slot="head">
     <script
       type="application/ld+json"
+      is:inline
       set:html={JSON.stringify({
         "@context": "https://schema.org",
         "@type": "ContactPage",
@@ -42,14 +43,16 @@ import Layout from "../layouts/Layout.astro";
               client-side, so no-JS visitors just see the normal form. */}
           <p id="topic-hint" class="topic-hint" hidden>
             Interested in <strong>The Table We're Building</strong>? We'll let
-            you know when it launches — the message below is ready to send, or
+            you know when it launches. The message below is ready to send, or
             make it your own.
           </p>
 
           {/* Posts to the contact-form Worker (workers/contact-form/), which
               verifies the Turnstile token server-side and delivers via
-              Cloudflare Email Routing. A native no-JS POST works too: the
-              Worker 303-redirects to /contact/thanks/. */}
+              Cloudflare Email Routing. The form also degrades to a native
+              POST (e.g. if fetch is blocked); Turnstile still requires JS to
+              render, so a truly JS-less visitor can't pass the check. The
+              Worker 303-redirects to /contact/thanks/ on success. */}
           <form
             class="contact-form"
             action="/contact/submit"
@@ -92,7 +95,7 @@ import Layout from "../layouts/Layout.astro";
               <label>Leave this empty <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" /></label>
             </div>
 
-            <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+            <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
             <div class="cf-turnstile" data-sitekey="0x4AAAAAACJ446flkL7Rwf8i"></div>
 
             <div id="form-status" class="form-status" role="status" aria-live="polite" aria-atomic="true"></div>
@@ -148,7 +151,7 @@ import Layout from "../layouts/Layout.astro";
                   });
 
                   if (res.ok) {
-                    statusEl.textContent = "Message sent — we'll be in touch soon.";
+                    statusEl.textContent = "Message sent! We'll be in touch soon.";
                     statusEl.className = "form-status form-status--success";
                     form.reset();
                   } else {
@@ -307,7 +310,7 @@ import Layout from "../layouts/Layout.astro";
 
   .field textarea { resize: vertical; min-height: 160px; }
 
-  .hp { display: none; }
+  .hp { position: absolute; left: -9999px; }
 
   .contact-submit { align-self: flex-start; }
 

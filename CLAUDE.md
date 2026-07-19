@@ -27,7 +27,8 @@ support and get in touch. The site is **live** at liberatingscripture.org.
 - **Language**: TypeScript (strict mode)
 - **Styling**: Vanilla CSS — a single design system in `src/styles/global.css`,
   shared visually with litbible.net (no utility framework)
-- **Fonts**: Self-hosted via `@fontsource` (Crimson Text, Inter, Fraunces)
+- **Fonts**: Self-hosted via `@fontsource`, Latin subsets only (Crimson Text,
+  Inter, Fraunces)
 - **Deploy**: GitHub Actions → GitHub Pages (see Deployment below)
 
 ## Commands
@@ -37,7 +38,8 @@ npm install      # Install dependencies
 npm run dev      # Dev server at localhost:4321
 npm run build    # Production build to dist/
 npm run preview  # Preview the production build
-npm run check    # astro check (type/diagnostics)
+npm run check    # astro check (type/diagnostics) — also runs in CI on every
+                 #   push/PR, before the build
 npm run build:og # Regenerate the per-page OG cards (one-shot; not in the build)
 ```
 
@@ -60,7 +62,8 @@ src/
     spiritual-direction.astro #  "Spiritual Companionship" page (URL kept as
                         #     /spiritual-direction/; wording is the umbrella term)
     contact.astro       #   Contact form (posts to the contact Worker)
-    contact/thanks.astro #  No-JS success page (Worker 303s here; noindex)
+    contact/thanks.astro #  Native-POST success page (Worker 303s here as a
+                        #     fallback when fetch fails/unavailable; noindex)
     privacy.astro       #   Privacy policy (covers this site only; LIT Bible
                         #     site + apps are covered by litbible.net/privacy)
     404.astro
@@ -74,6 +77,11 @@ public/                 # Served as-is at the site root:
   favicon.svg, favicon.ico, favicon-96x96.png, apple-touch-icon.png,
   web-app-manifest-*.png, site.webmanifest, robots.txt
   llms.txt, llms-full.txt   # LLM-readable site description
+  .well-known/
+    apple-developer-merchantid-domain-association # Apple Pay domain
+                        #   verification for the Give Lively donate widget —
+                        #   don't delete
+    security.txt        # RFC 9116 vulnerability-disclosure pointer (S16)
 scripts/
   build-og-images.mjs   # One-shot per-page OG-card generator (sharp +
                         #   opentype.js). Run by hand: `npm run build:og`; NOT
@@ -89,6 +97,9 @@ workers/
 docs/
   security-headers.md   # Cloudflare header setup the owner applies (FIXLIST OW1)
 DISASTER-RECOVERY.md    # Dashboards/secrets/redeploy path (repo root; not shipped)
+SECURITY.md, CONTRIBUTING.md, CODE_OF_CONDUCT.md # Community-health files
+                        #   (repo root; GitHub surfaces these automatically)
+.editorconfig, .gitattributes # Editor/line-ending conventions (repo root)
 ```
 
 > Everything that ships lives in `src/` and `public/`; `scripts/` and the repo
@@ -98,10 +109,18 @@ DISASTER-RECOVERY.md    # Dashboards/secrets/redeploy path (repo root; not shipp
 
 ## Deployment
 
-`.github/workflows/deploy.yml` runs on every push to `main` (and via manual
-dispatch): it `npm ci`s, `npm run build`s, uploads `dist/` as a Pages artifact,
-and deploys to GitHub Pages. The custom domain comes from `public/CNAME`
-(liberatingscripture.org). Push to `main` is the site deploy.
+`.github/workflows/deploy.yml` runs on every push to `main`, on pull requests,
+and via manual dispatch: it `npm ci`s, `npm run check`s, `npm run build`s,
+uploads `dist/` as a Pages artifact, and deploys to GitHub Pages. The `deploy`
+job is skipped on pull requests (`if: github.event_name != 'pull_request'`),
+so PRs build and type-check but never publish. The custom domain comes from
+`public/CNAME` (liberatingscripture.org). Push to `main` is the site deploy.
+
+Dependency updates: this repo follows litbible's precedent of enabling
+GitHub's native Dependabot security-alert toggle (Settings → Security →
+Dependabot alerts) rather than committing a `dependabot.yml` — that toggle
+surfaces vulnerabilities with zero recurring version-bump PRs to review,
+which litbible's own audit judged the better tradeoff for a small team.
 
 One nuance: the domain's DNS is on **Cloudflare with the proxy enabled**, so
 Cloudflare sits in front of GitHub Pages. That's what lets the contact-form
@@ -140,8 +159,9 @@ These are configured in-page; update the IDs/keys here if they ever change:
 - **Contact form Worker** — the form posts to `/contact/submit`, a Cloudflare
   Worker in `workers/contact-form/` (Turnstile verified server-side, per-IP
   rate limit, delivery via Email Routing from `contact@liberatingscripture.org`).
-  No-JS POSTs land on `/contact/thanks/`. Replaced Formspree (`xdkqvlkj`,
-  retired).
+  Native POSTs (the form's fallback when `fetch` is unavailable or fails) land
+  on `/contact/thanks/` — Turnstile still requires JS to render, so this isn't
+  a true no-JS path. Replaced Formspree (`xdkqvlkj`, retired).
 - **Cloudflare Turnstile** — bot protection on the contact form. Sitekey
   `0x4AAAAAACJ446flkL7Rwf8i` in `src/pages/contact.astro`; the matching
   secret key lives in the Worker's `TURNSTILE_SECRET` secret.

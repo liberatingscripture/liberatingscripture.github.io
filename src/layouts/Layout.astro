@@ -11,7 +11,6 @@ const {
   ogImageAlt = "Liberating Scripture Collective: open-access, trauma-informed scripture translation and spiritual community",
   twitterCard = "summary_large_image",
   noindex = false,
-  bg = "cream",
 } = Astro.props;
 
 const siteOrigin = "https://liberatingscripture.org";
@@ -57,12 +56,13 @@ const ogImageUrl = ogImage ?? `${siteOrigin}/assets/og/og-default.png`;
     <link rel="shortcut icon" href="/favicon.ico" />
     <link rel="manifest" href="/site.webmanifest" />
     <meta name="theme-color" content="#209D50" />
+    <meta name="theme-color" content="#0F6B33" media="(prefers-color-scheme: dark)" />
     <meta name="color-scheme" content="light dark" />
 
     <slot name="head" />
   </head>
 
-  <body class={`bg-${bg}`}>
+  <body>
     <a href="#main-content" class="skip-link">Skip to content</a>
     <SiteHeader />
     <main id="main-content">

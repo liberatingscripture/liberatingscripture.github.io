@@ -12,6 +12,7 @@ import Layout from "../layouts/Layout.astro";
   <Fragment slot="head">
     <script
       type="application/ld+json"
+      is:inline
       set:html={JSON.stringify({
         "@context": "https://schema.org",
         "@graph": [
@@ -93,7 +94,7 @@ import Layout from "../layouts/Layout.astro";
           is made visible rather than hidden behind a facade of neutrality.
         </p>
         <p>
-          The full name—Liberation and Inclusion Translation—reflects the
+          The full name, Liberation and Inclusion Translation, reflects the
           conviction that the Bible's core movements are liberating, restorative,
           and radically inclusive, and that how we translate shapes how people
           experience God, themselves, and one another.
@@ -213,7 +214,7 @@ import Layout from "../layouts/Layout.astro";
           <div class="lit-feature">
             <h3>Full-text search</h3>
             <p>
-              Search the full text by keyword or chapter topics, allowing in depth study. Also find results for words discussed in the glossary, as well as articles about specific passages.
+              Search the full text by keyword or chapter topics, allowing in-depth study. Also find results for words discussed in the glossary, as well as articles about specific passages.
             </p>
           </div>
           <div class="lit-feature">

@@ -7,10 +7,14 @@ Liberation and Inclusion Translation (LIT) of the Bible, available at https://li
 
 ## Pages
 Home: https://liberatingscripture.org/
+About: https://liberatingscripture.org/about/ — who the Liberating Scripture Collective is and what it's building
 LIT Bible project: https://liberatingscripture.org/lit-bible/
-The Table We're Building podcast: https://liberatingscripture.org/table-were-building-podcast/
+Podcasts: https://liberatingscripture.org/podcasts/ — Found in Translation and The Table We're Building
+Community & Courses: https://liberatingscripture.org/community/ — courses, study companions, and community spaces for reading scripture together
 Spiritual direction directory: https://liberatingscripture.org/spiritual-direction/
+Support: https://liberatingscripture.org/support/ — donate and get involved to keep the work free, open, and community-shaped
 Contact: https://liberatingscripture.org/contact/
+Privacy Policy: https://liberatingscripture.org/privacy/ — what little data this site collects and what we never do
 
 ## About the LIT Bible
 The Liberation and Inclusion Translation (LIT) is a trauma-informed, justice-oriented

@@ -36,8 +36,16 @@ accessibility defects), then F2→OW1 (security headers).
 > bottom. Make exactly the changes described; don't expand scope. Run
 > `npm run check` and `npm run build` at the end."
 
-- [ ] **(S1) Fix the broken podcast URL in both llms files, and list the
+- [x] **(S1) Fix the broken podcast URL in both llms files, and list the
   missing pages.**
+  DONE 2026-07-19: replaced the dead `/table-were-building-podcast/` URL with
+  `/podcasts/` in both `public/llms.txt` and `public/llms-full.txt` (Site
+  Structure list and the TWB project description), and added About, Podcasts,
+  Community & Courses, Support, and Privacy Policy to both files' page lists
+  with one-line descriptions matching each page's actual meta description.
+  Verified: `grep -r "table-were-building-podcast" public/` returns nothing;
+  every URL in both files resolves to a `dist/sitemap-0.xml` entry after
+  `npm run build`.
   Problem: `public/llms.txt` (line 11) and `public/llms-full.txt` (lines 16
   and 37) link to `https://liberatingscripture.org/table-were-building-podcast/`,
   which does not exist and returns a live 404 (verified 2026-07-18). The
@@ -54,8 +62,15 @@ accessibility defects), then F2→OW1 (security headers).
   every URL listed in both files corresponds to an entry in
   `dist/sitemap-0.xml` after a build.
 
-- [ ] **(S2) Make `npm run check` work from a clean clone and fix the four
+- [x] **(S2) Make `npm run check` work from a clean clone and fix the four
   type errors.**
+  DONE 2026-07-19: `@astrojs/check`/`typescript` devDeps were already added to
+  `package.json` in an earlier commit (721d834); `npm install` now installs
+  them cleanly (this fresh worktree just hadn't had `node_modules/` yet).
+  Removed the dead `link.external` machinery from both nav loops in
+  `SiteHeader.astro` (desktop and mobile overlay) and deleted the now-unused
+  `.ext-icon` CSS rule.
+  Verified: `npm run check` exits 0 with 0 errors, 0 warnings, 0 hints.
   Problem: `@astrojs/check` and `typescript` are not in `package.json`, so
   `npm run check` prompts interactively on a fresh `npm ci`. Once run, it
   reports 4 errors in `src/components/SiteHeader.astro` (lines ~35, 38, 73,
@@ -71,7 +86,14 @@ accessibility defects), then F2→OW1 (security headers).
   `.ext-icon` CSS rule in the same file also becomes unused — delete it.
   Verify: `npm run check` exits 0 with 0 errors.
 
-- [ ] **(S3) Run the typecheck in CI and run CI on pull requests.**
+- [x] **(S3) Run the typecheck in CI and run CI on pull requests.**
+  DONE 2026-07-19: added `pull_request:` to `deploy.yml`'s `on:` block, added
+  `npm run check` between `npm ci` and `npm run build` in the `build` job,
+  and guarded the `deploy` job with
+  `if: github.event_name != 'pull_request'` so PRs build+check but don't
+  publish.
+  Verified: workflow YAML parses; `npm run check` passes locally as the same
+  step CI runs.
   Problem: `.github/workflows/deploy.yml` only builds, and only on push to
   main — type errors (see S2) and PR breakage never surface. litbible's
   `.github/workflows/ci.yml` is the reference.
@@ -83,7 +105,16 @@ accessibility defects), then F2→OW1 (security headers).
   Verify: workflow YAML is valid (`gh workflow view` or push to a branch and
   watch the PR run); a PR run executes build+check but skips deploy.
 
-- [ ] **(S4) Delete the unused images (~15 MB) and the duplicate OG folder.**
+- [x] **(S4) Delete the unused images (~15 MB) and the duplicate OG folder.**
+  DONE 2026-07-19, with two carve-outs from the original scope: F5's DONE note
+  (below, under Fable) already established `twb-square.png` is now consumed
+  by the OG generator, so it was kept; and the owner asked to keep the three
+  logo variants (`lsc-logo-gold.png`, `lsc-logo-gold-square.png`,
+  `lsc-logo-text.png`) for possible future use. Deleted only `sd-hero.jpg`
+  (5.9 MB), `sevenfold-mandala.png` (3.5 MB), and the duplicate
+  `public/assets/images/og/` directory.
+  Verified: grep confirmed zero references to either deleted filename before
+  removal; `npm run build` passes; `dist/assets/` no longer contains them.
   Problem: these files under `public/assets/images/` are referenced nowhere
   in `src/`, `public/llms*.txt`, README, or CLAUDE.md (verified by grep),
   but ship with every deploy: `sd-hero.jpg` (5.9 MB), `sevenfold-mandala.png`
@@ -100,7 +131,13 @@ accessibility defects), then F2→OW1 (security headers).
   Verify: `npm run build` passes; grep confirms no reference to any deleted
   filename; the built `dist/assets/` no longer contains them.
 
-- [ ] **(S5) Small HTML/copy corrections.**
+- [x] **(S5) Small HTML/copy corrections.**
+  DONE 2026-07-19: fixed `height="auto"` → `height="84"` in support.astro;
+  fixed the "in depth" → "in-depth" typo in lit-bible.astro; added `is:inline`
+  to all 9 JSON-LD `<script>` tags across `src/pages/*.astro` plus a 10th hint
+  `astro check` surfaced once those cleared — the Turnstile loader `<script>`
+  in contact.astro (matches the FIXLIST's "10 hints" count exactly).
+  Verified: `npm run check` — 0 errors, 0 warnings, 0 hints.
   (a) `src/pages/support.astro` (~line 54): the donate-band logo has
   `height="auto"`, which is invalid HTML (`height` must be an integer). The
   image is 2200×2200 rendered at width 84 — use `height="84"`.
@@ -112,7 +149,13 @@ accessibility defects), then F2→OW1 (security headers).
   Verify: `npm run check` shows 0 errors and no astro(4000) hints on those
   scripts.
 
-- [ ] **(S6) Remove dead code found in the audit.**
+- [x] **(S6) Remove dead code found in the audit.**
+  DONE 2026-07-19: removed the unused `bg`/`bg-${bg}` prop and class from
+  Layout.astro (bare `<body>` now); fixed index.astro's project-card
+  aria-label to `${p.cta}: ${p.name}`; deleted the unused
+  `.support-strip__hint` CSS rule.
+  Verified: `npm run build` passes; rendered `<body>` has no class;
+  aria-labels read e.g. "Learn more: LIT Bible".
   (a) `src/layouts/Layout.astro`: the `bg = "cream"` prop renders
   `class="bg-cream"` on `<body>`, but no `.bg-*` class exists anywhere in
   this repo's CSS and no page passes the prop (it was ported from litbible,
@@ -127,7 +170,12 @@ accessibility defects), then F2→OW1 (security headers).
   Verify: `npm run build` passes; rendered `<body>` has no class; the CTA
   aria-labels read e.g. "Learn more: LIT Bible".
 
-- [ ] **(S7) Em-dash sweep in visible prose.**
+- [x] **(S7) Em-dash sweep in visible prose.**
+  DONE 2026-07-19: rephrased all six listed locations, plus two more found
+  during the sweep (needed for this item's own verify command to pass):
+  404.astro's lede and the contact.astro topic-hint prose added by F7.
+  Verified: `grep -rn "—" src/pages src/components` returns only
+  `index.astro`'s `ogImageAlt` (alt text, explicitly excluded).
   Owner style rule (established in litbible and in this repo's recent
   commits, e.g. `e96156e`, `492bd62`): no em dashes in published page copy —
   rephrase with commas/periods/colons, changing as few words as possible.
@@ -150,7 +198,13 @@ accessibility defects), then F2→OW1 (security headers).
   Verify: `grep -rn "—" src/pages src/components` shows no em dashes in
   visible prose (JSON-LD/comments excepted).
 
-- [ ] **(S8) Harden the contact-form honeypot.**
+- [x] **(S8) Harden the contact-form honeypot.**
+  DONE 2026-07-19: changed `.hp { display: none; }` to
+  `.hp { position: absolute; left: -9999px; }` in contact.astro; the input's
+  `tabindex="-1"`, `autocomplete="off"`, `aria-hidden="true"` were already in
+  place. No Worker change.
+  Verified: field is off-screen but present in the DOM/POST body; not
+  reachable by Tab.
   Problem: the `_gotcha` honeypot in `src/pages/contact.astro` is hidden via
   `.hp { display: none; }` — trivially detected by spam bots that skip
   `display:none` fields. litbible fixed the same weakness.
@@ -163,7 +217,14 @@ accessibility defects), then F2→OW1 (security headers).
   Verify: field invisible in `npm run dev`, not focusable by Tab, still
   present in the POST body.
 
-- [ ] **(S9) Stop overstating the no-JS contact path.**
+- [x] **(S9) Stop overstating the no-JS contact path.**
+  DONE 2026-07-19: reworded all four spots (the drift in contact.astro's
+  comment had moved to ~lines 50–52 by the time this ran, after F7 added the
+  topic-hint block above it — same comment, new line numbers) plus the
+  Worker's `errorPage` turnstile-branch copy and its README's smoke-test
+  section, all now framed as "native-POST fallback for when fetch fails/is
+  blocked" rather than "no-JS works."
+  Verified: reread all spots; `npm run build` passes; no functional diff.
   Problem: comments and docs claim "a native no-JS POST works too", but
   Cloudflare Turnstile requires JavaScript to render, so a genuinely JS-less
   visitor can never obtain a token and every native POST fails the server
@@ -184,7 +245,12 @@ accessibility defects), then F2→OW1 (security headers).
   Verify: reread all four spots; no functional diff (`npm run build`, worker
   `npm run check` in `workers/contact-form/` still pass).
 
-- [ ] **(S10) Render the footer year at build time.**
+- [x] **(S10) Render the footer year at build time.**
+  DONE 2026-07-19: SiteFooter.astro now computes `year` in frontmatter and
+  renders `{year}` inside `<span id="footerYear">`; the existing client
+  script still overwrites it as a progressive-enhancement guard.
+  Verified: `dist/index.html` contains the literal current year
+  (`2026`) server-rendered.
   Problem: `src/components/SiteFooter.astro` injects the copyright year with
   client JS into `#footerYear`; without JS the footer reads "© " with a
   blank. The site rebuilds on every push, so a build-time year is accurate
@@ -195,7 +261,13 @@ accessibility defects), then F2→OW1 (security headers).
   deploy happens across a New Year).
   Verify: `dist/index.html` contains the literal current year in the footer.
 
-- [ ] **(S11) Switch font imports to Latin subsets and drop unused weights.**
+- [x] **(S11) Switch font imports to Latin subsets and drop unused weights.**
+  DONE 2026-07-19: all imports in global.css switched to their `latin-`
+  variants; confirmed via grep that no Fraunces-using selector sets
+  `font-weight: 600` (`.lede` is 400, `.support-strip__heading` is 500, the
+  rest inherit 400), so `fraunces/600.css` was dropped entirely rather than
+  converted.
+  Verified: `npm run build` passes.
   Problem: `src/styles/global.css` (lines 1–12) imports full-subset
   @fontsource files; litbible imports `latin-` subsets only (site is
   English), which is meaningfully smaller. Also `@fontsource/fraunces/600.css`
@@ -210,7 +282,12 @@ accessibility defects), then F2→OW1 (security headers).
   Verify: `npm run build`; spot-check headings/lede/taglines in `npm run
   dev` — no fallback-font flash or weight change.
 
-- [ ] **(S12) Add a dark-scheme `theme-color` meta.**
+- [x] **(S12) Add a dark-scheme `theme-color` meta.**
+  DONE 2026-07-19: added
+  `<meta name="theme-color" content="#0F6B33" media="(prefers-color-scheme: dark)" />`
+  after the existing light-mode meta in Layout.astro, matching litbible's
+  Layout.astro exactly.
+  Verified: both metas present in `dist/index.html`.
   Problem: `src/layouts/Layout.astro` emits a single
   `<meta name="theme-color" content="#209D50" />`; in dark mode the green
   chrome clashes. litbible ships a second meta (owner-approved value
@@ -243,28 +320,46 @@ accessibility defects), then F2→OW1 (security headers).
   Verify: diff a built page's `<head>` before/after — identical today; a
   test page passing `ogImage` omits the dimension metas.
 
-- [ ] **(S14) Add `.editorconfig` and `.gitattributes`.**
+- [x] **(S14) Add `.editorconfig` and `.gitattributes`.**
+  DONE 2026-07-19: copied both verbatim from the litbible repo root.
+  Verified: `git check-attr text -- src/pages/index.astro` reports `auto`.
   Copy both verbatim from the litbible repo root: `.editorconfig` (UTF-8,
   LF, trim trailing whitespace, final newline) and `.gitattributes`
   (`* text=auto eol=lf`). Rationale: Windows-based development; keeps line
   endings and whitespace consistent for any future contributor.
   Verify: `git check-attr text -- src/pages/index.astro` reports `auto`.
 
-- [ ] **(S15) Add a Dependabot config.**
-  Problem: no automated dependency updates for the site's npm deps, the
-  Worker's npm deps (`workers/contact-form/`), or the GitHub Actions in
-  `deploy.yml` — everything is manual.
-  Fix: create `.github/dependabot.yml` with three update blocks:
-  `package-ecosystem: npm` with `directory: /`; `package-ecosystem: npm`
-  with `directory: /workers/contact-form`; `package-ecosystem:
-  github-actions` with `directory: /`. Use `schedule: { interval: monthly }`
-  and sensible `groups` (e.g. group all patch/minor npm bumps) to keep PR
-  noise low on this small site.
-  Verify: YAML validates; after merge, the Dependabot tab on GitHub shows
-  the three ecosystems.
+- [x] **(S15) ~~Add a Dependabot config~~ — changed to enabling native
+  Dependabot alerts instead (owner decision, 2026-07-19).**
+  DONE 2026-07-19: litbible's own FIXLIST (2026-07-16 audit section)
+  contains an item that explicitly rejected a committed `dependabot.yml` for
+  the identical problem, in favor of just enabling GitHub's native
+  Dependabot security-alerts toggle (Settings → Security → Dependabot
+  alerts) — a one-time toggle with zero recurring version-bump PRs to
+  review, versus a `dependabot.yml`'s weekly PR overhead for a small team.
+  The owner confirmed this repo should follow the same precedent, so no
+  `.github/dependabot.yml` was created. Moved to the Owner section as
+  **(OW8)** below — see there for the action.
+  Original problem/fix text (superseded): no automated dependency updates
+  for the site's npm deps, the Worker's npm deps
+  (`workers/contact-form/`), or the GitHub Actions in `deploy.yml` —
+  everything was manual.
 
-- [ ] **(S16) Governance/health drafts: SECURITY.md, CONTRIBUTING.md,
+- [x] **(S16) Governance/health drafts: SECURITY.md, CONTRIBUTING.md,
   CODE_OF_CONDUCT.md, security.txt (owner-review drafts).**
+  DONE 2026-07-19 (as drafts, owner review still pending): adapted all three
+  from litbible's files, scoped to this site's reality (no `/api/`, no
+  companion apps — dropped those bullets from SECURITY.md; CONTRIBUTING.md
+  routes content/mission feedback to the contact form and technical
+  issues/PRs to GitHub; CODE_OF_CONDUCT.md is Contributor Covenant v2.1 with
+  the contact form as the enforcement channel). Confirmed (including full
+  git history across litbible's branches) that neither `dependabot.yml` nor
+  `security.txt` has any litbible precedent to port — `public/.well-known/security.txt`
+  was authored fresh per RFC 9116 (`Contact`, `Policy` pointing at this
+  repo's SECURITY.md on GitHub, `Expires` ~1 year out, `Preferred-Languages:
+  en`). Did NOT create LICENSE (still gated on OW3).
+  Verified: all four files exist at their specified paths; `npm run build`
+  copies `security.txt` into `dist/.well-known/`.
   Problem: the site actively invites collaboration ("feedback,
   collaboration, scholarship, accessibility work, art" on /about/ and
   /support/) but the public repo has none of GitHub's community-health
@@ -289,8 +384,19 @@ accessibility defects), then F2→OW1 (security headers).
   security.txt into `dist/.well-known/`; GitHub's Community Standards page
   (repo Insights) recognizes the three markdown files after merge.
 
-- [ ] **(S17) Doc-drift sweep in CLAUDE.md and README (run LAST in the
+- [x] **(S17) Doc-drift sweep in CLAUDE.md and README (run LAST in the
   batch).**
+  DONE 2026-07-19: added the `.well-known/` files (Apple Pay association +
+  the new security.txt) to CLAUDE.md's structure listing; added the new root
+  governance/config files (SECURITY.md, CONTRIBUTING.md, CODE_OF_CONDUCT.md,
+  .editorconfig, .gitattributes) to the same listing; noted `npm run check`
+  now runs in CI in both CLAUDE.md and README; reworded the no-JS/native-POST
+  language in CLAUDE.md's contact-form description to match S9; noted the
+  Latin-subset font change; documented the Dependabot-alerts-over-yml
+  decision (S15/OW8) in CLAUDE.md's Deployment section; added a FIXLIST.md
+  mention to README under "Working with Claude Code".
+  Verified: read both docs against the repo tree post-batch; no stale
+  claims found.
   Problem: CLAUDE.md's `public/` structure listing omits
   `.well-known/apple-developer-merchantid-domain-association` (Apple Pay
   domain verification for the Give Lively donate widget — exactly the kind
@@ -826,3 +932,14 @@ accessibility defects), then F2→OW1 (security headers).
   finalizes the official values statement, hand it to a model to
   reconcile the About page (and any echoes on the homepage) with the
   final language.
+
+- [ ] **(OW8) Enable Dependabot security alerts.**
+  Moved here from the Sonnet section (was S15) on 2026-07-19: litbible's own
+  FIXLIST rejected a committed `dependabot.yml` for the identical problem
+  (no automated visibility into vulnerable deps) in favor of a one-time
+  dashboard toggle — Settings → Security → Dependabot alerts — which
+  surfaces known vulnerabilities via email/GitHub notification with zero
+  recurring version-bump PRs to review. The owner confirmed this repo should
+  follow the same precedent rather than adding a `dependabot.yml`. Action:
+  flip that toggle in this repo's GitHub Settings. No code change; nothing
+  a model can do here.

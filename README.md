@@ -32,7 +32,7 @@ npm run dev      # Start the dev server at http://localhost:4321
 | `npm run dev` | Start the local dev server at `localhost:4321` |
 | `npm run build` | Build the production site to `dist/` |
 | `npm run preview` | Preview the production build locally |
-| `npm run check` | Run `astro check` (type checking / diagnostics) |
+| `npm run check` | Run `astro check` (type checking / diagnostics) — also runs in CI |
 | `npm run build:og` | Regenerate the per-page Open Graph share cards (one-shot; not part of the build) |
 
 ## Structure
@@ -46,7 +46,7 @@ src/
                 #   privacy, 404
   styles/       # global.css (the full design system)
 public/         # Served at the site root: images, OG images, favicons,
-                #   CNAME, robots.txt, site.webmanifest
+                #   CNAME, robots.txt, site.webmanifest, .well-known/
 scripts/        # Build-time tooling (the one-shot OG-card generator)
 workers/        # Cloudflare Worker for the contact form (deployed separately)
 .github/workflows/deploy.yml   # Builds and deploys to GitHub Pages
@@ -80,3 +80,7 @@ This repo includes a `CLAUDE.md` file with deeper operational guidance for the
 [Claude Code](https://claude.com/claude-code) AI assistant — deploy details,
 external integrations, design tokens, and known leftover files. It's a useful
 reference for humans too.
+
+Open work is tracked in `FIXLIST.md` (repo root) — a living checklist from the
+2026-07-18 site audit, grouped by which model (or the owner) should execute
+each item.

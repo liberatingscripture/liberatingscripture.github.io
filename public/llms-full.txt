@@ -12,10 +12,14 @@ Profile: https://litbible.net/about/
 
 ## Site Structure
 - Home: https://liberatingscripture.org/
+- About: https://liberatingscripture.org/about/ — who the Liberating Scripture Collective is and what it's building
 - LIT Bible project: https://liberatingscripture.org/lit-bible/
-- The Table We're Building podcast: https://liberatingscripture.org/table-were-building-podcast/
+- Podcasts: https://liberatingscripture.org/podcasts/ — Found in Translation and The Table We're Building
+- Community & Courses: https://liberatingscripture.org/community/ — courses, study companions, and community spaces for reading scripture together
 - Spiritual direction directory: https://liberatingscripture.org/spiritual-direction/
+- Support: https://liberatingscripture.org/support/ — donate and get involved to keep the work free, open, and community-shaped
 - Contact: https://liberatingscripture.org/contact/
+- Privacy Policy: https://liberatingscripture.org/privacy/ — what little data this site collects and what we never do
 
 ## Projects
 
@@ -34,7 +38,7 @@ Spotify: https://open.spotify.com/show/6S2wWaM5oqknwncPfOEyZ6
 
 ### The Table We're Building (Podcast)
 A forthcoming podcast from the LSC. Currently in pre-production; landing page at
-https://liberatingscripture.org/table-were-building-podcast/.
+https://liberatingscripture.org/podcasts/.
 
 ### Spiritual Direction Directory
 A directory connecting people with spiritual directors who share LSC's values. Currently
