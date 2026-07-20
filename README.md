@@ -39,14 +39,15 @@ npm run dev      # Start the dev server at http://localhost:4321
 
 ```
 src/
-  components/   # SiteHeader, SiteFooter
+  components/   # SiteHeader, SiteFooter, AppsLaunchPopover, AppIcons,
+                #   PlatformIcon
   layouts/      # Layout.astro (base HTML shell)
-  pages/        # One file per route: index, about, lit-bible, support,
+  pages/        # One file per route: index, about, lit-bible, apps, support,
                 #   podcasts, community, spiritual-direction, contact,
                 #   privacy, 404
   styles/       # global.css (the full design system)
-public/         # Served at the site root: images, OG images, favicons,
-                #   CNAME, robots.txt, site.webmanifest, .well-known/
+public/         # Served at the site root: images, app screenshots, OG images,
+                #   favicons, CNAME, robots.txt, site.webmanifest, .well-known/
 scripts/        # Build-time tooling (the one-shot OG-card generator)
 workers/        # Cloudflare Worker for the contact form (deployed separately)
 .github/workflows/deploy.yml   # Builds and deploys to GitHub Pages
