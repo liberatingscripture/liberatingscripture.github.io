@@ -2,6 +2,7 @@
 import "../styles/global.css";
 import SiteHeader from "../components/SiteHeader.astro";
 import SiteFooter from "../components/SiteFooter.astro";
+import AppsLaunchPopover from "../components/AppsLaunchPopover.astro";
 
 const {
   title = "Liberating Scripture Collective",
@@ -69,5 +70,6 @@ const ogImageUrl = ogImage ?? `${siteOrigin}/assets/og/og-default.png`;
       <slot />
     </main>
     <SiteFooter />
+    <AppsLaunchPopover />
   </body>
 </html>

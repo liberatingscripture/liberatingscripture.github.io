@@ -50,12 +50,19 @@ src/
   components/
     SiteHeader.astro    # Sticky header with mobile menu
     SiteFooter.astro    # Dark footer
+    AppsLaunchPopover.astro # LIT Bible app announcement modal (see Popover)
+    AppIcons.astro      # The iOS + Android app icons as a matched pair
+    ChurchYearCarousel.astro # Hebrews 1 cycling through the five liturgical
+                        #   seasons (card tint + chip + screenshot in step)
+    PlatformIcon.astro  # Apple / Android marks for the store links
   layouts/
-    Layout.astro        # Base HTML shell (SEO/OG, fonts, favicons, header/footer)
+    Layout.astro        # Base HTML shell (SEO/OG, fonts, favicons, header/footer,
+                        #   and the one announcement popover)
   pages/                # One .astro per route (static):
     index.astro         #   Homepage
     about.astro         #   About LSC
     lit-bible.astro     #   Landing page for the LIT Bible
+    apps.astro          #   The LIT Bible iOS/Android apps (see Apps Page)
     support.astro       #   Donate + get involved (Give Lively embed)
     podcasts.astro      #   Hub for both podcasts
     community.astro     #   Community & Courses
@@ -70,7 +77,12 @@ src/
   styles/
     global.css          # Full design system (see Design System below)
 public/                 # Served as-is at the site root:
-  assets/images/        # Logos, podcast art, hero images
+  assets/images/        # Logos, podcast art, hero images, and both app icons
+                        #   (lit-app-icon.svg = Android, *-ios.webp = iOS)
+  assets/screenshots/   # App screenshots for /apps, as WebP (converted from
+                        #   litbible's PNGs — see Apps Page)
+    carousel/           #   Hebrews 1 in each of the five liturgical seasons,
+                        #     for ChurchYearCarousel
   assets/og/            # Open Graph share images: og-default.png (site-wide
                         #   fallback) + per-page cards from scripts/ (F5)
   CNAME                 # Custom domain for GitHub Pages
@@ -152,6 +164,33 @@ Colors:
 
 Fonts: Crimson Text (headings) · Inter (body) · Fraunces (display / pull quotes)
 
+### Buttons must use the CTA tokens, never raw `--ink`
+
+`--ink` is theme-invariant, and the dark page background (`#1a1e1a`) sits
+almost exactly on top of it. Anything painted directly onto `var(--ink)` —
+a fill, a border, or text — **disappears in dark mode**. That's what made the
+site's buttons invisible there: `.btn` and `.btn--outline` hardcoded
+`--ink`/`--green`, and the header CTA did the same with `!important`.
+
+Four semantic tokens carry the flip; consume these rather than the raw colors:
+
+| Token | Light | Dark |
+|-------|-------|------|
+| `--cta-bg` / `--cta-text` | `--ink` / `--green` | `#d4d2cc` / `#1a1e1a` |
+| `--btn-outline-fg` | `--ink` | `--text` |
+| `--btn-outline-fg-hover` | `--green` | `--page-bg` |
+
+Because the flip lives in tokens rather than in `@media` blocks that re-declare
+properties, per-page overrides keep working on specificity alone — the footer,
+the index and support heroes, and 404 all set their own button colors for the
+colored surfaces they sit on, and those still win. Add new button variants the
+same way.
+
+Two known-soft spots, both pre-existing and left as-is: the footer's solid CTA
+is an ink pill on the ink footer (reads as green text, no visible shape) in
+*both* themes, and hero `.btn--green` on a `--green-deep` hero has ~1.9:1 edge
+contrast. Text contrast passes in both cases; only the button outline is faint.
+
 ## External Integrations
 
 These are configured in-page; update the IDs/keys here if they ever change:
@@ -170,6 +209,68 @@ These are configured in-page; update the IDs/keys here if they ever change:
 - **Apple Podcasts** — Found in Translation podcast ID `1586737797`.
 - **Spotify** — Found in Translation podcast ID `6S2wWaM5oqknwncPfOEyZ6`.
 - **YouTube** — `@foundintranslationpodcast`.
+- **App Store** — LIT Bible app ID `6772577879`.
+- **Google Play** — LIT Bible package `com.litbible.app`.
+
+Both store URLs are defined once at the top of `src/pages/apps.astro`. The apps
+themselves are built and shipped from the litbible side; this site only links
+to them.
+
+## Apps Page & Announcement Popover
+
+`/apps` tells the LIT Bible app's story on this site, and
+`AppsLaunchPopover.astro` announces it. Both mirror litbible.net — **keep the
+copy and the store links in step with `litbible.net/apps` when either changes.**
+
+Two deliberate choices:
+
+- **The page is a rewrite, not a port.** litbible's `/apps` is built on ~58
+  design tokens this site doesn't define (`--space-*`, `--text-*`,
+  `--measure-*`, season tints). Rather than import a second token vocabulary,
+  `apps.astro` retells the same content in this site's system, following
+  `lit-bible.astro`'s section/card idiom. Screenshots were converted from
+  litbible's PNGs to WebP (8.3MB → ~2MB) and live in
+  `public/assets/screenshots/`. Every section of litbible's page has a
+  counterpart here, including the church-year carousel.
+- **The carousel's season colors are duplicated, deliberately.** The five
+  `--season-*` values (and their brighter dark-mode cuts) live in
+  `ChurchYearCarousel.astro` because they aren't LSC design tokens — they're
+  the app's liturgical palette. They're copied from litbible's `apps.css`;
+  keep the two in agreement. Auto-advance pauses on hover and focus, and
+  doesn't start at all under `prefers-reduced-motion`.
+- **The popover is the site's single announcement slot.** `Layout.astro`
+  renders exactly one. It shows once per visitor (cookie `lsc_apps_launch_v1`,
+  30 days) and only from the **2nd pageview of a session**, never on a session
+  entrance — a modal on a search-landing page is what Google's
+  intrusive-interstitial penalty targets. It's also suppressed on `/apps` (its
+  own CTA destination), `/lit-bible` (which carries the announcement in-page),
+  `/privacy`, and `/contact/thanks`.
+
+### The two app icons
+
+The platforms ship **different art**, and both are shown wherever the app is
+announced (popover, the `/lit-bible` band, the `/apps` closing CTA, and the OG
+card) — `AppIcons.astro` renders the pair at a given `size`:
+
+- **iOS** — `lit-app-icon-ios.webp`, the full leather-book artwork. Pulled from
+  the App Store listing's artwork CDN (via the public iTunes lookup for id
+  `6772577879`) at 1024px and re-encoded to 512px WebP. It carries its own
+  background, so it only needs the corner radius. If the store icon is ever
+  redesigned, re-pull it from the same place.
+- **Android** — `lit-app-icon.svg`, the bare gradient mark on transparency. Its
+  lime end washes out on light surfaces, so it wears an ink tile (`#1b2318`)
+  that's fixed rather than tokenised, so it can't invert in dark mode.
+
+Two traps, both already handled inside `AppIcons.astro` — reproduce them if you
+ever render an icon outside it:
+
+- **Padding must be fixed, not a percentage.** Percentage padding resolves
+  against the *containing block*, not the icon, so `padding: 9%` inside the
+  full-width `/lit-bible` band became 88px and collapsed the mark to nothing.
+- **The Android tile needs lifting on the OG card.** `#1b2318` is all but
+  identical to the card's `INK` field, so the tile vanishes and the mark looks
+  like it floats next to a properly-tiled iOS icon. `build-og-images.mjs` uses
+  `#2A3227` there for that reason only.
 
 ## AI & Crawler Policy (`public/robots.txt`)
 

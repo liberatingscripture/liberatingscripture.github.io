@@ -9,15 +9,16 @@
  *
  * This is a ONE-SHOT tool, run by hand (`npm run build:og`) when a card's
  * text or art changes — it is deliberately NOT part of `astro build` or the
- * deploy pipeline (only four cards, they rarely change). Committing the
- * output PNGs is intentional.
+ * deploy pipeline (a handful of cards, and they rarely change). Committing
+ * the output PNGs is intentional.
  *
  * Design (house style, matching og-default.png): ink field, a green accent
  * bar, the page title in Fraunces (display cut, opsz 144), the org wordmark
  * in Inter, liberatingscripture.org bottom-right. The right third carries
  * art: the gold LSC emblem (support, companionship), the LIT Bible's own
  * green-disc logo in a green ring (lit-bible, echoing litbible.net's cards),
- * or the two podcast covers as rounded tiles (podcasts).
+ * the LIT app icon in a green rounded square (apps), or the two podcast
+ * covers as rounded tiles (podcasts).
  *
  * Rendering: text is converted to SVG paths with opentype.js using the fonts
  * committed under scripts/og/fonts/ (see the README there), then sharp
@@ -232,6 +233,64 @@ async function podcastsCard() {
   ]);
 }
 
+// Both platform icons as home-screen tiles, stacked on the right like the
+// podcasts card. The two are different art — iOS ships the leather-book
+// artwork, Android the bare gradient mark — so the pair says "on both stores"
+// without any text. The Android mark arrives on transparency and gets the ink
+// tile it wears in the app; the iOS art already carries its own background.
+// The footer URL moves left here so it clears the lower tile.
+async function appsCard() {
+  const tile = 224;
+  const radius = 50; // squircle-ish, the way an app icon is masked
+  const x = WIDTH - MARGIN - tile;
+  const gap = 28;
+  const totalH = tile * 2 + gap;
+  const top = Math.round((HEIGHT - totalH) / 2);
+
+  const ios = await roundedTile(
+    path.join(IMAGES, "lit-app-icon-ios.webp"),
+    tile,
+    radius,
+  );
+
+  // The Android mark inset on its own tile, at the same 9% padding the in-page
+  // icons use. The tile is lifted off the in-app #1b2318 — that value is all
+  // but identical to this card's INK field, which left the mark looking like it
+  // floated while the iOS art read as a proper tile.
+  const inset = Math.round(tile * 0.09);
+  const mark = await sharp(path.join(IMAGES, "lit-app-icon.svg"))
+    .resize(tile - inset * 2, tile - inset * 2, {
+      fit: "contain",
+      background: { r: 0, g: 0, b: 0, alpha: 0 },
+    })
+    .png()
+    .toBuffer();
+  const androidTile = await sharp({
+    create: {
+      width: tile,
+      height: tile,
+      channels: 4,
+      background: { r: 42, g: 50, b: 39, alpha: 1 }, // #2A3227
+    },
+  })
+    .composite([
+      { input: mark, left: inset, top: inset },
+      {
+        input: Buffer.from(
+          `<svg width="${tile}" height="${tile}"><rect width="${tile}" height="${tile}" rx="${radius}" ry="${radius}"/></svg>`,
+        ),
+        blend: "dest-in",
+      },
+    ])
+    .png()
+    .toBuffer();
+
+  await writeCard("og-apps", baseSVG("The LIT Bible App", "left"), [
+    { input: ios, left: x, top },
+    { input: androidTile, left: x, top: top + tile + gap },
+  ]);
+}
+
 // --- Run -----------------------------------------------------------------
 
 mkdirSync(OUT_DIR, { recursive: true });
@@ -240,6 +299,7 @@ await emblemCard("og-home", "Scripture that liberates rather than controls");
 await emblemCard("og-support", "Support the Work");
 await emblemCard("og-spiritual-direction", "Spiritual Companionship");
 await litBibleCard();
+await appsCard();
 await podcastsCard();
 
-console.log("build-og-images: wrote 5 cards to public/assets/og/");
+console.log("build-og-images: wrote 6 cards to public/assets/og/");

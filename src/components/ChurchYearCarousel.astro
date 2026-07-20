@@ -1,0 +1,323 @@
+---
+/**
+ * Church-year carousel — Hebrews 1 cycling through the five liturgical
+ * seasons. The card tint, the active chip, and the screenshot change together.
+ *
+ * An LSC-native rebuild of litbible.net's component of the same name; keep the
+ * two in step. The card tint is computed with color-mix() from the active
+ * season's token, so light and dark differ only by how much tint is mixed
+ * (--cy-tint) and which surface it composites over (--cy-base).
+ */
+const SEASONS = [
+  { name: "Advent", var: "--season-advent", slug: "advent" },
+  { name: "Christmas", var: "--season-christmas", slug: "christmas" },
+  { name: "Lent", var: "--season-lent", slug: "lent" },
+  { name: "Easter", var: "--season-easter", slug: "easter" },
+  { name: "Ordinary Time", var: "--season-ot", slug: "ordinary-time" },
+];
+---
+
+<div
+  class="church-year"
+  data-carousel
+  style={`--cy-accent: var(${SEASONS[0].var});`}
+>
+  <div class="church-year__copy">
+    <h3 class="church-year__title">Mark sacred time.</h3>
+    <p class="church-year__body">
+      The app quietly honors the church year, adorning your reading with the
+      liturgical season's colors: royal blue through Advent, red for the twelve
+      days of Christmas, purple in Lent, gold for Easter, and forest green
+      through Ordinary Time. Or choose from a set of hand-picked alternatives.
+    </p>
+
+    <div class="church-year__chips" role="group" aria-label="Liturgical season">
+      {
+        SEASONS.map((s, i) => (
+          <button
+            type="button"
+            class="church-year__chip"
+            data-index={String(i)}
+            data-accent-var={s.var}
+            aria-pressed={i === 0 ? "true" : "false"}
+          >
+            <span
+              class="church-year__dot"
+              style={`background-color: var(${s.var});`}
+              aria-hidden="true"
+            />
+            <span class="church-year__chip-label">{s.name}</span>
+          </button>
+        ))
+      }
+    </div>
+  </div>
+
+  <div
+    class="church-year__stage"
+    role="group"
+    aria-label="Hebrews chapter 1, cycling through five liturgical seasons"
+  >
+    {
+      SEASONS.map((s, i) => (
+        <div
+          class={`church-year__frame${i === 0 ? " is-active" : ""}`}
+          data-index={String(i)}
+        >
+          <img
+            src={`/assets/screenshots/carousel/hebrews-1-${s.slug}.webp`}
+            alt={`The LIT Bible showing Hebrews 1 in ${s.name} colors`}
+            class="church-year__phone"
+            width="1350"
+            height="2760"
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
+      ))
+    }
+  </div>
+</div>
+
+<style>
+  /* Season colors. Light values first, then the brighter cuts dark mode needs
+     to carry a hue against a dark surface. Shared with litbible's apps.css —
+     keep them in agreement. */
+  .church-year {
+    --season-advent: #1a4fa0;
+    --season-christmas: #c62d25;
+    --season-lent: #800080;
+    --season-easter: #b8860b;
+    --season-ot: #186420;
+
+    /* Light: 8% accent over the raised surface. */
+    --cy-tint: 8%;
+    --cy-base: var(--surface-raised);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .church-year {
+      --season-advent: #6ba3e8;
+      --season-christmas: #f05252;
+      --season-lent: #cc66cc;
+      --season-easter: #d4af37;
+      --season-ot: #4db84d;
+      /* More tint over a recessed surface, or the hue washes out. */
+      --cy-tint: 15%;
+      --cy-base: var(--surface);
+    }
+  }
+
+  :root[data-theme="dark"] .church-year {
+    --season-advent: #6ba3e8;
+    --season-christmas: #f05252;
+    --season-lent: #cc66cc;
+    --season-easter: #d4af37;
+    --season-ot: #4db84d;
+    --cy-tint: 15%;
+    --cy-base: var(--surface);
+  }
+
+  /* ---- Card ---- */
+  .church-year {
+    margin-top: 1.5rem;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    align-items: center;
+    border-radius: 12px;
+    padding: clamp(1.5rem, 4vw, 2.25rem);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    background: color-mix(
+      in srgb,
+      var(--cy-accent, transparent) var(--cy-tint),
+      var(--cy-base)
+    );
+    transition: background-color 0.7s ease;
+  }
+
+  @media (min-width: 760px) {
+    .church-year {
+      grid-template-columns: 1fr 0.8fr;
+      gap: 2.5rem;
+    }
+  }
+
+  /* ---- Copy ---- */
+  .church-year__title {
+    font-family: "Crimson Text", Georgia, serif;
+    font-size: clamp(1.25rem, 2.2vw, 1.6rem);
+    margin: 0 0 0.75rem;
+  }
+
+  .church-year__body {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    max-width: 42ch;
+    margin: 0 0 1.25rem;
+  }
+
+  /* ---- Chips ---- */
+  .church-year__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .church-year__chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.35rem 0.8rem;
+    border-radius: 999px;
+    border: 1.5px solid var(--border);
+    background: transparent;
+    color: var(--text);
+    font-family: Inter, sans-serif;
+    font-size: 0.85rem;
+    line-height: 1;
+    cursor: pointer;
+    transition:
+      border-color 0.2s ease,
+      color 0.2s ease;
+  }
+
+  .church-year__chip:hover {
+    border-color: currentColor;
+  }
+
+  /* Touch: give the pill a comfortable tap target. */
+  @media (pointer: coarse) {
+    .church-year__chip {
+      min-height: 44px;
+      padding-inline: 1rem;
+    }
+  }
+
+  .church-year__dot {
+    width: 0.45rem;
+    height: 0.45rem;
+    border-radius: 50%;
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+  }
+
+  .church-year__chip[aria-pressed="true"] .church-year__dot {
+    transform: scale(1.35);
+  }
+
+  .church-year__chip[aria-pressed="true"] .church-year__chip-label {
+    font-weight: 600;
+  }
+
+  /* ---- Screenshot stage ---- */
+  .church-year__stage {
+    position: relative;
+    width: 100%;
+    max-width: 260px;
+    margin: 0 auto;
+    aspect-ratio: 1350 / 2760;
+  }
+
+  .church-year__frame {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+
+  .church-year__frame.is-active {
+    opacity: 1;
+  }
+
+  .church-year__phone {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    border-radius: 14px;
+  }
+
+  /* ---- Reduced motion: no cycling and no crossfade; chips still work ---- */
+  @media (prefers-reduced-motion: reduce) {
+    .church-year,
+    .church-year__frame,
+    .church-year__dot {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  const carousel = document.querySelector<HTMLElement>("[data-carousel]");
+
+  if (carousel) {
+    const frames = Array.from(
+      carousel.querySelectorAll<HTMLElement>(".church-year__frame"),
+    );
+    const chips = Array.from(
+      carousel.querySelectorAll<HTMLButtonElement>(".church-year__chip"),
+    );
+    const prefersReduced = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    const DURATION = 3800;
+
+    let current = 0;
+    let timer: number | undefined;
+
+    function goTo(index: number) {
+      if (!carousel) return;
+      chips[current].setAttribute("aria-pressed", "false");
+      chips[current].style.borderColor = "";
+      frames[current].classList.remove("is-active");
+
+      current = ((index % frames.length) + frames.length) % frames.length;
+
+      frames[current].classList.add("is-active");
+      chips[current].setAttribute("aria-pressed", "true");
+
+      // Point the card tint and the active chip's border at this season's
+      // token; the light/dark values live entirely in CSS, so this works in
+      // both themes without the script knowing which one is active.
+      const v = chips[current].dataset.accentVar ?? "";
+      chips[current].style.borderColor = `var(${v})`;
+      carousel.style.setProperty("--cy-accent", `var(${v})`);
+    }
+
+    function startTimer() {
+      // Auto-advance is decorative motion — honoring reduced-motion means not
+      // starting it at all, not just dropping the crossfade.
+      if (prefersReduced) return;
+      clearInterval(timer);
+      timer = setInterval(() => goTo(current + 1), DURATION) as unknown as number;
+    }
+
+    function stopTimer() {
+      clearInterval(timer);
+    }
+
+    chips.forEach((chip, i) => {
+      chip.addEventListener("click", () => {
+        goTo(i);
+        startTimer();
+      });
+    });
+
+    if (!prefersReduced) {
+      // Pause while the visitor is reading or tabbing through the chips.
+      carousel.addEventListener("mouseenter", stopTimer);
+      carousel.addEventListener("mouseleave", startTimer);
+      carousel.addEventListener("focusin", stopTimer);
+      carousel.addEventListener("focusout", startTimer);
+      // Don't animate in a hidden tab.
+      document.addEventListener("visibilitychange", () =>
+        document.hidden ? stopTimer() : startTimer(),
+      );
+    }
+
+    // Boot — frame 0 is already active in the HTML; sync the chip and tint.
+    goTo(0);
+    startTimer();
+  }
+</script>

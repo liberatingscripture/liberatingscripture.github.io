@@ -1,0 +1,438 @@
+---
+// AppsLaunchPopover — announces the LIT Bible iOS + Android release. Mirrors
+// the popover of the same name on litbible.net (keep the two in step); the CTA
+// points at this site's own /apps page.
+//
+// Shown once per visitor (cookie lsc_apps_launch_v1, 30-day expiry), and only
+// from the 2nd pageview of a session so it never fires on a search entrance.
+// This is the site's single announcement slot: Layout renders exactly one
+// popover component.
+import PlatformIcon from "./PlatformIcon.astro";
+import AppIcons from "./AppIcons.astro";
+
+const APPS_URL = "/apps/";
+---
+
+<dialog
+  id="apps-launch-popover"
+  class="applaunch-dialog"
+  aria-labelledby="applaunch-title"
+  aria-modal="true"
+>
+  <div class="applaunch-inner">
+    <button
+      type="button"
+      id="applaunch-close"
+      class="applaunch-close"
+      aria-label="Close app announcement"
+    >
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 20 20"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <line
+          x1="4"
+          y1="4"
+          x2="16"
+          y2="16"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"></line>
+        <line
+          x1="16"
+          y1="4"
+          x2="4"
+          y2="16"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"></line>
+      </svg>
+    </button>
+
+    <AppIcons size={84} class="applaunch-logo" />
+
+    <p class="applaunch-eyebrow">Now available</p>
+
+    <h2 id="applaunch-title" class="applaunch-title">
+      The LIT Bible app is here
+    </h2>
+    <p class="applaunch-subtitle">
+      Read the Liberation and Inclusion Translation on your phone. Free, with no
+      account and no ads.
+    </p>
+
+    <ul class="applaunch-features" aria-label="About the LIT Bible apps">
+      <li class="applaunch-feature">
+        <div
+          class="applaunch-feature-icon applaunch-feature-icon--platforms"
+          aria-hidden="true"
+        >
+          <PlatformIcon platform="ios" />
+          <PlatformIcon platform="android" />
+        </div>
+        <div>
+          <strong>On iPhone and Android</strong>
+          <span
+            >Now on the App Store and Google Play. Daily and Lectionary
+            readings, notes and highlights, and the whole New Testament
+            offline.</span
+          >
+        </div>
+      </li>
+      <li class="applaunch-feature">
+        <div class="applaunch-feature-icon" aria-hidden="true">
+          <svg
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+          </svg>
+        </div>
+        <div>
+          <strong>Immersive reading</strong>
+          <span
+            >Toggle off verse numbers, chapter numbers, and footnote markers,
+            and scripture reads the way it was first written: as letters and
+            stories.</span
+          >
+        </div>
+      </li>
+    </ul>
+
+    <div class="applaunch-ctas">
+      <a href={APPS_URL} class="applaunch-cta-primary">Get the app</a>
+    </div>
+  </div>
+</dialog>
+
+<style>
+  /* Accent for the eyebrow and feature icons. Deep Green passes on the light
+     raised surface (6.6:1); in dark mode it goes near-black against #2e322e,
+     so it flips to the site's dark link green. */
+  .applaunch-dialog {
+    --applaunch-accent: var(--green-deep);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .applaunch-dialog {
+      --applaunch-accent: #3abf6a;
+    }
+  }
+
+  :root[data-theme="dark"] .applaunch-dialog {
+    --applaunch-accent: #3abf6a;
+  }
+
+  /* Backdrop */
+  .applaunch-dialog::backdrop {
+    background: rgba(0, 0, 0, 0.55);
+    transition: opacity 0.25s ease;
+  }
+
+  /* Dialog container */
+  .applaunch-dialog {
+    position: fixed;
+    inset: 0;
+    margin: auto;
+    padding: 0;
+    border: none;
+    border-radius: 12px;
+    background: var(--surface-raised);
+    color: var(--text);
+    width: min(600px, calc(100vw - 2.5rem));
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.22);
+    /* Entry animation */
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+    transition:
+      opacity 0.15s ease,
+      transform 0.15s ease;
+  }
+
+  .applaunch-dialog[open] {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  .applaunch-dialog[open].is-closing {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+    pointer-events: none;
+  }
+
+  .applaunch-dialog[open].is-closing::backdrop {
+    opacity: 0;
+  }
+
+  /* Inner padding */
+  .applaunch-inner {
+    position: relative;
+    padding: clamp(1rem, 3vw, 1.5rem);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 0;
+  }
+
+  /* Close button */
+  .applaunch-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--text);
+    cursor: pointer;
+    opacity: 0.6;
+    transition:
+      opacity 0.15s,
+      background 0.15s;
+  }
+
+  .applaunch-close:hover,
+  .applaunch-close:focus-visible {
+    opacity: 1;
+    background: var(--border);
+    outline: none;
+  }
+
+  /* AppIcons handles its own sizing and tiling; this only places the pair. */
+  .applaunch-logo {
+    margin-bottom: 0.75rem;
+  }
+
+  /* Eyebrow */
+  .applaunch-eyebrow {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--applaunch-accent);
+    margin: 0 0 0.4rem 0;
+  }
+
+  /* Title */
+  .applaunch-title {
+    font-family: "Crimson Text", Georgia, serif;
+    font-size: clamp(1.5rem, 4vw, 2rem);
+    font-weight: 600;
+    color: var(--text-strong);
+    margin: 0 0 0.5rem 0;
+    line-height: 1.2;
+  }
+
+  /* Subtitle */
+  .applaunch-subtitle {
+    font-size: 1rem;
+    color: var(--text);
+    opacity: 0.75;
+    margin: 0 0 1.1rem 0;
+  }
+
+  /* Feature list */
+  .applaunch-features {
+    list-style: none;
+    margin: 0 0 1.25rem 0;
+    padding: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+    text-align: left;
+  }
+
+  .applaunch-feature {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.875rem;
+    /* --surface sits one step back from the dialog's --surface-raised in both
+       themes, so the rows read as inset panels without a hard-coded tint. */
+    background: var(--surface);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+  }
+
+  /* Fixed-width icon column, left-aligned. The platforms row holds two marks
+     and the others hold one, so without a shared column width the rows' text
+     would start at different x positions. */
+  .applaunch-feature-icon {
+    flex-shrink: 0;
+    margin-top: 2px;
+    width: 38px;
+    display: flex;
+    align-items: center;
+    color: var(--applaunch-accent);
+  }
+
+  .applaunch-feature-icon--platforms {
+    gap: 0.35rem;
+    /* PlatformIcon sizes itself in em, so this sets the pair's optical weight
+       to match the 22px stroke icons in the other rows. */
+    font-size: 17px;
+  }
+
+  .applaunch-feature div:last-child {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  .applaunch-feature strong {
+    font-size: 0.975rem;
+    font-weight: 600;
+    color: var(--text-strong);
+  }
+
+  .applaunch-feature span {
+    font-size: 0.9rem;
+    line-height: 1.45;
+    color: var(--text);
+    opacity: 0.8;
+  }
+
+  /* CTA button */
+  .applaunch-ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .applaunch-cta-primary {
+    display: inline-block;
+    padding: 0.65rem 1.5rem;
+    border-radius: 6px;
+    font-size: 0.975rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: opacity 0.15s;
+    cursor: pointer;
+    /* Deep Green + white is the solid-button pairing and is theme-invariant,
+       so the launch CTA reads as the same branded button in light and dark. */
+    background: var(--green-deep);
+    color: #fff;
+  }
+
+  .applaunch-cta-primary:hover,
+  .applaunch-cta-primary:focus-visible {
+    opacity: 0.85;
+    text-decoration: none;
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .applaunch-dialog,
+    .applaunch-dialog::backdrop {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  const COOKIE_NAME = "lsc_apps_launch_v1";
+  const COOKIE_DAYS = 30;
+
+  function getCookie(name: string): string | null {
+    const match = document.cookie.match(
+      new RegExp(
+        "(?:^|; )" +
+          name.replace(/([.*+?^=!:${}()|[\]/\\])/g, "\\$1") +
+          "=([^;]*)",
+      ),
+    );
+    return match ? decodeURIComponent(match[1]) : null;
+  }
+
+  function setCookie(name: string, value: string, days: number) {
+    const expires = new Date(Date.now() + days * 864e5).toUTCString();
+    document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/; SameSite=Lax`;
+  }
+
+  const dialog = document.getElementById(
+    "apps-launch-popover",
+  ) as HTMLDialogElement | null;
+
+  function dismissAndSet() {
+    if (!dialog || dialog.classList.contains("is-closing")) return;
+    setCookie(COOKIE_NAME, "1", COOKIE_DAYS);
+    dialog.classList.add("is-closing");
+    setTimeout(() => dialog.close(), 250);
+  }
+
+  let pageviews = 1;
+  try {
+    pageviews = (parseInt(sessionStorage.getItem("lsc_pv") || "0", 10) || 0) + 1;
+    sessionStorage.setItem("lsc_pv", String(pageviews));
+  } catch (_) {
+    /* storage unavailable → treat as first pageview */
+  }
+
+  // Never on a session entrance (a modal on a search-landing page is exactly
+  // what Google's intrusive-interstitial penalty targets), and never on /apps
+  // (the CTA's own destination) or /lit-bible (which carries the announcement
+  // in-page), nor on /privacy or the contact confirmation — pages people open
+  // to read or to finish a task, not to be pitched to.
+  const SUPPRESSED_PATHS = /^\/(apps|lit-bible|privacy|contact\/thanks)\/?$/;
+  const eligible =
+    !SUPPRESSED_PATHS.test(location.pathname) && pageviews >= 2;
+
+  if (dialog && !getCookie(COOKIE_NAME) && eligible) {
+    // Open once the main thread is idle so the page's load-time long tasks
+    // (fonts, header scripts) finish first. The popover forces an immediate
+    // first interaction (the close click); opening it before those tasks
+    // settle is what inflates INP (input delay) on the close button. The
+    // timeout guarantees it still appears promptly even on a busy thread.
+    const show = () => dialog.showModal();
+    if ("requestIdleCallback" in window) {
+      requestIdleCallback(show, { timeout: 1500 });
+    } else {
+      setTimeout(show, 200);
+    }
+  }
+
+  // Close on X button
+  document
+    .getElementById("applaunch-close")
+    ?.addEventListener("click", dismissAndSet);
+
+  // Close on backdrop click (click lands on the <dialog> element itself, not
+  // .applaunch-inner)
+  dialog?.addEventListener("click", (e) => {
+    if (e.target === dialog) dismissAndSet();
+  });
+
+  // Close on Escape key (native dialog behavior) — set cookie so it doesn't
+  // reappear
+  dialog?.addEventListener("cancel", (e) => {
+    e.preventDefault(); // prevent default close so we can set cookie first
+    dismissAndSet();
+  });
+
+  // CTA link closes the popover and sets cookie before navigating
+  dialog?.querySelectorAll(".applaunch-cta-primary").forEach((link) => {
+    link.addEventListener("click", () =>
+      setCookie(COOKIE_NAME, "1", COOKIE_DAYS),
+    );
+  });
+</script>

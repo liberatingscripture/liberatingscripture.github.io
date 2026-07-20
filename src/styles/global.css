@@ -41,9 +41,13 @@
   --link: var(--green);
   --border: rgba(29, 35, 28, 0.15);
 
-  /* CTA */
+  /* CTA. --ink is theme-invariant and the dark page background is nearly the
+     same color, so a button painted straight onto --ink disappears in dark
+     mode. These pairs are what .btn / .btn--outline consume so both flip. */
   --cta-bg: var(--ink);
   --cta-text: var(--green);
+  --btn-outline-fg: var(--ink);
+  --btn-outline-fg-hover: var(--green);
 
   /* Layout */
   --gutter: clamp(1.25rem, 4vw, 2.5rem);
@@ -64,6 +68,8 @@
     --border: rgba(255,255,255,0.12);
     --cta-bg: #d4d2cc;
     --cta-text: #1a1e1a;
+    --btn-outline-fg: var(--text);
+    --btn-outline-fg-hover: var(--page-bg);
   }
 }
 
@@ -78,6 +84,8 @@
   --border: rgba(255,255,255,0.12);
   --cta-bg: #d4d2cc;
   --cta-text: #1a1e1a;
+  --btn-outline-fg: var(--text);
+  --btn-outline-fg-hover: var(--page-bg);
 }
 
 /* ---------- Reset ---------- */
@@ -172,9 +180,9 @@ li { margin-bottom: 0.4rem; }
   justify-content: center;
   padding: 14px 28px;
   border-radius: 12px;
-  border: 2px solid var(--ink);
-  background: var(--ink);
-  color: var(--green);
+  border: 2px solid var(--cta-bg);
+  background: var(--cta-bg);
+  color: var(--cta-text);
   font-family: Inter, sans-serif;
   font-size: 0.95rem;
   font-weight: 700;
@@ -212,17 +220,17 @@ li { margin-bottom: 0.4rem; }
 
 .btn--outline {
   background: transparent;
-  color: var(--ink);
-  border-color: var(--ink);
+  color: var(--btn-outline-fg);
+  border-color: var(--btn-outline-fg);
 }
 
 .btn--outline::before {
-  background: var(--ink);
+  background: var(--btn-outline-fg);
 }
 
 .btn--outline:hover,
 .btn--outline:focus-visible {
-  color: var(--green);
+  color: var(--btn-outline-fg-hover);
 }
 
 .btn--green {

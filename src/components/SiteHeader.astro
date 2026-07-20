@@ -210,8 +210,11 @@ const navLinks = [
 
   .site-nav__cta-item a {
     padding: 8px 18px !important;
-    background: var(--ink) !important;
-    color: var(--green) !important;
+    /* CTA tokens, not raw --ink/--green: --ink is theme-invariant and sits
+       almost exactly on the dark header surface, which left this pill
+       shapeless in dark mode. */
+    background: var(--cta-bg) !important;
+    color: var(--cta-text) !important;
     font-weight: 700 !important;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -336,8 +339,9 @@ const navLinks = [
 
   .menu-overlay__cta {
     margin-top: 1rem;
-    background: var(--ink) !important;
-    color: var(--green) !important;
+    /* Same reasoning as .site-nav__cta-item a — see above. */
+    background: var(--cta-bg) !important;
+    color: var(--cta-text) !important;
     font-weight: 700 !important;
     text-transform: uppercase;
     letter-spacing: 0.1em;

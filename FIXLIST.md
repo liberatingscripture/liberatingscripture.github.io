@@ -414,6 +414,40 @@ accessibility defects), then F2→OW1 (security headers).
 
 ## Opus — one session per item
 
+- [x] **(O4) Buttons are invisible in dark mode (`.btn`, `.btn--outline`,
+  header CTA).** *Found 2026-07-20, outside the original audit.*
+  Problem: `--ink` (#1D231C) is theme-invariant and the dark page background
+  is #1a1e1a — near-identical. `.btn` painted its fill/border on `var(--ink)`
+  and `.btn--outline` its text/border, so in dark mode outline buttons
+  measured 1.31:1 (text) and 1.05:1 (border) — effectively invisible — and
+  solid buttons showed only floating green text with no button shape. Hit
+  every page using `.btn--outline` (index, about, community, lit-bible,
+  podcasts, spiritual-direction, support, 404, apps) plus the header and
+  footer CTAs. Distinct from O1 (which explicitly exempts button labels on
+  `--ink`) and O2 (grays and form status).
+  DONE 2026-07-20: `--cta-bg`/`--cta-text` already existed in all three theme
+  blocks with correct dark values (#d4d2cc / #1a1e1a) but had **no consumer**
+  — the token design had anticipated this and `.btn` was simply never wired
+  up. Pointed `.btn` at them, added `--btn-outline-fg` /
+  `--btn-outline-fg-hover` (light: `--ink` / `--green`; dark: `--text` /
+  `--page-bg`) for `.btn--outline`, and replaced the hardcoded
+  `var(--ink)`/`var(--green)` `!important` pairs in SiteHeader's
+  `.site-nav__cta-item a` and `.menu-overlay__cta` with the same CTA tokens.
+  Kept the flip in tokens rather than `@media` property re-declarations so
+  per-page overrides (footer, index/support heroes, 404) keep winning on
+  specificity — verified the footer's outline button held its own styling.
+  Verified: computed ratios before/after in dark — outline 1.31 → 13.03,
+  solid shape 1.05 → 11.16, header CTA 1.05 → 8.62, footer override intact
+  at 9.39; light mode measured and screenshotted unchanged on /about and
+  /apps; `npm run check` + `npm run build` clean.
+  Left alone (pre-existing, noted in CLAUDE.md): the footer's solid CTA is an
+  ink pill on the ink footer in *both* themes (green text, no visible shape),
+  and hero `.btn--green` on `--green-deep` has ~1.9:1 edge contrast. Text
+  contrast passes in both; only the outline is faint.
+  Note for O1: the apps work added local `--applaunch-accent` /
+  `--apps-accent` vars (Deep Green on light, #3abf6a on dark) for small green
+  labels. When O1 lands `--green-text`, fold those two into it.
+
 - [ ] **(O1) Port the green text-contrast tokens from litbible and sweep
   green-as-text usages.**
   Problem: brand green `#209D50` used AS TEXT fails WCAG AA on light
