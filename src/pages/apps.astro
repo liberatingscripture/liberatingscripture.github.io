@@ -1,0 +1,613 @@
+---
+import Layout from "../layouts/Layout.astro";
+import PlatformIcon from "../components/PlatformIcon.astro";
+import AppIcons from "../components/AppIcons.astro";
+import ChurchYearCarousel from "../components/ChurchYearCarousel.astro";
+
+// The apps ship from litbible.net; this page is LSC's own telling of the same
+// story, written in this site's design system rather than ported from
+// litbible's (whose page uses a token vocabulary this site doesn't define).
+// Keep the store URLs and the headline claims in step with litbible.net/apps.
+const IOS_URL = "https://apps.apple.com/app/id6772577879";
+const ANDROID_URL =
+  "https://play.google.com/store/apps/details?id=com.litbible.app&pcampaignid=web_share";
+---
+
+<Layout
+  title="The LIT Bible App | Liberating Scripture Collective"
+  description="The LIT Bible app for iPhone and Android: the full Liberation and Inclusion Translation, plus notes, highlights, daily and Lectionary readings, and offline access. Free, with no account and no ads."
+  canonical="https://liberatingscripture.org/apps/"
+  ogImage="https://liberatingscripture.org/assets/og/og-apps.png"
+  ogImageAlt="The LIT Bible app, now on iPhone and Android"
+>
+  <Fragment slot="head">
+    <script
+      type="application/ld+json"
+      is:inline
+      set:html={JSON.stringify({
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebPage",
+            "@id": "https://liberatingscripture.org/apps/#webpage",
+            url: "https://liberatingscripture.org/apps/",
+            name: "The LIT Bible App | Liberating Scripture Collective",
+            isPartOf: { "@id": "https://liberatingscripture.org/#website" },
+            about: { "@id": "https://litbible.net/#translation" },
+          },
+          {
+            "@type": "MobileApplication",
+            name: "LIT Bible",
+            operatingSystem: "iOS",
+            applicationCategory: "BookApplication",
+            url: IOS_URL,
+            publisher: {
+              "@type": "Organization",
+              name: "Liberating Scripture Collective",
+              url: "https://liberatingscripture.org",
+            },
+            offers: {
+              "@type": "Offer",
+              price: "0",
+              priceCurrency: "USD",
+            },
+          },
+          {
+            "@type": "MobileApplication",
+            name: "LIT Bible",
+            operatingSystem: "Android",
+            applicationCategory: "BookApplication",
+            url: ANDROID_URL,
+            publisher: {
+              "@type": "Organization",
+              name: "Liberating Scripture Collective",
+              url: "https://liberatingscripture.org",
+            },
+            offers: {
+              "@type": "Offer",
+              price: "0",
+              priceCurrency: "USD",
+            },
+          },
+        ],
+      })}
+    />
+  </Fragment>
+
+  <div class="apps-page">
+    <header class="apps-hero">
+      <div class="apps-hero__inner content">
+        <div class="apps-hero__copy">
+          <p class="eyebrow">Now available</p>
+          <h1>A New Testament that's <em>for</em> everyone.</h1>
+          <p class="lede apps-hero__lede">
+            The Liberation and Inclusion Translation, in your pocket. Free on
+            iPhone and Android, with no account, no ads, and nothing watching
+            you read.
+          </p>
+          <div class="apps-hero__actions">
+            <a href={IOS_URL} class="btn btn--green" rel="external">
+              <span><PlatformIcon platform="ios" />Download on the App Store</span>
+            </a>
+            <a href={ANDROID_URL} class="btn btn--hero-outline" rel="external">
+              <span><PlatformIcon platform="android" />Get it on Google Play</span>
+            </a>
+          </div>
+        </div>
+        <div class="apps-hero__art">
+          <img
+            src="/assets/screenshots/iphone-john-1.webp"
+            alt="The LIT Bible on iPhone, showing John 1 — 'In the beginning was the Conversation'"
+            width="1350"
+            height="2760"
+            fetchpriority="high"
+            decoding="async"
+          />
+        </div>
+      </div>
+    </header>
+
+    <div class="apps-body content">
+      <section class="apps-section" aria-labelledby="apps-taste">
+        <h2 id="apps-taste">What does it actually read like?</h2>
+        <p>
+          One taste, side by side with a familiar translation. The depth behind
+          every choice lives in the footnotes, and at
+          <a href="https://litbible.net" target="_blank" rel="noopener noreferrer"
+            >litbible.net</a
+          >.
+        </p>
+        <article class="apps-example">
+          <h3 class="apps-example__ref">John 1:1–5</h3>
+          <div class="apps-example__cols">
+            <div class="apps-example__col apps-example__col--lit">
+              <p class="apps-example__label">LIT</p>
+              <p>
+                In the beginning was the Conversation, and the Conversation was
+                with God, and the Conversation was God. It was with God in the
+                beginning. Everything came into being through it; not even one
+                thing came into being without it.
+              </p>
+              <p>
+                What has come into being by it was life, and the life was
+                humanity's light. The light shines in the darkness; the darkness
+                did not overpower it.
+              </p>
+            </div>
+            <div class="apps-example__col apps-example__col--trad">
+              <p class="apps-example__label">NRSV</p>
+              <p>
+                In the beginning was the Word, and the Word was with God, and the
+                Word was God. He was in the beginning with God. All things came
+                into being through him, and without him not one thing came into
+                being.
+              </p>
+              <p>
+                What has come into being in him was life, and the life was the
+                light of all people. The light shines in the darkness, and the
+                darkness did not overcome it.
+              </p>
+            </div>
+          </div>
+          <p class="apps-example__note">
+            Traditional versions render <em>logos</em> as "Word"; the LIT
+            translates it as "Conversation," stressing relational communication
+            over static decree.
+          </p>
+        </article>
+      </section>
+
+      <section class="apps-section" aria-labelledby="apps-reading">
+        <h2 id="apps-reading">Read it your way</h2>
+
+        <div class="apps-callout">
+          <div class="apps-callout__copy">
+            <h3>Read the Bible as literature…</h3>
+            <p>
+              Enjoy each gospel, epistle, and antifascist apocalyptic tract as
+              literature: hide chapter drop-caps, verse markers, and footnotes.
+              Scroll through an entire book without a Next button between
+              artificial chapters.
+            </p>
+          </div>
+          <div class="apps-callout__art">
+            <img
+              src="/assets/screenshots/android-romans-8.webp"
+              alt="The LIT Bible on Android in light mode, showing Romans 8 tinted in Advent blue"
+              width="1187"
+              height="2513"
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
+        </div>
+
+        <div class="apps-callout apps-callout--reverse">
+          <div class="apps-callout__copy">
+            <h3>…Or nerd out. Hard.</h3>
+            <p>
+              Unleash your <em>special interest</em> zeal with thousands of exceptionally
+              nerdy footnotes, historical context detours, and trauma-informed analysis.
+              Then make it your own with four highlighter colors and an intuitive
+              inline note tool.
+            </p>
+          </div>
+          <div class="apps-callout__art">
+            <img
+              src="/assets/screenshots/iphone-hebrews-6.webp"
+              alt="The LIT Bible on iPhone in dark mode, showing Hebrews 6 with footnotes, tinted in Christmas red"
+              width="1350"
+              height="2760"
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
+        </div>
+
+        <div class="apps-callout">
+          <div class="apps-callout__copy">
+            <h3>Read with the church all year.</h3>
+            <p>
+              Next Sunday's readings from the Revised Common Lectionary are
+              always a tap away. Or settle into the year-long daily reading
+              plan.
+            </p>
+          </div>
+          <div class="apps-callout__art">
+            <img
+              src="/assets/screenshots/iphone-today.webp"
+              alt="The LIT Bible on iPhone, showing the Today screen with the day's readings, tinted in Easter gold"
+              width="1350"
+              height="2760"
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
+        </div>
+      </section>
+
+      <section class="apps-section" aria-labelledby="apps-seasons">
+        <h2 id="apps-seasons">Mark sacred time</h2>
+        <ChurchYearCarousel />
+      </section>
+
+      <section class="apps-section" aria-labelledby="apps-bigscreens">
+        <h2 id="apps-bigscreens">Expand your views, and your view</h2>
+        <p>
+          A second panel fans open on iPad and foldable phones, bringing your
+          notes, the glossary, and more on one side, and the passage on the
+          other.
+        </p>
+        <figure class="apps-figure">
+          <img
+            src="/assets/screenshots/ipad-philippians-2.webp"
+            alt="The LIT Bible on an iPad in landscape — the My Notes panel beside Philippians 2 in the side-by-side study view"
+            width="2640"
+            height="1920"
+            loading="lazy"
+            decoding="async"
+          />
+        </figure>
+      </section>
+
+      <section class="apps-section" aria-labelledby="apps-humane">
+        <h2 id="apps-humane">Your reading life is your own</h2>
+        <p class="apps-negations">
+          <span>No ads.</span>
+          <span>No account.</span>
+          <span>No one watching.</span>
+        </p>
+        <p>
+          Open the app and start reading: no sign-up, no email, nothing to
+          create. Your highlights and notes live in a private database on your
+          own device, synced to your other devices through your Apple or Google
+          account. We can't see them.
+        </p>
+        <p>
+          The entire LIT Bible is already on your phone, so you never have to
+          wait for a chapter or footnote to load on the subway, a plane, or a
+          backpacking trip. Set the type, spacing, and accessibility features to
+          whatever your eyes or ears want: it respects your system text size and
+          works with your screen reader, because a Bible that's <em>for</em>
+          everyone should be enjoyable <em>by</em> everyone.
+        </p>
+        <p>
+          <a
+            href="https://litbible.net/privacy"
+            target="_blank"
+            rel="noopener noreferrer">Read the app's privacy commitments ↗</a
+          >
+        </p>
+      </section>
+
+      <section class="apps-section" aria-labelledby="apps-about">
+        <h2 id="apps-about">About the translation</h2>
+        <p>
+          The Liberation and Inclusion Translation is an independent,
+          scholar-driven rendering of the New Testament, faithful to the Greek
+          and unwilling to launder the harm the text has been used to justify.
+          It reads from the vantage of the people it was first written to: the
+          poor, the grieving, the pushed-aside.
+        </p>
+        <p>
+          The LIT Bible is the flagship project of the Liberating Scripture
+          Collective, the 501(c)(3) nonprofit that stewards the translation and
+          the work around it.
+        </p>
+        <div class="apps-actions">
+          <a href="/lit-bible/" class="btn btn--outline">
+            <span>About the LIT Bible</span>
+          </a>
+          <a
+            href="https://litbible.net/translation-commitments"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn btn--outline"
+          >
+            <span>Translation commitments ↗</span>
+          </a>
+        </div>
+      </section>
+
+      <section class="apps-section apps-cta" aria-labelledby="apps-get">
+        <h2 id="apps-get">Take it with you</h2>
+        <AppIcons size={68} class="apps-cta__icons" />
+        <p>
+          The complete Liberation and Inclusion Translation, free on iPhone and
+          Android.
+        </p>
+        <div class="apps-actions">
+          <a href={IOS_URL} class="btn" rel="external">
+            <span><PlatformIcon platform="ios" />Download on the App Store</span>
+          </a>
+          <a href={ANDROID_URL} class="btn btn--outline" rel="external">
+            <span><PlatformIcon platform="android" />Get it on Google Play</span>
+          </a>
+        </div>
+      </section>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  /* ---- Hero ---- */
+  .apps-hero {
+    background: var(--green-deep);
+    padding: clamp(3.5rem, 7vw, 6rem) 0;
+    overflow: hidden;
+  }
+
+  .apps-hero__inner {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: clamp(2rem, 5vw, 3.5rem);
+    align-items: center;
+  }
+
+  @media (min-width: 900px) {
+    .apps-hero__inner {
+      grid-template-columns: 1.15fr 0.85fr;
+    }
+  }
+
+  .apps-hero__copy {
+    max-width: 34ch;
+  }
+
+  .apps-hero h1 {
+    font-family: "Crimson Text", Georgia, serif;
+    font-size: clamp(2.2rem, 4.5vw, 3.8rem);
+    color: var(--cream);
+    margin: 0.75rem 0 1.25rem;
+    line-height: 1.05;
+  }
+
+  .apps-hero .eyebrow,
+  .apps-hero .lede {
+    color: var(--cream);
+  }
+
+  .apps-hero__lede {
+    max-width: 36ch;
+  }
+
+  .apps-hero__actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+  }
+
+  /* The phone is tall; cap it so the hero doesn't become a full screen of
+     screenshot on narrow viewports. */
+  .apps-hero__art {
+    display: flex;
+    justify-content: center;
+  }
+
+  .apps-hero__art img {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    max-height: min(60vh, 520px);
+    height: auto;
+    border-radius: 18px;
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
+  }
+
+  .btn--hero-outline {
+    background: transparent;
+    border-color: var(--cream);
+    color: var(--cream);
+  }
+
+  .btn--hero-outline::before {
+    background: var(--cream);
+  }
+
+  .btn--hero-outline:hover,
+  .btn--hero-outline:focus-visible {
+    color: var(--ink);
+  }
+
+  /* Store buttons pair a platform mark with the label. The global .btn keeps
+     its hover fill behind `> span`, so the icon rides inside that span too. */
+  .btn > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6em;
+  }
+
+  /* Accent for the small uppercase labels. Plain --green is thin at 0.72rem
+     against either surface, so these follow the popover's pairing: Deep Green
+     on light, the dark-theme link green on dark. Larger green headings keep
+     --green, matching the rest of the site. */
+  .apps-body {
+    --apps-accent: var(--green-deep);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .apps-body {
+      --apps-accent: #3abf6a;
+    }
+  }
+
+  :root[data-theme="dark"] .apps-body {
+    --apps-accent: #3abf6a;
+  }
+
+  /* ---- Body ---- */
+  .apps-body {
+    padding: clamp(3rem, 6vw, 5rem) 0;
+    display: flex;
+    flex-direction: column;
+    gap: 3.5rem;
+  }
+
+  .apps-section {
+    max-width: 64ch;
+    margin-inline: auto;
+    width: 100%;
+  }
+
+  .apps-section h2 {
+    font-size: clamp(1.5rem, 2.5vw, 2rem);
+    margin: 0 0 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--green);
+    display: inline-block;
+  }
+
+  .apps-section h3 {
+    font-size: clamp(1.15rem, 1.8vw, 1.35rem);
+    font-weight: 600;
+    margin: 0 0 0.5rem;
+  }
+
+  .apps-section p {
+    max-width: 68ch;
+  }
+
+  /* ---- Side-by-side example ---- */
+  .apps-example {
+    background: var(--surface-raised);
+    border-radius: 12px;
+    padding: clamp(1.25rem, 3vw, 1.75rem);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    margin-top: 1.5rem;
+  }
+
+  .apps-example__ref {
+    font-family: "Crimson Text", Georgia, serif;
+    color: var(--green);
+    margin: 0 0 1rem !important;
+  }
+
+  .apps-example__cols {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  @media (min-width: 720px) {
+    .apps-example__cols {
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+  }
+
+  .apps-example__label {
+    font-family: Inter, sans-serif;
+    font-size: 0.72rem !important;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--apps-accent);
+    margin: 0 0 0.5rem !important;
+  }
+
+  .apps-example__col p {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 0.9rem;
+  }
+
+  .apps-example__col--lit p {
+    font-family: "Crimson Text", Georgia, serif;
+    font-size: 1.05rem;
+  }
+
+  /* The comparison column is context, not the point — set it back a step. */
+  .apps-example__col--trad .apps-example__label,
+  .apps-example__col--trad p {
+    opacity: 0.7;
+  }
+
+  .apps-example__note {
+    font-size: 0.9rem !important;
+    line-height: 1.5;
+    opacity: 0.75;
+    margin: 1.25rem 0 0 !important;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+  }
+
+  /* ---- Feature callouts ---- */
+  .apps-callout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    align-items: center;
+    margin-top: 2.5rem;
+  }
+
+  @media (min-width: 760px) {
+    .apps-callout {
+      grid-template-columns: 1fr 0.7fr;
+      gap: 2.5rem;
+    }
+
+    /* Alternate which side the phone lands on, without reordering the DOM. */
+    .apps-callout--reverse .apps-callout__copy {
+      order: 2;
+    }
+  }
+
+  .apps-callout__art {
+    display: flex;
+    justify-content: center;
+  }
+
+  .apps-callout__art img {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    max-height: 420px;
+    height: auto;
+    border-radius: 16px;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.16);
+  }
+
+  /* ---- Big-screen figure ---- */
+  .apps-figure {
+    margin: 1.5rem 0 0;
+  }
+
+  .apps-figure img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 14px;
+    box-shadow: 0 10px 34px rgba(0, 0, 0, 0.18);
+  }
+
+  /* ---- Humane section ---- */
+  .apps-negations {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+    font-family: "Fraunces", serif;
+    font-size: clamp(1.1rem, 2vw, 1.35rem);
+    color: var(--apps-accent);
+    margin: 1.25rem 0 1.5rem !important;
+  }
+
+  .apps-cta__icons {
+    margin: 1.25rem 0 0.25rem;
+  }
+
+  /* ---- Actions ---- */
+  .apps-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 1.5rem;
+  }
+
+  .apps-actions .btn {
+    padding: 12px 22px;
+  }
+
+  /* The season dots are fixed brand colors; everything else follows the
+     tokens, so dark mode needs no further adjustment here. */
+</style>

@@ -1,10 +1,12 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import PlatformIcon from "../components/PlatformIcon.astro";
+import AppIcons from "../components/AppIcons.astro";
 ---
 
 <Layout
   title="The LIT Bible | Liberating Scripture Collective"
-  description="The Liberation and Inclusion Translation (LIT Bible) is a trauma-informed, liberationist New Testament translation from the Greek, freely available at litbible.net. Created by Brandon Vélez Johnson."
+  description="The Liberation and Inclusion Translation (LIT Bible) is a trauma-informed, liberationist New Testament translation from the Greek, free to read at litbible.net and on the iPhone and Android apps. Created by Brandon Vélez Johnson."
   canonical="https://liberatingscripture.org/lit-bible/"
   ogImage="https://liberatingscripture.org/assets/og/og-lit-bible.png"
   ogImageAlt="The LIT Bible, from the Liberating Scripture Collective"
@@ -70,6 +72,9 @@ import Layout from "../layouts/Layout.astro";
           >
             <span>Read the LIT Bible ↗</span>
           </a>
+          <a href="/apps/" class="btn btn--hero-outline">
+            <span>Get the app</span>
+          </a>
           <a
             href="https://litbible.net"
             target="_blank"
@@ -81,6 +86,31 @@ import Layout from "../layouts/Layout.astro";
         </div>
       </div>
     </header>
+
+    <aside class="lit-apps" aria-labelledby="lit-apps-title">
+      <div class="lit-apps__inner content">
+        <AppIcons size={64} />
+        <div class="lit-apps__copy">
+          <p class="eyebrow">Now available</p>
+          <h2 id="lit-apps-title">The LIT Bible app is here</h2>
+          <p>
+            The whole translation on your phone, free and offline, with notes,
+            highlights, and the daily and Lectionary readings. No account, no
+            ads.
+          </p>
+        </div>
+        <div class="lit-apps__actions">
+          <a href="/apps/" class="btn">
+            <span>See the app</span>
+          </a>
+          <p class="lit-apps__stores">
+            <PlatformIcon platform="ios" />
+            <PlatformIcon platform="android" />
+            <span>iPhone and Android</span>
+          </p>
+        </div>
+      </div>
+    </aside>
 
     <div class="lit-body content">
       <section class="lit-section" aria-labelledby="lit-what">
@@ -199,8 +229,8 @@ import Layout from "../layouts/Layout.astro";
             href="https://litbible.net"
             target="_blank"
             rel="noopener noreferrer">litbible.net</a
-          >, where it is freely available to read, search, and study.
-          The site includes:
+          > and in the free <a href="/apps/">iPhone and Android apps</a>, where it
+          is available to read, search, and study. The site includes:
         </p>
         <div class="lit-features">
           <div class="lit-feature">
@@ -245,6 +275,14 @@ import Layout from "../layouts/Layout.astro";
               the scholarship behind them.
             </p>
           </div>
+          <div class="lit-feature">
+            <h3>Apps for iPhone and Android</h3>
+            <p>
+              The whole New Testament offline, with private notes and
+              highlights, immersive reading, and the daily and Lectionary
+              readings. <a href="/apps/">See the app →</a>
+            </p>
+          </div>
         </div>
       </section>
 
@@ -279,6 +317,9 @@ import Layout from "../layouts/Layout.astro";
             class="btn"
           >
             <span>Read the LIT Bible ↗</span>
+          </a>
+          <a href="/apps/" class="btn btn--outline">
+            <span>Get the app</span>
           </a>
           <a
             href="https://litbible.net/about"
@@ -351,6 +392,55 @@ import Layout from "../layouts/Layout.astro";
   .btn--hero-outline:hover,
   .btn--hero-outline:focus-visible {
     color: var(--ink);
+  }
+
+  /* ---- App announcement band ---- */
+  .lit-apps {
+    background: var(--surface-raised);
+    border-bottom: 1px solid var(--border);
+    padding: clamp(1.5rem, 4vw, 2.25rem) 0;
+  }
+
+  .lit-apps__inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: clamp(1rem, 3vw, 1.75rem);
+  }
+
+  .lit-apps__copy {
+    flex: 1 1 20rem;
+  }
+
+  .lit-apps__copy h2 {
+    font-size: clamp(1.25rem, 2.2vw, 1.6rem);
+    margin: 0 0 0.4rem;
+  }
+
+  .lit-apps__copy p:last-child {
+    margin: 0;
+    font-size: 0.95rem;
+    max-width: 54ch;
+  }
+
+  .lit-apps__actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.6rem;
+  }
+
+  .lit-apps__actions .btn {
+    padding: 10px 20px;
+  }
+
+  .lit-apps__stores {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin: 0;
+    font-size: 0.85rem;
+    opacity: 0.7;
   }
 
   /* ---- Body ---- */
