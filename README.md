@@ -41,12 +41,14 @@ npm run dev      # Start the dev server at http://localhost:4321
 ```
 src/
   components/   # SiteHeader, SiteFooter, AppsLaunchPopover, AppIcons,
-                #   PlatformIcon
+                #   PlatformIcon, apps/ (the /apps page sections, ported
+                #   verbatim from litbible.net)
+  content.config.ts, content/   # Content collections backing /apps
   layouts/      # Layout.astro (base HTML shell)
   pages/        # One file per route: index, about, lit-bible, apps, support,
                 #   podcasts, community, spiritual-direction, contact,
                 #   privacy, 404
-  styles/       # global.css (the full design system)
+  styles/       # global.css (the full design system) + pages/apps.css
 public/         # Served at the site root: images, app screenshots, OG images,
                 #   favicons, CNAME, robots.txt, site.webmanifest, .well-known/
 scripts/        # Build-time tooling (the one-shot OG-card generator)

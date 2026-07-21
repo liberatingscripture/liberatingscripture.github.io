@@ -52,9 +52,19 @@ src/
     SiteFooter.astro    # Dark footer + the Brevo newsletter form (see Privacy)
     AppsLaunchPopover.astro # LIT Bible app announcement modal (see Popover)
     AppIcons.astro      # The iOS + Android app icons as a matched pair
-    ChurchYearCarousel.astro # Hebrews 1 cycling through the five liturgical
-                        #   seasons (card tint + chip + screenshot in step)
     PlatformIcon.astro  # Apple / Android marks for the store links
+    apps/               # /apps page sections, ported verbatim from litbible
+                        #   (see Apps Page): Hero, ExamplesSlider,
+                        #   ReaderCallouts, ChurchYearCarousel, BigScreens,
+                        #   HumaneByDesign, JoinBeta, AboutTranslation. These
+                        #   import the top-level AppIcons/PlatformIcon above
+                        #   rather than forking their own copies.
+  content.config.ts     # Astro content collections backing /apps: callouts,
+                        #   examples, seasons (see Apps Page) — ported from
+                        #   litbible; no other collections exist here
+  content/
+    callouts/, examples/, seasons/ # /apps section copy as markdown
+                        #   frontmatter + body, ported from litbible verbatim
   layouts/
     Layout.astro        # Base HTML shell (SEO/OG, fonts, favicons, header/footer,
                         #   and the one announcement popover)
@@ -76,6 +86,10 @@ src/
     404.astro
   styles/
     global.css          # Full design system (see Design System below)
+    pages/
+      apps.css          # /apps's own stylesheet — litbible's apps.css ported
+                        #   verbatim, plus an LSC bridge ahead of it (see
+                        #   Apps Page). Imported ONLY by pages/apps.astro.
 public/                 # Served as-is at the site root:
   assets/images/        # Logos, podcast art, hero images, and both app icons
                         #   (lit-app-icon.svg = Android, *-ios.webp = iOS)
@@ -226,31 +240,78 @@ These are configured in-page; update the IDs/keys here if they ever change:
 - **App Store** — LIT Bible app ID `6772577879`.
 - **Google Play** — LIT Bible package `com.litbible.app`.
 
-Both store URLs are defined once at the top of `src/pages/apps.astro`. The apps
-themselves are built and shipped from the litbible side; this site only links
-to them.
+The store URLs appear in three places, mirroring litbible.net's own apps.astro
+exactly: `apps.astro`'s `IOS_URL`/`ANDROID_URL` consts (used only by its
+JSON-LD) and hardcoded literally inside `components/apps/Hero.astro` and
+`components/apps/JoinBeta.astro` (the actual store buttons). Update all three
+if a store URL ever changes. The apps themselves are built and shipped from
+the litbible side; this site only links to them.
 
 ## Apps Page & Announcement Popover
 
 `/apps` tells the LIT Bible app's story on this site, and
-`AppsLaunchPopover.astro` announces it. Both mirror litbible.net — **keep the
-copy and the store links in step with `litbible.net/apps` when either changes.**
+`AppsLaunchPopover.astro` announces it. `/apps` is a **verbatim port** of
+litbible.net/apps — it should render identically to litbible's page except for
+LSC's own header/footer. **When litbible's `/apps` changes, re-copy it here**
+(see below for exactly what that means).
 
-Two deliberate choices:
-
-- **The page is a rewrite, not a port.** litbible's `/apps` is built on ~58
-  design tokens this site doesn't define (`--space-*`, `--text-*`,
-  `--measure-*`, season tints). Rather than import a second token vocabulary,
-  `apps.astro` retells the same content in this site's system, following
-  `lit-bible.astro`'s section/card idiom. Screenshots were converted from
-  litbible's PNGs to WebP (8.3MB → ~2MB) and live in
-  `public/assets/screenshots/`. Every section of litbible's page has a
-  counterpart here, including the church-year carousel.
-- **The carousel's season colors are duplicated, deliberately.** The five
-  `--season-*` values (and their brighter dark-mode cuts) live in
-  `ChurchYearCarousel.astro` because they aren't LSC design tokens — they're
-  the app's liturgical palette. They're copied from litbible's `apps.css`;
-  keep the two in agreement. Auto-advance pauses on hover and focus, and
+- **The page is a port, not a rewrite.** It used to retell the same content in
+  LSC's own design system; that drifted visibly from litbible's actual page
+  (a missing hero image, the wrong background) and was replaced with a real
+  port: litbible's `src/pages/apps.astro` shell (with LSC's own SEO
+  title/canonical/OG/JSON-LD kept), its `src/styles/pages/apps.css`, its 8
+  `components/apps/` section components (`Hero`, `ExamplesSlider`,
+  `ReaderCallouts`, `ChurchYearCarousel`, `BigScreens`, `HumaneByDesign`,
+  `JoinBeta`, `AboutTranslation`), and its three content collections
+  (`callouts`, `examples`, `seasons` — `src/content.config.ts` +
+  `src/content/`, driving the callout cards and the season carousel from
+  markdown `image:`/copy frontmatter). litbible's `ExampleSideBySide.astro`
+  was **not** ported — it's unused dead code even in litbible's own repo
+  (not imported by `ExamplesSlider.astro` or anything else there), so
+  porting it would add a file with no rendering effect. The ported
+  components import LSC's existing top-level `AppIcons.astro` /
+  `PlatformIcon.astro` rather than forking their own copies — they already
+  match litbible's byte-for-byte. Screenshots were converted from litbible's
+  PNGs to WebP and live in `public/assets/screenshots/`.
+- **`apps.css` carries an "LSC bridge" ahead of litbible's verbatim CSS,
+  in a specific order that matters.** litbible's `apps.css` intentionally
+  inherits several tokens (`--serif`, `--text`, `--text-strong`,
+  `--surface-raised`, `--green`, `--green-text`) from litbible's *own*
+  `global.css` rather than redefining them. LSC's `global.css` either doesn't
+  define those tokens at all or defines different values for the same names,
+  so the bridge redeclares litbible's actual values, scoped inside `.apps`
+  only — **this never changes an LSC global token** (see Design System: "do
+  not change token values"); every page outside `/apps` is unaffected. The
+  bridge also resets the handful of properties LSC's site-wide `.btn` class
+  would otherwise leak into these promo buttons (litbible has no global
+  `.btn` to cancel), and reproduces one line from litbible's global
+  `.container` (`padding-bottom: 80px`) that genuinely is part of
+  litbible.net's rendering. The bridge's `.btn` reset **must stay physically
+  before** litbible's verbatim `.btn-primary`/`.btn-secondary` rules in the
+  file: both selectors are the same specificity (two classes), so within one
+  stylesheet the later rule wins ties on shared properties. Bridge-first lets
+  litbible's own rules (later, in the verbatim section) win back what they
+  actually set — background, border, hover colors — while the bridge's
+  resets only stick where litbible is silent (LSC's uppercase text, its
+  swipe-fill `::before`, the `position`/`overflow`/`isolation` trick behind
+  it, `nowrap`). Getting this backwards is a real, easy-to-miss bug: it
+  silently produced a transparent primary button and a borderless secondary
+  button here, caught only by diffing computed styles against the live
+  litbible.net page in both themes — a visual glance didn't catch it. If you
+  touch this file, re-verify computed styles (`getComputedStyle`, not just
+  eyeballing) against litbible.net before trusting a change.
+- **The body background is set by `apps.css`, not a Layout prop.** litbible's
+  `apps.astro` passes `Layout bg="white"`, which litbible's `global.css`
+  resolves to `body { background: var(--surface-raised) }` (`#FAFAF8` light /
+  `#1d1d1f` dark). LSC's `Layout.astro` has no such prop, so `apps.css`
+  (imported *only* by `apps.astro`) sets a literal `body` background instead
+  — page-scoped by construction, since Astro only ships a page's imported CSS
+  to that page. Don't import `apps.css` from anywhere else, or this leaks
+  site-wide.
+- **The season colors live in `apps.css` now**, ported verbatim with the rest
+  of the file — they're litbible's own liturgical palette
+  (`--season-advent`, etc.), not LSC design tokens. Keep the two in agreement
+  if litbible's palette changes. Auto-advance pauses on hover and focus, and
   doesn't start at all under `prefers-reduced-motion`.
 - **The popover is the site's single announcement slot.** `Layout.astro`
   renders exactly one. It shows once per visitor (cookie `lsc_apps_launch_v1`,
