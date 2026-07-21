@@ -7,18 +7,24 @@ network access — same rendering on every machine.
 | File | Family | Source |
 |------|--------|--------|
 | `fraunces-opsz144-500.ttf` | Fraunces, weight 500, optical size 144 (display cut) | Google Fonts static instance of the Fraunces variable font |
-| `inter-400.ttf` | Inter, weight 400, subset to `A-Z a-z 0-9 & . space` | Google Fonts (`text=` subset) |
+| `inter-400.ttf` | Inter, weight 400, subset to `A-Z a-z 0-9 & . ' space` | Google Fonts (`text=` subset) |
+| `inter-400italic.ttf` | Inter, weight 400, *italic*, same subset as `inter-400.ttf` | Google Fonts (`text=` subset) |
 
-The Inter file is character-subsetted on purpose: the full Inter TTF carries
-GSUB lookups opentype.js can't parse, and the card strings it renders (the
-wordmark line and `liberatingscripture.org`) only need this charset. If a card
-ever needs new Inter characters, re-download with a wider `text=` parameter.
+The Inter files are character-subsetted on purpose: the full Inter TTF
+carries GSUB lookups opentype.js can't parse, and the card strings they
+render (the wordmark line, `liberatingscripture.org`, and the apps card's
+tagline) only need this charset. The italic exists for one word — the apps
+card's tagline emphasizes "for" — rendered as a separate `textPath` call in
+`inter-400italic.ttf` rather than switching the whole line to Fraunces. If a
+card ever needs new Inter characters, re-download with a wider `text=`
+parameter (both files, if the new character is ever emphasized too).
 
 These are deliberately NOT the `@fontsource` files the website itself uses:
 the site ships woff2 text-cut instances, while the share cards need the
 Fraunces display cut (opsz 144) at poster sizes, in a TTF container that
-opentype.js can parse. Both files are copied verbatim from the sibling
-litbible repo's `scripts/og/fonts/`.
+opentype.js can parse. All three files are copied verbatim from the sibling
+litbible repo's `scripts/og/fonts/` (see that copy's README for the
+re-subsetting recipe).
 
 Both families are licensed under the SIL Open Font License 1.1 — see
 `OFL.txt` in this directory.

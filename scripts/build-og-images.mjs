@@ -17,8 +17,9 @@
  * in Inter, liberatingscripture.org bottom-right. The right third carries
  * art: the gold LSC emblem (support, companionship), the LIT Bible's own
  * green-disc logo in a green ring (lit-bible, echoing litbible.net's cards),
- * the LIT app icon in a green rounded square (apps), or the two podcast
- * covers as rounded tiles (podcasts).
+ * the LIT app icon (Android's gradient mark) in a rounded tile (apps, which
+ * also carries a tagline under the title — the only card that does), or the
+ * two podcast covers as rounded tiles (podcasts).
  *
  * Rendering: text is converted to SVG paths with opentype.js using the fonts
  * committed under scripts/og/fonts/ (see the README there), then sharp
@@ -63,6 +64,7 @@ function loadFont(file) {
 
 const fraunces = loadFont("fraunces-opsz144-500.ttf");
 const inter = loadFont("inter-400.ttf");
+const interItalic = loadFont("inter-400italic.ttf");
 
 // Serialize an opentype Path to SVG `d` with explicit, space-separated,
 // 2-decimal numbers. Do NOT use opentype's built-in toPathData(): its compact
@@ -233,61 +235,58 @@ async function podcastsCard() {
   ]);
 }
 
-// Both platform icons as home-screen tiles, stacked on the right like the
-// podcasts card. The two are different art — iOS ships the leather-book
-// artwork, Android the bare gradient mark — so the pair says "on both stores"
-// without any text. The Android mark arrives on transparency and gets the ink
-// tile it wears in the app; the iOS art already carries its own background.
-// The footer URL moves left here so it clears the lower tile.
+// Just the Android gradient mark, centered on the right third like the LIT
+// Bible logo card — a single icon reads best centered, not stacked in a
+// right-aligned column the way a platform *pair* would need. (The popover
+// and /apps page's own icon pair still show both platforms; this card is
+// single-icon by the owner's choice.) The tile is lifted to #2A3227, clear
+// of the in-app #1b2318 — that value is all but identical to this card's
+// own INK field, which would leave the mark looking like it floats rather
+// than sitting in a tile.
+//
+// This is also the one card with a tagline: the site's own hero line ("A
+// New Testament that's <em>for</em> everyone."), with "for" rendered in
+// Inter Italic — the roman face's own italic, not a switch to Fraunces —
+// so the emphasis survives without breaking the tagline's smaller-caption
+// typography.
 async function appsCard() {
-  const tile = 224;
-  const radius = 50; // squircle-ish, the way an app icon is masked
-  const x = WIDTH - MARGIN - tile;
-  const gap = 28;
-  const totalH = tile * 2 + gap;
-  const top = Math.round((HEIGHT - totalH) / 2);
+  const cx = 955;
+  const cy = 345;
+  const d = 300;
+  const radius = 66; // ~22% of d, matching the app's own icon corners
+  const inset = Math.round(d * 0.09);
 
-  const ios = await roundedTile(
-    path.join(IMAGES, "lit-app-icon-ios.webp"),
-    tile,
-    radius,
+  const taglineSize = 30;
+  const taglinePre = "A New Testament that's ";
+  const taglineEm = "for";
+  const taglinePost = " everyone.";
+  const taglinePreW = width(inter, taglinePre, taglineSize);
+  const taglineEmW = width(interItalic, taglineEm, taglineSize);
+  const taglineY = 470;
+
+  const svg = baseSVG("The LIT Bible").replace(
+    "</svg>",
+    `<rect x="${cx - d / 2}" y="${cy - d / 2}" width="${d}" height="${d}" rx="${radius}" fill="#2A3227"/>
+${textPath(inter, taglinePre, MARGIN, taglineY, taglineSize, `fill="${CREAM}"`)}
+${textPath(interItalic, taglineEm, MARGIN + taglinePreW, taglineY, taglineSize, `fill="${CREAM}"`)}
+${textPath(inter, taglinePost, MARGIN + taglinePreW + taglineEmW, taglineY, taglineSize, `fill="${CREAM}"`)}
+</svg>`,
   );
 
-  // The Android mark inset on its own tile, at the same 9% padding the in-page
-  // icons use. The tile is lifted off the in-app #1b2318 — that value is all
-  // but identical to this card's INK field, which left the mark looking like it
-  // floated while the iOS art read as a proper tile.
-  const inset = Math.round(tile * 0.09);
   const mark = await sharp(path.join(IMAGES, "lit-app-icon.svg"))
-    .resize(tile - inset * 2, tile - inset * 2, {
+    .resize(d - inset * 2, d - inset * 2, {
       fit: "contain",
       background: { r: 0, g: 0, b: 0, alpha: 0 },
     })
     .png()
     .toBuffer();
-  const androidTile = await sharp({
-    create: {
-      width: tile,
-      height: tile,
-      channels: 4,
-      background: { r: 42, g: 50, b: 39, alpha: 1 }, // #2A3227
-    },
-  })
-    .composite([
-      { input: mark, left: inset, top: inset },
-      {
-        input: Buffer.from(
-          `<svg width="${tile}" height="${tile}"><rect width="${tile}" height="${tile}" rx="${radius}" ry="${radius}"/></svg>`,
-        ),
-        blend: "dest-in",
-      },
-    ])
-    .png()
-    .toBuffer();
 
-  await writeCard("og-apps", baseSVG("The LIT Bible App", "left"), [
-    { input: ios, left: x, top },
-    { input: androidTile, left: x, top: top + tile + gap },
+  await writeCard("og-apps", svg, [
+    {
+      input: mark,
+      left: Math.round(cx - d / 2 + inset),
+      top: Math.round(cy - d / 2 + inset),
+    },
   ]);
 }
 
