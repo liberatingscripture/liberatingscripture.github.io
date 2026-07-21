@@ -862,9 +862,13 @@ accessibility defects), then F2→OW1 (security headers).
   form. Newsletter remains the eventual answer (owner backlog; ties to
   litbible's Brevo setup).
   UPDATE 2026-07-20: the newsletter half of this is now resolved — the footer
-  carries litbible's Brevo form (pointing at the shared LIT Bible list), so
-  "get notified" has a real home. The `?topic=twb` contact flow above is left
-  as-is; revisit only if TWB warrants its own Brevo list.
+  carries a Brevo form, so "get notified" has a real home.
+  UPDATE 2026-07-21: swapped to a dedicated LSC list/form (same Brevo account
+  as litbible.net, but its own list) instead of the originally-ported one that
+  pointed at litbible's shared translation-update list, and gave it its own
+  dedicated Turnstile widget too (see OW9 — one verification step left there).
+  The `?topic=twb` contact flow above is left as-is; revisit only if TWB
+  warrants its own Brevo list.
   Problem: the "Get notified" CTA on /podcasts/ drops people into the
   generic contact form with no indication of why they came — friction and
   lost signal. A newsletter is the real answer eventually (the privacy
@@ -988,20 +992,32 @@ accessibility defects), then F2→OW1 (security headers).
   flip that toggle in this repo's GitHub Settings. No code change; nothing
   a model can do here.
 
-- [ ] **(OW9) Confirm Brevo's Turnstile sitekey works on liberatingscripture.org.**
-  Added 2026-07-20 with the footer newsletter. The form renders Turnstile with
-  **Brevo's** sitekey (`0x4AAAAAACyvexOxVuDiY_85`), copied from litbible.
-  Turnstile sitekeys carry a domain allowlist that lives in *Brevo's* account,
-  not ours, so whether it renders on a second domain can't be settled from this
-  repo — and local testing proves nothing either way: on localhost the widget
-  renders no iframe on **either** site, so litbible's known-good setup behaves
-  identically to this one.
-  Action: after deploy, load any page on the live domain, hover the footer form
-  to trigger its lazy load, and confirm the widget appears and a real subscribe
-  lands in the Brevo list. If it errors (Turnstile reports `110200` for a
-  disallowed domain), add `liberatingscripture.org` in Brevo's form/domain
-  settings. If Brevo won't allow a second domain, fall back to linking Brevo's
-  hosted subscribe page from the footer instead of embedding the form.
-  Note this is downstream of OW1 — if `form-action` isn't widened first, the
-  subscribe fails for that reason instead, so do OW1 before diagnosing here.
-  Verify: widget renders on the live domain; test subscribe appears in Brevo.
+- [ ] **(OW9) Confirm the newsletter's Turnstile widget works end-to-end on
+  liberatingscripture.org.**
+  Added 2026-07-20 with the footer newsletter, which originally reused
+  **litbible's** sitekey (`0x4AAAAAACyvexOxVuDiY_85`) unchanged.
+  UPDATE 2026-07-21: reproduced the failure live on the deployed site (OW1
+  wasn't applied yet, so CSP wasn't the cause). Forcing a manual
+  `turnstile.render()` of that sitekey on `liberatingscripture.org` fired the
+  `error-callback` with code `110200` ("domain not allowed for this
+  sitekey") — confirmed, not speculative. That allowlist is a property of the
+  Turnstile *widget* itself, in whichever Cloudflare account created it — not
+  something editable from inside Brevo's own UI as first assumed.
+  UPDATE 2026-07-21 (resolved differently): rather than chase litbible's
+  shared widget's domain list, a **new, dedicated Turnstile widget** was
+  created scoped to this domain (`0x4AAAAAAD6VVgt-e5g_YNul`, mirroring the
+  contact form's own sitekey pattern) and wired into `SiteFooter.astro` in
+  place of litbible's. Re-tested the same way: forcing a render of the new
+  sitekey on the live domain produced **no error** and a real, valid
+  Turnstile token — the domain-allowlist problem is solved.
+  **One step remains, and only the owner can do it:** a real test subscribe
+  through the live footer form, to confirm Brevo's captcha configuration for
+  this form/list uses the **secret key paired with this new sitekey**.
+  Rendering successfully client-side proves the domain allowlist is right,
+  but not that Brevo's server-side verification is wired to the matching
+  secret — if Brevo's form still references a different/old secret, the
+  widget will keep rendering fine while the subscribe still fails
+  server-side. If it fails, check Brevo's form/captcha settings for the
+  secret paired with `0x4AAAAAAD6VVgt-e5g_YNul`.
+  Verify: submit a real email through the live footer form; confirm the
+  success message shows and the address appears in the LSC Brevo list.

@@ -69,14 +69,16 @@ const year = new Date().getFullYear();
         <span>Read the LIT Bible ↗</span>
       </a>
 
-      {/* Brevo newsletter — posts to the shared LIT Bible list (same Brevo
-          account as litbible.net). The fixed ids below (sib-form,
-          error-message, success-message, sib-captcha), the
-          handleCaptchaResponse global, the honeypot, and the locale field are
-          all required by Brevo's main.js — don't rename them. If this site
-          ever gains a page with its own Brevo form (litbible has
-          /unsubscribe), add litbible's `hideNewsletter` prop: two forms on one
-          page collide on the shared sib-form id. */}
+      {/* Brevo newsletter — posts to LSC's own list/form (same Brevo account
+          as litbible.net, but a dedicated list — not litbible's translation-
+          update list). The fixed ids below (sib-form, error-message,
+          success-message, sib-captcha), the handleCaptchaResponse global, the
+          honeypot, and the locale field are all required by Brevo's main.js —
+          don't rename them. If this site ever gains a page with its own Brevo
+          form (litbible has /unsubscribe), add litbible's `hideNewsletter`
+          prop: two forms on one page collide on the shared sib-form id.
+          NOTE: the Turnstile sitekey below is now a dedicated widget scoped
+          to this domain (not litbible's shared one) — see FIXLIST OW9. */}
       <section
         class="footer-newsletter"
         aria-labelledby="footer-newsletter-heading"
@@ -85,7 +87,7 @@ const year = new Date().getFullYear();
           Stay informed
         </h2>
         <p class="footer-newsletter__desc">
-          New translations, articles, and LIT Bible news direct to your inbox.
+          News about LSC projects and updates, direct to your inbox.
         </p>
 
         {/* Brevo success/error panels — visibility toggled by Brevo main.js */}
@@ -113,7 +115,7 @@ const year = new Date().getFullYear();
           id="sib-form"
           class="footer-newsletter__form"
           method="POST"
-          action="https://1742a6b7.sibforms.com/serve/MUIFAKJyiPPqI2bardfqrp4wdqO-pfiy9S0T0d29zd_v8G57bZ4nS9ClYWCPu64OSzzQyw7yTR9wqyWr-vdn17UIhr2fG1OFFtGvdeEHWM-b9y94UUNmT3jjFI_8ltcZGK3w1h_iMk2Aylrk3qAQqLSPdAV51iOZf0SVzMSSVh41B1CKoomPPA_6j5j3arPgHjcdzi76_cLEFKzQKA=="
+          action="https://1742a6b7.sibforms.com/serve/MUIFAKkVDT78nzkJMnK-weBRAwIgbQLBZPO0abgGiDBE3y_q-MGXVZiM43FbTmBclg9Yxb4AJIykDYmOtwVRiWWQr9AFEcZh45QBCPH6niXWf1z2k8po10oRiJq4Lw4ySwI5zxb2GUxE02ZGuK6jb7NuGq6vh0wP9D9_-vxQ12P8dkWUjrjs0RCzZQyhLYowVoKxHMyd0eXecCqJPg=="
           data-type="subscription"
           novalidate
         >
@@ -144,11 +146,12 @@ const year = new Date().getFullYear();
             class="entry__error entry__error--primary footer-newsletter__field-error"
             aria-live="polite"></label>
 
-          {/* Turnstile — Brevo's own site key; callback required by main.js */}
+          {/* Turnstile — our own dedicated widget for this domain; callback
+              required by main.js */}
           <div class="footer-newsletter__turnstile">
             <div
               class="cf-turnstile g-recaptcha"
-              data-sitekey="0x4AAAAAACyvexOxVuDiY_85"
+              data-sitekey="0x4AAAAAAD6VVgt-e5g_YNul"
               id="sib-captcha"
               data-callback="handleCaptchaResponse"
               data-language="en"

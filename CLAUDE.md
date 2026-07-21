@@ -218,20 +218,25 @@ These are configured in-page; update the IDs/keys here if they ever change:
 - **Cloudflare Turnstile** — bot protection on the contact form. Sitekey
   `0x4AAAAAACJ446flkL7Rwf8i` in `src/pages/contact.astro`; the matching
   secret key lives in the Worker's `TURNSTILE_SECRET` secret. The footer
-  newsletter renders a **second** Turnstile widget using Brevo's own sitekey
-  (`0x4AAAAAACyvexOxVuDiY_85`) — which is why `/contact/` carries two. Two
-  consequences, both already handled: the footer's loader skips injecting
-  `turnstile/v0/api.js` when the page already has it, and `contact.astro`
-  resets its widget by container (`turnstile.reset("#contact-turnstile")`)
-  rather than with a bare `reset()`, which is ambiguous with two widgets.
-- **Brevo** — the footer newsletter (`SiteFooter.astro`), posting to the
-  **shared LIT Bible list** in litbible's Brevo account, not a separate LSC
-  one. Brevo's `main.js` is lazy-loaded on first hover/focus of the form and
-  requires the fixed ids `sib-form`, `error-message`, `success-message`, and
-  `sib-captcha` — don't rename them. **The enforced CSP's `form-action` must
-  list `sibforms.com`** or the POST is silently blocked; see
-  `docs/security-headers.md`. If a page ever needs its own Brevo form, port
-  litbible's `hideNewsletter` prop — two forms collide on the `sib-form` id.
+  newsletter renders a **second**, separate Turnstile widget of our own,
+  dedicated to this domain (`0x4AAAAAAD6VVgt-e5g_YNul`) — which is why
+  `/contact/` carries two. Two consequences, both already handled: the
+  footer's loader skips injecting `turnstile/v0/api.js` when the page already
+  has it, and `contact.astro` resets its widget by container
+  (`turnstile.reset("#contact-turnstile")`) rather than with a bare `reset()`,
+  which is ambiguous with two widgets.
+- **Brevo** — the footer newsletter (`SiteFooter.astro`), posting to **LSC's
+  own list/form**, in the same Brevo account as litbible.net but a dedicated
+  list (not litbible's translation-update list). Brevo's `main.js` is
+  lazy-loaded on first hover/focus of the form and requires the fixed ids
+  `sib-form`, `error-message`, `success-message`, and `sib-captcha` — don't
+  rename them. **The enforced CSP's `form-action` must list `sibforms.com`**
+  or the POST is silently blocked; see `docs/security-headers.md`. The
+  captcha uses the dedicated sitekey above, confirmed to render and produce a
+  token on the live domain — see FIXLIST **OW9** for the one remaining step
+  (a real test subscribe, to confirm Brevo's captcha config has the matching
+  secret). If a page ever needs its own Brevo form, port litbible's
+  `hideNewsletter` prop — two forms collide on the `sib-form` id.
 - **Give Lively** — donations (live; slug `liberating-scripture-collective`).
   Widget embedded in `src/pages/support.astro`.
 - **Apple Podcasts** — Found in Translation podcast ID `1586737797`.
