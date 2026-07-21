@@ -1010,14 +1010,42 @@ accessibility defects), then F2→OW1 (security headers).
   place of litbible's. Re-tested the same way: forcing a render of the new
   sitekey on the live domain produced **no error** and a real, valid
   Turnstile token — the domain-allowlist problem is solved.
+  UPDATE 2026-07-21 (second, separate bug found): with Turnstile fixed, the
+  owner reported the Subscribe button still did nothing. Instrumented the live
+  page: the `submit` event fires on `#sib-form`, but Brevo's `main.js` issues
+  **zero** XHR/fetch — it loads fine and silently never binds a handler. Root
+  cause is markup, not captcha: `main.js` binds to the wrappers its generated
+  snippet ships with (`.sib-form`, `#sib-form-container`, `#sib-container`,
+  `.entry__field` / `.form__entry.entry_block`, `.sib-form-block__button`,
+  `id="EMAIL"`), all of which were dropped when the form was restyled into
+  this site's design system. **The identical probe against litbible.net's live
+  footer form fails the same way**, so this was inherited with the port, not
+  introduced here — litbible's newsletter is also silently dead (see the
+  litbible-side follow-up below). CSP was ruled out (no security headers live).
+  FIXED in the same session: dropped `main.js` entirely and gave the form its
+  own `fetch` submit (verified: the sibforms endpoint supports CORS, returning
+  a readable status). Validation, missing-token, success, and failure paths all
+  exercised locally. See CLAUDE.md's "The newsletter submits itself" section —
+  **do not reintroduce `main.js`.**
   **One step remains, and only the owner can do it:** a real test subscribe
-  through the live footer form, to confirm Brevo's captcha configuration for
-  this form/list uses the **secret key paired with this new sitekey**.
-  Rendering successfully client-side proves the domain allowlist is right,
-  but not that Brevo's server-side verification is wired to the matching
-  secret — if Brevo's form still references a different/old secret, the
-  widget will keep rendering fine while the subscribe still fails
-  server-side. If it fails, check Brevo's form/captcha settings for the
-  secret paired with `0x4AAAAAAD6VVgt-e5g_YNul`.
+  through the live footer form. That confirms the last unverified link —
+  whether Brevo's captcha configuration for this form/list holds the **secret
+  key paired with `0x4AAAAAAD6VVgt-e5g_YNul`**. Everything client-side is now
+  confirmed working, but a mismatched secret would still fail server-side.
+  If it fails, check Brevo's form/captcha settings for that pairing.
   Verify: submit a real email through the live footer form; confirm the
   success message shows and the address appears in the LSC Brevo list.
+
+- [ ] **(OW10) litbible.net's footer newsletter is broken the same way.**
+  Found 2026-07-21 while debugging OW9, by running the same probe against
+  litbible.net's live footer form: `main.js` loads, the submit event fires,
+  and no request is ever made — its Subscribe button silently does nothing,
+  for the same markup reason described in OW9. Separate repo, so it can't be
+  fixed from here. The fix is the same one applied in this repo's
+  `SiteFooter.astro`: drop `main.js` and submit with `fetch` (see CLAUDE.md's
+  "The newsletter submits itself"). Note litbible's own `SubscribeStrip.astro`
+  (used on /courses) *already* uses a hand-rolled fetch submit — so that repo
+  contains both the broken pattern and the working one.
+  Note this likely supersedes litbible's FIXLIST **O12** (a no-JS fallback for
+  the footer subscribe button), which assumed the JS path worked.
+  Action: port the fix in the litbible repo and re-test live.

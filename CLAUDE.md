@@ -227,16 +227,11 @@ These are configured in-page; update the IDs/keys here if they ever change:
   which is ambiguous with two widgets.
 - **Brevo** — the footer newsletter (`SiteFooter.astro`), posting to **LSC's
   own list/form**, in the same Brevo account as litbible.net but a dedicated
-  list (not litbible's translation-update list). Brevo's `main.js` is
-  lazy-loaded on first hover/focus of the form and requires the fixed ids
-  `sib-form`, `error-message`, `success-message`, and `sib-captcha` — don't
-  rename them. **The enforced CSP's `form-action` must list `sibforms.com`**
-  or the POST is silently blocked; see `docs/security-headers.md`. The
-  captcha uses the dedicated sitekey above, confirmed to render and produce a
-  token on the live domain — see FIXLIST **OW9** for the one remaining step
-  (a real test subscribe, to confirm Brevo's captcha config has the matching
-  secret). If a page ever needs its own Brevo form, port litbible's
-  `hideNewsletter` prop — two forms collide on the `sib-form` id.
+  list (not litbible's translation-update list). **We do not load Brevo's
+  `main.js`** — see "The newsletter submits itself" below. Turnstile is
+  lazy-loaded on first hover/focus of the form; the POST is our own `fetch`.
+  **The enforced CSP's `form-action` must list `sibforms.com`** or the POST is
+  silently blocked; see `docs/security-headers.md`.
 - **Give Lively** — donations (live; slug `liberating-scripture-collective`).
   Widget embedded in `src/pages/support.astro`.
 - **Apple Podcasts** — Found in Translation podcast ID `1586737797`.
@@ -351,6 +346,43 @@ ever render an icon outside it:
   identical to the card's `INK` field, so the tile vanishes and the mark looks
   like it floats next to a properly-tiled iOS icon. `build-og-images.mjs` uses
   `#2A3227` there for that reason only.
+
+## The newsletter submits itself — don't reintroduce Brevo's `main.js`
+
+The footer newsletter in `SiteFooter.astro` posts with its **own `fetch`**, not
+with `https://sibforms.com/forms/end-form/build/main.js`. This is deliberate and
+was arrived at by debugging a silent failure, so don't "restore" the script.
+
+**Why.** Brevo's `main.js` binds to the structural markup its generated snippet
+ships with: `.sib-form`, `#sib-form-container`, `#sib-container`,
+`.form__entry.entry_block` / `.entry__field` wrappers, `.sib-form-block__button`
+on the button, and `id="EMAIL"` on the input. Restyling the form into this
+site's design system drops all of it. The script then loads **without any
+error**, never attaches a submit handler, and pressing Subscribe does
+*nothing* — no request, no message, no console output. It was verified live in
+2026-07-21 on both this site and litbible.net (which carries the same ported
+markup and fails identically) by instrumenting the page and confirming zero XHR
+or fetch on submit.
+
+**What replaced it.** The submit handler validates the email, reads the
+Turnstile token from the hidden `cf-turnstile-response` input the widget
+injects, and POSTs `EMAIL` + `email_address_check` (honeypot, empty) + `locale`
++ `cf-turnstile-response` as form-urlencoded. The sibforms endpoint supports
+CORS and returns a readable status, so success/failure drive the two status
+panels. On failure the widget is reset — Turnstile tokens are single-use.
+
+Consequences worth knowing:
+
+- **The button no longer ships `disabled`.** It used to be disabled until
+  `main.js` loaded and re-enabled it, which meant a JS failure left a dead
+  button. Now it's live immediately, and with JS off it falls through to a
+  native POST (Turnstile still needs JS, so that isn't a true no-JS path —
+  same caveat as the contact form).
+- **The fixed Brevo ids no longer matter functionally.** `sib-form`,
+  `sib-captcha`, `error-message`, `success-message` are kept for continuity
+  with litbible, but nothing external depends on them now.
+- **Keep the honeypot and `locale` hidden fields** — Brevo still expects both
+  in the POST body.
 
 ## Privacy Policy (`/privacy`)
 
