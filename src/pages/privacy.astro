@@ -4,7 +4,7 @@ import Layout from "../layouts/Layout.astro";
 
 <Layout
   title="Privacy Policy | Liberating Scripture Collective"
-  description="How the Liberating Scripture Collective website handles your data: what little we collect, the services we rely on, and what we never do."
+  description="How the Liberating Scripture Collective website and the LIT Bible apps handle your data: what little we collect, the services we rely on, and what we never do."
   canonical="https://liberatingscripture.org/privacy/"
 >
   <Fragment slot="head">
@@ -17,7 +17,7 @@ import Layout from "../layouts/Layout.astro";
         "@id": "https://liberatingscripture.org/privacy/#webpage",
         url: "https://liberatingscripture.org/privacy/",
         name: "Privacy Policy | Liberating Scripture Collective",
-        dateModified: "2026-07-18",
+        dateModified: "2026-07-20",
         isPartOf: { "@id": "https://liberatingscripture.org/#website" },
       })}
     />
@@ -29,12 +29,13 @@ import Layout from "../layouts/Layout.astro";
         <p class="eyebrow">Privacy</p>
         <h1>Privacy Policy</h1>
         <p class="lede">
-          We built this site to hold as little of your data as possible. The
-          most trustworthy thing we can do with information about you is not
+          We built this site to hold as little of your data as possible, and the
+          LIT Bible apps on the same principle: your reading life is your own.
+          The most trustworthy thing we can do with information about you is not
           collect it in the first place.
         </p>
         <p class="privacy-effective">
-          Effective date: <time datetime="2026-07-18">July 18, 2026</time>
+          Effective date: <time datetime="2026-07-20">July 20, 2026</time>
         </p>
       </div>
     </header>
@@ -44,30 +45,46 @@ import Layout from "../layouts/Layout.astro";
         <h2 id="privacy-scope">Scope</h2>
         <p>
           This policy covers the Liberating Scripture Collective website at
-          liberatingscripture.org. The LIT Bible, our scripture translation
-          project, has its own website and companion mobile apps, and those
-          are covered by the
+          liberatingscripture.org and the companion LIT Bible iOS and Android
+          apps. Sections labeled "(app)" describe how the apps handle data.
+          Where a detail is platform-specific (for example, iCloud sync on iOS
+          or automatic Google Drive backup on Android), it is labeled
+          <em>On iOS</em> or <em>On Android</em>; details that apply to both are
+          labeled <em>On both platforms</em>.
+        </p>
+        <p>
+          The LIT Bible also has its own website at litbible.net. That site is
+          covered by the
           <a href="https://litbible.net/privacy/">litbible.net privacy policy</a>,
-          not this one. Nothing you do on this site is shared with those apps,
-          and nothing from them flows back here.
+          which is also the policy of record referenced by the App Store and
+          Google Play listings. The app sections below are kept identical to it;
+          if the two ever disagree, the litbible.net version governs the apps.
+          Nothing you do on this site is shared with the apps, and nothing from
+          them flows back here.
         </p>
       </section>
 
       <section aria-labelledby="privacy-collect">
         <h2 id="privacy-collect">What we collect</h2>
         <p>
-          The site collects personal information only when you actively send
-          it to us:
+          <strong>Website:</strong> The site collects personal information only
+          when you actively send it to us:
         </p>
         <ul>
+          <li>
+            <strong>Mailing list:</strong> If you subscribe using the form in
+            the footer, your email address is stored by Brevo, which manages the
+            mailing list solely to send updates. This is the same list the LIT
+            Bible uses, so you'll hear about the translation as well as the
+            Collective's other work. You can unsubscribe anytime using the links
+            in those emails.
+          </li>
           <li>
             <strong>Contact form:</strong> Your name, email address, and
             message are delivered directly to our inbox by Cloudflare, the
             infrastructure this site runs behind. No separate form-processing
             service handles them. We use what you send only to respond to you;
-            it is never sold or shared. The form is protected from spam by
-            Cloudflare Turnstile, a privacy-preserving alternative to CAPTCHAs
-            that does not track you across sites.
+            it is never sold or shared.
           </li>
           <li>
             <strong>Donations:</strong> Gifts on the
@@ -82,11 +99,30 @@ import Layout from "../layouts/Layout.astro";
           </li>
         </ul>
         <p>
+          The contact and subscribe forms are protected from spam by Cloudflare
+          Turnstile, a privacy-preserving alternative to CAPTCHAs that does not
+          track you across sites.
+        </p>
+        <p>
+          <strong>Cookies:</strong> The site sets one cookie of its own, a small
+          flag (<code>lsc_apps_launch_v1</code>) that remembers you have seen the
+          one-time announcement about the LIT Bible apps, so it doesn't reappear.
+          It contains no personal data and expires after 30 days. The same
+          announcement counts pageviews within a single browsing session, using
+          your browser's session storage (<code>lsc_pv</code>), so it can wait
+          until your second page rather than interrupting you on arrival. That
+          count never leaves your device and is discarded when you close the tab.
+        </p>
+        <p>
           The site also uses Cloudflare Web Analytics, which is
           privacy-preserving by design: it sets no cookies, does not track
           individuals across sites or sessions, and does not build behavioral
           profiles. We see only aggregated numbers like page views and general
           geographic region, none of which can identify you.
+        </p>
+        <p>
+          <strong>App (on both platforms):</strong> The app does not collect your
+          name, email address, device identifiers, or identifying information.
         </p>
       </section>
 
@@ -94,9 +130,10 @@ import Layout from "../layouts/Layout.astro";
         <h2 id="privacy-not">What we don't do</h2>
         <p>
           There are no accounts to create, no advertising networks, and no
-          cross-site tracking. This site sets no cookies of its own, and our
-          only measurement is the cookie-free, aggregate analytics described
-          above. The one exception is the donation widget on the
+          cross-site tracking. The single cookie we set is the announcement flag
+          described above — it holds no personal data — and our only measurement
+          is the cookie-free, aggregate analytics. The one exception is the
+          donation widget on the
           <a href="/support/">support page</a>: it is operated by
           <a href="https://www.givelively.org/">Give Lively</a>, runs on their
           systems, and may set its own cookies or storage when you use it to
@@ -104,6 +141,141 @@ import Layout from "../layouts/Layout.astro";
           <a href="https://www.givelively.org/privacy">Give Lively's privacy policy</a>).
           Apart from that, you can read every page without telling us anything
           about yourself.
+        </p>
+      </section>
+
+      <section aria-labelledby="privacy-reading-data">
+        <h2 id="privacy-reading-data">Your reading data (app)</h2>
+        <p>
+          <strong>On both platforms:</strong> Everything you create in the app
+          (highlights, notes, and your reading position) is stored privately on
+          your device. The LIT Bible team cannot access this data.
+        </p>
+        <p>
+          <strong>On iOS:</strong> If you have iCloud enabled for LIT Bible,
+          this data is also synced to your personal iCloud account via Apple's
+          CloudKit. Sync happens automatically in the background, the same way
+          Apple Notes and Reminders work. Your data is stored in your own
+          private iCloud database; the LIT Bible team has no access to it there
+          either. You can turn off iCloud sync for LIT Bible at any time in iOS
+          Settings → [Your Name] → iCloud → Apps Using iCloud. App preferences
+          like text size and display settings are stored in your device's
+          standard preferences storage and are not synced to iCloud.
+        </p>
+        <p>
+          <strong>On Android:</strong> If your device has Backup enabled, a copy
+          of your highlights and notes is included in your device's automatic
+          backup to your own Google Drive (via Android Auto Backup), so they can
+          restore on a new device. This backup lives in your personal Google
+          account; the LIT Bible team has no access to it there either. You can
+          turn it off at any time in your device's settings under Settings →
+          Google → Backup. Your reading position and your app preferences (like
+          text size and display settings) are stored on your device but are not
+          included in this backup; only your highlights and notes are.
+        </p>
+      </section>
+
+      <section aria-labelledby="privacy-content-updates">
+        <h2 id="privacy-content-updates">Content updates (app)</h2>
+        <p>
+          <strong>On both platforms:</strong> The app periodically checks
+          litbible.net servers for Bible translation text updates. During this
+          check, your device downloads changed content with no information about
+          you, your device, or reading activity transmitted to the servers. The
+          process compares file versions and downloads updated text only.
+        </p>
+      </section>
+
+      <section aria-labelledby="privacy-widget">
+        <h2 id="privacy-widget">The home screen widget (app)</h2>
+        <p>
+          <strong>On both platforms:</strong> The LIT Bible widget displays
+          lectionary readings and liturgical calendar information. All widget
+          data is computed on your device from information bundled with the app.
+          The widget makes no network requests.
+        </p>
+      </section>
+
+      <section aria-labelledby="privacy-sharing">
+        <h2 id="privacy-sharing">Sharing (app)</h2>
+        <p>
+          <strong>On both platforms:</strong> When you select text and choose
+          Share, your device's standard share sheet opens. The selected passage
+          text is passed to whatever app you choose to share it with. The LIT
+          Bible team does not log what you share, where you share it, or
+          frequency.
+        </p>
+      </section>
+
+      <section aria-labelledby="privacy-third-party">
+        <h2 id="privacy-third-party">Third-party software (app)</h2>
+        <p>
+          <strong>On iOS,</strong> the app uses one third-party software
+          library: <strong>GRDB</strong>, an open-source database library that
+          stores scripture content locally on your device. It makes no network
+          connections of its own. iCloud sync uses Apple's CloudKit framework,
+          which is part of the iOS operating system and subject to Apple's
+          privacy policy.
+        </p>
+        <p>
+          <strong>On Android,</strong> the app uses two third-party software
+          libraries: <strong>Room</strong> (an open-source database library from
+          Google that stores scripture content locally on your device using the
+          device's built-in SQLite), and <strong>OkHttp</strong> (an open-source
+          HTTP library used only for the content-update downloads described
+          above, fetching translation text from litbible.net). Automatic backup
+          of your highlights and notes uses Android Auto Backup, which is part
+          of the Android operating system and subject to Google's privacy
+          policy.
+        </p>
+      </section>
+
+      <section aria-labelledby="privacy-external-links">
+        <h2 id="privacy-external-links">External links</h2>
+        <p>
+          The website and app include links to external services. Following
+          these links subjects you to those third parties' privacy policies. We
+          do not track whether you visit these pages or take actions on them.
+        </p>
+        <p>External services linked include:</p>
+        <ul>
+          <li>
+            <strong>Give Lively</strong>, for contributions to the Liberating
+            Scripture Collective and the LIT Bible
+          </li>
+          <li>
+            <strong>Apple Podcasts</strong>, for the Found in Translation
+            podcast
+          </li>
+          <li>
+            <strong>Spotify</strong>, for the Found in Translation podcast
+          </li>
+          <li>
+            <strong>YouTube</strong>, for the Found in Translation podcast
+          </li>
+          <li>
+            <strong>The App Store and Google Play</strong>, for the LIT Bible
+            apps
+          </li>
+          <li>
+            <strong>CreativeCommons.org</strong>, to display the full license
+            text
+          </li>
+          <li>
+            <strong>litbible.net</strong>, the LIT Bible's own website
+          </li>
+        </ul>
+      </section>
+
+      <section aria-labelledby="privacy-children">
+        <h2 id="privacy-children">Children</h2>
+        <p>
+          This website and the LIT Bible app do not knowingly collect personal
+          information from children. The site and app contain no advertising and
+          no social features. Any personal data the site receives, such as a
+          newsletter subscription or a message sent through the contact form,
+          requires you to actively submit it and is never required to access
+          content.
         </p>
       </section>
 
@@ -125,9 +297,11 @@ import Layout from "../layouts/Layout.astro";
       <section aria-labelledby="privacy-changes">
         <h2 id="privacy-changes">Changes to this policy</h2>
         <p>
-          If the site gains features that touch your data, such as an
-          embedded podcast player or a newsletter signup, we'll describe them
-          here before they matter and update the effective date above.
+          If the site or app gains features that touch your data, such as an
+          embedded podcast player, we'll describe them here before they matter
+          and update the effective date above. Changes that materially affect
+          how app data is handled are also noted in the app's Translation
+          Updates section.
         </p>
       </section>
 
@@ -212,5 +386,23 @@ import Layout from "../layouts/Layout.astro";
 
   .privacy-body a {
     color: var(--green);
+  }
+
+  /* Cookie / storage key names */
+  .privacy-body code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.88em;
+    background: var(--surface-input);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.1em 0.35em;
+    overflow-wrap: anywhere;
+  }
+
+  /* Platform labels in the Scope section */
+  .privacy-body em {
+    font-style: normal;
+    font-weight: 600;
+    color: var(--text-strong);
   }
 </style>

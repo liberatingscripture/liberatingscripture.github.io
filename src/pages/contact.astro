@@ -96,7 +96,7 @@ import Layout from "../layouts/Layout.astro";
             </div>
 
             <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-            <div class="cf-turnstile" data-sitekey="0x4AAAAAACJ446flkL7Rwf8i"></div>
+            <div id="contact-turnstile" class="cf-turnstile" data-sitekey="0x4AAAAAACJ446flkL7Rwf8i"></div>
 
             <div id="form-status" class="form-status" role="status" aria-live="polite" aria-atomic="true"></div>
 
@@ -165,7 +165,9 @@ import Layout from "../layouts/Layout.astro";
                   }
                   // Turnstile tokens are single-use: the server consumed this
                   // one either way, so the next attempt needs a fresh pass.
-                  turnstile()?.reset();
+                  // Reset by container — the footer's newsletter renders a
+                  // second Turnstile widget, so a bare reset() is ambiguous.
+                  turnstile()?.reset("#contact-turnstile");
                 } catch {
                   statusEl.textContent = "Couldn't send the message. Check your connection and try again.";
                   statusEl.className = "form-status form-status--error";

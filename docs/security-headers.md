@@ -37,7 +37,8 @@
 | `secure.givelively.org` | /support/ | donate widget script, images, modal **iframe** | script/img/connect/frame |
 | `fonts.googleapis.com` | /support/ | Google Fonts stylesheet (pulled in by the GL widget) | style |
 | `fonts.gstatic.com` | /support/ | the font files that stylesheet references | font |
-| `challenges.cloudflare.com` | /contact/ | Turnstile script + its **iframe** | script/frame |
+| `challenges.cloudflare.com` | /contact/, every page (footer newsletter) | Turnstile script + its **iframe** | script/frame |
+| `sibforms.com` | every page (footer newsletter) | Brevo form script (`main.js`) + the subscribe **POST target** | script/connect/**form-action** |
 | `static.cloudflareinsights.com` | every page | Cloudflare Web Analytics beacon script | script/connect |
 | `cloudflareinsights.com` | every page | analytics beacon POST target | connect |
 | `/cdn-cgi/*` (rum, challenge-platform, speculation) | every page | Cloudflare edge (same-origin) | covered by `'self'` |
@@ -71,19 +72,24 @@ X-Content-Type-Options: nosniff
 X-Frame-Options: DENY
 Referrer-Policy: strict-origin-when-cross-origin
 Permissions-Policy: camera=(), microphone=(), geolocation=()
-Content-Security-Policy: frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self'
-Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://secure.givelively.org https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://secure.givelively.org; img-src 'self' data: https://secure.givelively.org; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://secure.givelively.org https://static.cloudflareinsights.com https://cloudflareinsights.com; frame-src https://challenges.cloudflare.com https://secure.givelively.org; media-src 'self'
+Content-Security-Policy: frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self' https://sibforms.com https://*.sibforms.com
+Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://secure.givelively.org https://static.cloudflareinsights.com https://sibforms.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://secure.givelively.org; img-src 'self' data: https://secure.givelively.org; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://secure.givelively.org https://static.cloudflareinsights.com https://cloudflareinsights.com https://sibforms.com; frame-src https://challenges.cloudflare.com https://secure.givelively.org; media-src 'self'
 ```
 
 Notes on the values:
 
 - **Enforced CSP (structural only).** `frame-ancestors 'none'` backs up
-  `X-Frame-Options: DENY` (nothing may frame us). `form-action 'self'` means our
-  forms can only submit to our own origin — the contact form posts to
-  `/contact/submit`, a same-origin Worker route, so `'self'` is enough (there's
-  no Brevo/sibforms here, unlike litbible). `object-src 'none'` and
-  `base-uri 'self'` are cheap, universally-safe hardening. **These never need
-  editing when a widget is added.**
+  `X-Frame-Options: DENY` (nothing may frame us). `object-src 'none'` and
+  `base-uri 'self'` are cheap, universally-safe hardening.
+- **`form-action` is the one enforced directive that tracks the site's forms.**
+  It lists every origin a form may submit to, and because it is *enforced*, a
+  missing origin means the browser silently blocks the submit — no fallback, no
+  error the visitor can act on. Today: `/contact/submit` is same-origin
+  (`'self'`), and the footer newsletter posts cross-origin to Brevo, hence
+  `https://sibforms.com https://*.sibforms.com`. The wildcard is needed because
+  the form's action is on a per-account subdomain (`1742a6b7.sibforms.com`).
+  **If a form is ever added, removed, or repointed, update this line in the same
+  change.** The other three enforced directives need no such maintenance.
 - **`'unsafe-inline'` in the Report-Only script-src** is required by Astro's
   `is:inline` scripts and the inline Give Lively bootstrap; JSON-LD `<script
   type="application/ld+json">` blocks are data, not executable, and are exempt.
@@ -95,8 +101,12 @@ Notes on the values:
 
 1. After the rule is live, open **DevTools → Console** and click through
    **every** page — especially **/support/** (exercise the donate widget, open
-   the amount/checkout modal) and **/contact/** (let Turnstile render). Any
-   `[Report Only]` CSP violation names an origin the allowlist is missing.
+   the amount/checkout modal) and **/contact/** (let Turnstile render). Also
+   hover the **footer newsletter** on any page to trigger its lazy load, and
+   send a real test subscribe through it: the Brevo POST is governed by the
+   *enforced* `form-action`, so unlike the resource allowlist it fails hard
+   rather than just reporting. Any `[Report Only]` CSP violation names an origin
+   the allowlist is missing.
 2. The Give Lively **payment step** (card fields, Stripe/PayPal) was not driven
    to completion during the 2026-07-18 inventory, so its deepest origins may not
    be listed. In Report-Only that's harmless — but if you take a real test

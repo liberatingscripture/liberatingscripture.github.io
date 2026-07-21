@@ -14,6 +14,7 @@ Live at **[liberatingscripture.org](https://liberatingscripture.org)**.
 - **Fonts**: Crimson Text, Inter, Fraunces (self-hosted via `@fontsource`)
 - **Forms**: self-hosted Cloudflare Worker + Turnstile (contact page; see `workers/contact-form/`)
 - **Donations**: Give Lively (embed on the support page)
+- **Newsletter**: Brevo (footer form; posts to the shared LIT Bible list)
 - **Hosting**: GitHub Pages, deployed by GitHub Actions
 
 ## Getting started

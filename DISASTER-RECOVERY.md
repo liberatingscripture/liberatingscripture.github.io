@@ -28,11 +28,13 @@ domain is on **Cloudflare with the proxy enabled**, which sits in front of
 GitHub Pages — that's what lets one standalone **Cloudflare Worker**
 (`lsc-contact-form`) own `liberatingscripture.org/contact/submit` at the edge.
 The Worker delivers mail via **Cloudflare Email Routing's send binding**; bot
-protection on the contact form is **Cloudflare Turnstile** (one widget). Traffic
+protection on the contact form is **Cloudflare Turnstile** (one widget of our
+own; the footer newsletter renders a second one using Brevo's sitekey). Traffic
 measurement is **Cloudflare Web Analytics** (cookie-free). Off-platform:
 **GitHub** (repo + Pages + Actions), **Give Lively** (donations, embedded on
-/support/), and the **podcast platform accounts** (Apple / Spotify / YouTube for
-*Found in Translation*). Everything else is in the repo.
+/support/), **Brevo** (the footer newsletter — see below; the list itself is
+litbible's), and the **podcast platform accounts** (Apple / Spotify / YouTube
+for *Found in Translation*). Everything else is in the repo.
 
 ## Accounts & dashboards
 
@@ -48,6 +50,7 @@ this table only maps which services exist and which *kind* of identity owns each
 | GitHub | `liberatingscripture/liberatingscripture.github.io` repo, Pages, Actions | The primary admin identity |
 | Porkbun (registrar) | `liberatingscripture.org` domain registration | The owner's Porkbun account (login in the private doc) |
 | Give Lively | Donation widget on /support/ (nonprofit slug `liberating-scripture-collective`) | The owner |
+| Brevo | The footer newsletter form posts here. **This is litbible.net's Brevo account and its existing list — this site owns no Brevo assets**, it just points at them. Recovery, the subscriber list, and the sender identity are all covered by litbible's own DISASTER-RECOVERY. Losing Brevo breaks the footer form on both sites; nothing else here depends on it. | The primary admin identity (via litbible) |
 | Apple Podcasts / Spotify / YouTube | *Found in Translation* listings (Apple id `1586737797`, Spotify show `6S2wWaM5oqknwncPfOEyZ6`, `@foundintranslationpodcast`) — **linked from the site, not embedded** | **Managed by BDR**, not the site owner — podcast recovery goes through them |
 | Google Workspace (on the **litbible.net** domain) | The Google Drive holding the private Accounts doc, and the inbox that inbound `@liberatingscripture.org` mail is forwarded into. This org has no mailbox of its own — Cloudflare Email Routing forwards to a Workspace inbox on litbible.net (the specific address is the `DEST_EMAIL` secret value; kept in the private Drive doc). The `google._domainkey` + site-verification TXT records tie this domain to that same Google identity. | The primary admin identity |
 
@@ -243,6 +246,16 @@ creation, smoke tests) is in `workers/contact-form/README.md`.
   (`secure.givelively.org`, slug `liberating-scripture-collective`); nothing to
   recover on our side beyond the account login (in the private Drive doc). A
   Give Lively outage only affects the donate widget, not the rest of the site.
+- **Brevo (footer newsletter)** — the form posts to litbible's Brevo account;
+  this site stores nothing and owns no Brevo assets, so there is nothing here to
+  recover. A Brevo outage disables the subscribe form and leaves the rest of the
+  site untouched (the scripts are lazy-loaded on interaction, so pages that
+  nobody touches the form on don't even request them). **The subscriber list is
+  litbible's, and the export gap noted in litbible's DISASTER-RECOVERY applies
+  to subscribers gathered here too.** Note the form is also gated by the
+  *enforced* CSP `form-action` — if subscribes start failing silently with no
+  Brevo-side cause, check that rule before suspecting Brevo (see
+  `docs/security-headers.md`).
 - **Podcast platforms** — Apple / Spotify / YouTube are **linked, not
   embedded**, so an outage there never touches this site's build. The audio and
   feeds live in those accounts, which **BDR manages** (as with litbible's

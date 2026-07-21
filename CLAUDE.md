@@ -49,7 +49,7 @@ npm run build:og # Regenerate the per-page OG cards (one-shot; not in the build)
 src/
   components/
     SiteHeader.astro    # Sticky header with mobile menu
-    SiteFooter.astro    # Dark footer
+    SiteFooter.astro    # Dark footer + the Brevo newsletter form (see Privacy)
     AppsLaunchPopover.astro # LIT Bible app announcement modal (see Popover)
     AppIcons.astro      # The iOS + Android app icons as a matched pair
     ChurchYearCarousel.astro # Hebrews 1 cycling through the five liturgical
@@ -71,8 +71,8 @@ src/
     contact.astro       #   Contact form (posts to the contact Worker)
     contact/thanks.astro #  Native-POST success page (Worker 303s here as a
                         #     fallback when fetch fails/unavailable; noindex)
-    privacy.astro       #   Privacy policy (covers this site only; LIT Bible
-                        #     site + apps are covered by litbible.net/privacy)
+    privacy.astro       #   Privacy policy (covers this site AND the LIT Bible
+                        #     apps; app sections mirror litbible — see Privacy)
     404.astro
   styles/
     global.css          # Full design system (see Design System below)
@@ -203,7 +203,21 @@ These are configured in-page; update the IDs/keys here if they ever change:
   a true no-JS path. Replaced Formspree (`xdkqvlkj`, retired).
 - **Cloudflare Turnstile** — bot protection on the contact form. Sitekey
   `0x4AAAAAACJ446flkL7Rwf8i` in `src/pages/contact.astro`; the matching
-  secret key lives in the Worker's `TURNSTILE_SECRET` secret.
+  secret key lives in the Worker's `TURNSTILE_SECRET` secret. The footer
+  newsletter renders a **second** Turnstile widget using Brevo's own sitekey
+  (`0x4AAAAAACyvexOxVuDiY_85`) — which is why `/contact/` carries two. Two
+  consequences, both already handled: the footer's loader skips injecting
+  `turnstile/v0/api.js` when the page already has it, and `contact.astro`
+  resets its widget by container (`turnstile.reset("#contact-turnstile")`)
+  rather than with a bare `reset()`, which is ambiguous with two widgets.
+- **Brevo** — the footer newsletter (`SiteFooter.astro`), posting to the
+  **shared LIT Bible list** in litbible's Brevo account, not a separate LSC
+  one. Brevo's `main.js` is lazy-loaded on first hover/focus of the form and
+  requires the fixed ids `sib-form`, `error-message`, `success-message`, and
+  `sib-captcha` — don't rename them. **The enforced CSP's `form-action` must
+  list `sibforms.com`** or the POST is silently blocked; see
+  `docs/security-headers.md`. If a page ever needs its own Brevo form, port
+  litbible's `hideNewsletter` prop — two forms collide on the `sib-form` id.
 - **Give Lively** — donations (live; slug `liberating-scripture-collective`).
   Widget embedded in `src/pages/support.astro`.
 - **Apple Podcasts** — Found in Translation podcast ID `1586737797`.
@@ -271,6 +285,29 @@ ever render an icon outside it:
   identical to the card's `INK` field, so the tile vanishes and the mark looks
   like it floats next to a properly-tiled iOS icon. `build-og-images.mjs` uses
   `#2A3227` there for that reason only.
+
+## Privacy Policy (`/privacy`)
+
+The policy covers **this site and the LIT Bible apps**, and is deliberately
+kept in step with `litbible.net/privacy`. Like `/apps`, treat it as mirrored
+content: **when either site's policy changes, change both.**
+
+- **The app sections are shared text.** *Your reading data*, *Content updates*,
+  *The home screen widget*, *Sharing*, *Third-party software*, and *Children*
+  are the same copy on both sites. litbible.net/privacy is the **policy of
+  record** — it's the URL the App Store and Play listings point at — and the
+  Scope section says so, so the two can't silently contradict each other.
+- **The site sections are not shared, and shouldn't be.** Each site describes
+  its own data flows: LSC *embeds* the Give Lively widget on `/support/` (a
+  first-party flow needing a real disclosure), where litbible only links out.
+  LSC has one contact form; litbible has contact + app-support. Don't flatten
+  these toward litbible's wording.
+- **Cookies must match the code.** The policy names `lsc_apps_launch_v1` and
+  the `lsc_pv` session counter because `AppsLaunchPopover.astro` sets them. If
+  the popover's storage changes, or a component starts setting anything new,
+  update the Cookies paragraph in the same change — a privacy policy that
+  under-reports storage is worse than one that says nothing.
+- Bump the effective date **and** the JSON-LD `dateModified` together.
 
 ## AI & Crawler Policy (`public/robots.txt`)
 

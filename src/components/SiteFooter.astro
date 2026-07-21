@@ -68,6 +68,111 @@ const year = new Date().getFullYear();
       >
         <span>Read the LIT Bible ↗</span>
       </a>
+
+      {/* Brevo newsletter — posts to the shared LIT Bible list (same Brevo
+          account as litbible.net). The fixed ids below (sib-form,
+          error-message, success-message, sib-captcha), the
+          handleCaptchaResponse global, the honeypot, and the locale field are
+          all required by Brevo's main.js — don't rename them. If this site
+          ever gains a page with its own Brevo form (litbible has
+          /unsubscribe), add litbible's `hideNewsletter` prop: two forms on one
+          page collide on the shared sib-form id. */}
+      <section
+        class="footer-newsletter"
+        aria-labelledby="footer-newsletter-heading"
+      >
+        <h2 id="footer-newsletter-heading" class="footer-newsletter__heading">
+          Stay informed
+        </h2>
+        <p class="footer-newsletter__desc">
+          New translations, articles, and LIT Bible news direct to your inbox.
+        </p>
+
+        {/* Brevo success/error panels — visibility toggled by Brevo main.js */}
+        <div
+          id="error-message"
+          class="footer-newsletter__message footer-newsletter__message--error"
+          role="alert"
+          aria-live="assertive"
+          aria-atomic="true"
+        >
+          Your subscription could not be saved. Please try again.
+        </div>
+
+        <div
+          id="success-message"
+          class="footer-newsletter__message footer-newsletter__message--success"
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
+        >
+          You're subscribed. Thanks for signing up!
+        </div>
+
+        <form
+          id="sib-form"
+          class="footer-newsletter__form"
+          method="POST"
+          action="https://1742a6b7.sibforms.com/serve/MUIFAKJyiPPqI2bardfqrp4wdqO-pfiy9S0T0d29zd_v8G57bZ4nS9ClYWCPu64OSzzQyw7yTR9wqyWr-vdn17UIhr2fG1OFFtGvdeEHWM-b9y94UUNmT3jjFI_8ltcZGK3w1h_iMk2Aylrk3qAQqLSPdAV51iOZf0SVzMSSVh41B1CKoomPPA_6j5j3arPgHjcdzi76_cLEFKzQKA=="
+          data-type="subscription"
+          novalidate
+        >
+          <div class="footer-newsletter__row">
+            <label for="footer-email" class="sr-only">Email address</label>
+            <input
+              id="footer-email"
+              type="email"
+              name="EMAIL"
+              placeholder="your@email.com"
+              autocomplete="email"
+              required
+              data-required="true"
+              class="footer-newsletter__input"
+            />
+            <button
+              type="submit"
+              class="footer-newsletter__submit"
+              form="sib-form"
+              disabled
+            >
+              Subscribe
+            </button>
+          </div>
+
+          {/* Inline field error — populated by Brevo main.js */}
+          <label
+            class="entry__error entry__error--primary footer-newsletter__field-error"
+            aria-live="polite"></label>
+
+          {/* Turnstile — Brevo's own site key; callback required by main.js */}
+          <div class="footer-newsletter__turnstile">
+            <div
+              class="cf-turnstile g-recaptcha"
+              data-sitekey="0x4AAAAAACyvexOxVuDiY_85"
+              id="sib-captcha"
+              data-callback="handleCaptchaResponse"
+              data-language="en"
+              data-theme="dark"
+            >
+            </div>
+            <label
+              class="entry__error entry__error--primary footer-newsletter__field-error"
+              aria-live="polite"></label>
+          </div>
+
+          {/* Brevo required hidden fields */}
+          <input
+            type="text"
+            name="email_address_check"
+            value=""
+            class="footer-newsletter__honeypot"
+            aria-hidden="true"
+            tabindex="-1"
+            autocomplete="off"
+          />
+          <input type="hidden" name="locale" value="en" />
+        </form>
+      </section>
     </div>
   </div>
 </footer>
@@ -75,6 +180,73 @@ const year = new Date().getFullYear();
 <script>
   const el = document.getElementById("footerYear");
   if (el) el.textContent = String(new Date().getFullYear());
+</script>
+
+{/* Brevo scripts — lazy-loaded on first user interaction with the newsletter
+    form, so the footer costs nothing on pages nobody subscribes from. */}
+<script is:inline>
+  (function () {
+    var loaded = false;
+    var submitBtn = document.querySelector(".footer-newsletter__submit");
+
+    function loadBrevoScripts() {
+      if (loaded) return;
+      loaded = true;
+
+      // Brevo config globals
+      window.REQUIRED_CODE_ERROR_MESSAGE = "Please choose a country code";
+      window.LOCALE = "en";
+      window.EMAIL_INVALID_MESSAGE = window.SMS_INVALID_MESSAGE =
+        "The information provided is invalid. Please review the field format and try again.";
+      window.REQUIRED_ERROR_MESSAGE = "This field cannot be left blank.";
+      window.GENERIC_INVALID_MESSAGE =
+        "The information provided is invalid. Please review the field format and try again.";
+      window.translation = {
+        common: {
+          selectedList: "{quantity} list selected",
+          selectedLists: "{quantity} lists selected",
+          selectedOption: "{quantity} selected",
+          selectedOptions: "{quantity} selected",
+        },
+      };
+
+      window.handleCaptchaResponse = function () {
+        var event = new Event("captchaChange");
+        document.getElementById("sib-captcha").dispatchEvent(event);
+        window.grecaptcha = window.turnstile;
+      };
+
+      // Inject Brevo form JS — re-enable submit when ready
+      var s1 = document.createElement("script");
+      s1.src = "https://sibforms.com/forms/end-form/build/main.js";
+      s1.onload = function () {
+        if (submitBtn) submitBtn.disabled = false;
+      };
+      document.body.appendChild(s1);
+
+      // Inject Cloudflare Turnstile — /contact/ already loads this for its own
+      // widget, so skip it there rather than double-loading the API.
+      if (!document.querySelector('script[src*="turnstile/v0/api.js"]')) {
+        var s2 = document.createElement("script");
+        s2.src = "https://challenges.cloudflare.com/turnstile/v0/api.js";
+        s2.async = true;
+        document.body.appendChild(s2);
+      }
+    }
+
+    var form = document.getElementById("sib-form");
+    if (!form) return;
+
+    // Load on first pointer or keyboard interaction with the form
+    function onInteraction() {
+      form.removeEventListener("pointerover", onInteraction);
+      form.removeEventListener("focusin", onInteraction);
+      loadBrevoScripts();
+    }
+
+    form.addEventListener("pointerover", onInteraction);
+    form.addEventListener("focusin", onInteraction);
+  })();
 </script>
 
 <style>
@@ -178,6 +350,151 @@ const year = new Date().getFullYear();
     color: var(--ink);
   }
 
+  /* Newsletter
+     The footer band is a fixed dark surface in both themes, so anything that
+     would resolve to a dark value in light mode (var(--border), var(--text))
+     is hardcoded light here instead. The input keeps the theme tokens: it's an
+     inset surface, so its background and text flip together and stay legible. */
+  .footer-newsletter {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+  }
+
+  .footer-newsletter__heading {
+    font-family: Inter, sans-serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #8a8882;
+    margin: 0;
+  }
+
+  .footer-newsletter__desc {
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: #c8c6c0;
+    margin: 0;
+    max-width: 34ch;
+  }
+
+  /* Brevo status panels — hidden by default, shown by main.js */
+  .footer-newsletter__message {
+    display: none;
+    font-size: 0.85rem;
+    line-height: 1.4;
+    padding: 0.6rem 0.75rem;
+    border-radius: 6px;
+    border: 1px solid transparent;
+  }
+
+  .footer-newsletter__message--error {
+    color: #661d1d;
+    background-color: #ffeded;
+    border-color: #ff4949;
+  }
+
+  .footer-newsletter__message--success {
+    color: #085229;
+    background-color: #e7faf0;
+    border-color: #13ce66;
+  }
+
+  .footer-newsletter__row {
+    display: flex;
+    margin-top: 0.15rem;
+  }
+
+  .footer-newsletter__input {
+    flex: 1;
+    min-width: 0;
+    padding: 10px 14px;
+    font-size: 0.9rem;
+    font-family: inherit;
+    color: var(--text);
+    background: var(--surface-input);
+    /* 0.55, not the 0.4 used elsewhere in this footer: in dark mode
+       --surface-input sits at 1.2:1 against the band, so this border is the
+       only thing that gives the field a shape. 0.55 clears 3:1; 0.4 doesn't. */
+    border: 1px solid rgba(200, 198, 192, 0.55);
+    border-right: none;
+    border-radius: 8px 0 0 8px;
+    outline: none;
+    transition: border-color 160ms ease, box-shadow 160ms ease;
+  }
+
+  .footer-newsletter__input:focus {
+    border-color: var(--green);
+    box-shadow: 0 0 0 2px rgba(32, 157, 80, 0.35);
+  }
+
+  .footer-newsletter__input::placeholder {
+    color: var(--text);
+    opacity: 0.5;
+  }
+
+  .footer-newsletter__submit {
+    padding: 10px 16px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-family: inherit;
+    cursor: pointer;
+    white-space: nowrap;
+    color: var(--ink);
+    background: var(--green);
+    border: 1px solid var(--green);
+    border-radius: 0 8px 8px 0;
+    transition: background-color 160ms ease, color 160ms ease;
+  }
+
+  /* Hover goes to cream, not ink: an ink fill on the ink footer would erase
+     the button's shape. Mirrors .btn--outline:hover above. */
+  .footer-newsletter__submit:hover,
+  .footer-newsletter__submit:focus {
+    background: var(--cream);
+    border-color: var(--cream);
+    color: var(--ink);
+  }
+
+  .footer-newsletter__submit:focus-visible {
+    outline: 2px solid var(--green);
+    outline-offset: 2px;
+  }
+
+  /* Stays clickable while Brevo's main.js loads — the click that lands first
+     is what triggers the load. */
+  .footer-newsletter__submit:disabled {
+    opacity: 1;
+    cursor: pointer;
+  }
+
+  .footer-newsletter__field-error {
+    display: block;
+    font-size: 0.78rem;
+    color: #ff9a9a;
+    margin-top: 0.2rem;
+  }
+
+  .footer-newsletter__turnstile {
+    margin-top: 0.5rem;
+  }
+
+  .footer-newsletter__honeypot {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
   /* Responsive */
   @media (max-width: 960px) {
     .footer-inner {
@@ -190,9 +507,19 @@ const year = new Date().getFullYear();
     .footer-col--cta {
       flex-direction: row;
       flex-wrap: wrap;
+      align-items: flex-start;
     }
     .footer-cta-btn {
       width: auto;
+    }
+    /* The CTA column turns into a row here — keep the form on its own line
+       rather than letting it sit beside the buttons. */
+    .footer-newsletter {
+      flex-basis: 100%;
+      margin-top: 0.75rem;
+    }
+    .footer-newsletter__row {
+      max-width: 360px;
     }
   }
 

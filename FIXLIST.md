@@ -861,6 +861,10 @@ accessibility defects), then F2→OW1 (security headers).
   identically with or without the param, and no-JS visitors see the normal
   form. Newsletter remains the eventual answer (owner backlog; ties to
   litbible's Brevo setup).
+  UPDATE 2026-07-20: the newsletter half of this is now resolved — the footer
+  carries litbible's Brevo form (pointing at the shared LIT Bible list), so
+  "get notified" has a real home. The `?topic=twb` contact flow above is left
+  as-is; revisit only if TWB warrants its own Brevo list.
   Problem: the "Get notified" CTA on /podcasts/ drops people into the
   generic contact form with no indication of why they came — friction and
   lost signal. A newsletter is the real answer eventually (the privacy
@@ -917,6 +921,12 @@ accessibility defects), then F2→OW1 (security headers).
   `curl -sI https://liberatingscripture.org/` and click through /support/
   and /contact/ with the console open, adding any origin the Give Lively
   payment step flags in Report-Only.
+  UPDATED 2026-07-20 (footer newsletter): the checklist now includes
+  `sibforms.com`. Note the **enforced** `form-action` is no longer
+  `'self'`-only — it must carry `https://sibforms.com https://*.sibforms.com`
+  or the newsletter POST is blocked outright (enforced, not Report-Only, so it
+  fails silently rather than logging a violation). Copy the header lines from
+  the doc verbatim; don't reconstruct them from the older audit text.
 
 - [ ] **(OW2) Verify the Organization schema facts: foundingDate and EIN.**
   `src/pages/index.astro` JSON-LD says `foundingDate: "2020"` and `taxID:
@@ -977,3 +987,21 @@ accessibility defects), then F2→OW1 (security headers).
   follow the same precedent rather than adding a `dependabot.yml`. Action:
   flip that toggle in this repo's GitHub Settings. No code change; nothing
   a model can do here.
+
+- [ ] **(OW9) Confirm Brevo's Turnstile sitekey works on liberatingscripture.org.**
+  Added 2026-07-20 with the footer newsletter. The form renders Turnstile with
+  **Brevo's** sitekey (`0x4AAAAAACyvexOxVuDiY_85`), copied from litbible.
+  Turnstile sitekeys carry a domain allowlist that lives in *Brevo's* account,
+  not ours, so whether it renders on a second domain can't be settled from this
+  repo — and local testing proves nothing either way: on localhost the widget
+  renders no iframe on **either** site, so litbible's known-good setup behaves
+  identically to this one.
+  Action: after deploy, load any page on the live domain, hover the footer form
+  to trigger its lazy load, and confirm the widget appears and a real subscribe
+  lands in the Brevo list. If it errors (Turnstile reports `110200` for a
+  disallowed domain), add `liberatingscripture.org` in Brevo's form/domain
+  settings. If Brevo won't allow a second domain, fall back to linking Brevo's
+  hosted subscribe page from the footer instead of embedding the form.
+  Note this is downstream of OW1 — if `form-action` isn't widened first, the
+  subscribe fails for that reason instead, so do OW1 before diagnosing here.
+  Verify: widget renders on the live domain; test subscribe appears in Brevo.
