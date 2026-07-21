@@ -12,6 +12,7 @@ const {
   ogImageAlt = "Liberating Scripture Collective: open-access, trauma-informed scripture translation and spiritual community",
   twitterCard = "summary_large_image",
   noindex = false,
+  hideFooterNewsletter = false, // pages with their own Brevo form (e.g. /unsubscribe)
 } = Astro.props;
 
 const siteOrigin = "https://liberatingscripture.org";
@@ -69,7 +70,7 @@ const ogImageUrl = ogImage ?? `${siteOrigin}/assets/og/og-default.png`;
     <main id="main-content">
       <slot />
     </main>
-    <SiteFooter />
+    <SiteFooter hideNewsletter={hideFooterNewsletter} />
     <AppsLaunchPopover />
   </body>
 </html>

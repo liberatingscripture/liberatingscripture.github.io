@@ -1,4 +1,11 @@
 ---
+/**
+ * hideNewsletter: omit the Brevo subscribe form. Used on /unsubscribe, which
+ * embeds its own Brevo form — Brevo markup requires fixed ids (sib-form,
+ * error-message, success-message), so two forms on one page collide.
+ */
+const { hideNewsletter = false } = Astro.props;
+
 const year = new Date().getFullYear();
 ---
 
@@ -87,6 +94,7 @@ const year = new Date().getFullYear();
 
           Keep the hidden `email_address_check` honeypot and `locale` fields —
           Brevo still expects both in the POST body. */}
+      {!hideNewsletter && (
       <section
         class="footer-newsletter"
         aria-labelledby="footer-newsletter-heading"
@@ -176,6 +184,7 @@ const year = new Date().getFullYear();
           <input type="hidden" name="locale" value="en" />
         </form>
       </section>
+      )}
     </div>
   </div>
 </footer>
@@ -188,8 +197,9 @@ const year = new Date().getFullYear();
 {/* Newsletter submit. Turnstile is lazy-loaded on first interaction with the
     form, so the footer costs nothing on pages nobody subscribes from; the POST
     is our own fetch (see the markup comment above for why Brevo's main.js is
-    not used). */}
-<script is:inline>
+    not used). Skipped when the newsletter form is hidden — otherwise this would
+    bind to /unsubscribe's identically-id'd form. */}
+{!hideNewsletter && <script is:inline>
   (function () {
     var form = document.getElementById("sib-form");
     if (!form) return;
@@ -285,7 +295,7 @@ const year = new Date().getFullYear();
         });
     });
   })();
-</script>
+</script>}
 
 <style>
   .site-footer {

@@ -7,8 +7,10 @@ export default defineConfig({
   compressHTML: true,
   integrations: [
     sitemap({
-      // noindex utility page (the contact form's no-JS success redirect)
-      filter: (page) => !page.includes('/contact/thanks/'),
+      // noindex utility pages: the contact form's no-JS success redirect, and
+      // the newsletter unsubscribe form (reached from email footers, not search)
+      filter: (page) =>
+        !page.includes('/contact/thanks/') && !page.includes('/unsubscribe/'),
     }),
   ],
 });
