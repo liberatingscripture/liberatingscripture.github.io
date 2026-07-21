@@ -374,6 +374,14 @@ error**, never attaches a submit handler, and pressing Subscribe does
 markup and fails identically) by instrumenting the page and confirming zero XHR
 or fetch on submit.
 
+**And the replacement is proven, not just assumed.** Both directions were
+live-tested end-to-end on the deployed site 2026-07-21: a real subscribe
+through the footer form (Turnstile render → token → POST → contact appears in
+the LSC Brevo list) and a real unsubscribe through `/unsubscribe` (contact
+removed). So the `fetch` approach is confirmed working server-side as well as
+client-side — there is no open question that reintroducing `main.js` would
+answer.
+
 **What replaced it.** The submit handler validates the email, reads the
 Turnstile token from the hidden `cf-turnstile-response` input the widget
 injects, and POSTs `EMAIL` + `email_address_check` (honeypot, empty) + `locale`
@@ -417,6 +425,9 @@ survive it — don't "restore" them to match litbible:
   measures ~1.3:1 on the dark page; the token gives 8.96:1 light / 8.31:1 dark.
   The status *panels* keep litbible's flat colors — those pin a background too,
   so they're legible either way.
+
+Live-tested end-to-end 2026-07-21: a real submit removes the contact from the
+LSC list (see "And the replacement is proven" above).
 
 The page is `noindex` and excluded from the sitemap (`astro.config.mjs`), and
 `AppsLaunchPopover` suppresses itself there — nobody should be pitched an app
