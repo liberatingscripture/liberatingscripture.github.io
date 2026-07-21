@@ -1,0 +1,206 @@
+/* =========================
+   Unsubscribe page
+   Ported from litbible.net's own unsubscribe.css. Two deliberate divergences,
+   both because LSC's page background flips with the theme where litbible's
+   tokens differ — see the comments at .unsub-form__submit:hover and
+   .unsub-form__field-error.
+   ========================= */
+
+.unsub-page {
+  min-height: 60vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 5rem 2rem 6rem;
+}
+
+.unsub-page__inner {
+  width: 100%;
+  max-width: 520px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.unsub-page__heading {
+  margin: 0 0 0.25rem;
+}
+
+.unsub-page__desc {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--text);
+  margin: 0;
+}
+
+/* Status panels — hidden until the submit handler adds .is-visible.
+   These pin both foreground and background, so they stay legible in both
+   themes without needing the tokens. */
+.unsub-message {
+  display: none;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  padding: 0.6rem 0.75rem;
+  border-radius: 6px;
+  border: 1px solid transparent;
+}
+
+/* flex, not block — the panel lays out an icon beside its text */
+.unsub-message.is-visible {
+  display: flex;
+}
+
+.unsub-message--error {
+  color: #661d1d;
+  background-color: #ffeded;
+  border-color: #ff4949;
+}
+
+.unsub-message--success {
+  color: #085229;
+  background-color: #e7faf0;
+  border-color: #13ce66;
+}
+
+.unsub-message__icon {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}
+
+/* Input + button row */
+.unsub-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-top: 0.5rem;
+}
+
+.unsub-form__row {
+  display: flex;
+  gap: 0;
+}
+
+.unsub-form__input {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 14px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  color: var(--text);
+  background: var(--surface-input);
+  border: 1px solid var(--border);
+  border-right: none;
+  border-radius: 8px 0 0 8px;
+  outline: none;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+/* litbible focuses to var(--green-text), which this site doesn't define;
+   --green is what SiteFooter already uses for the same purpose here. */
+.unsub-form__input:focus {
+  border-color: var(--green);
+  box-shadow: 0 0 0 2px rgba(32, 157, 80, 0.2);
+}
+
+.unsub-form__input::placeholder {
+  color: var(--text);
+  opacity: 0.4;
+}
+
+.unsub-form__submit {
+  padding: 10px 18px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+
+  color: var(--ink);
+  background: var(--green);
+  border: 1px solid var(--green);
+  border-radius: 0 8px 8px 0;
+
+  transition: background-color 180ms ease, color 180ms ease;
+}
+
+/* The CTA tokens, not raw --ink/--green. litbible hovers to an ink fill, which
+   works there; here the dark page background (#1a1e1a) sits almost exactly on
+   --ink (#1D231C), so an ink pill would vanish on hover in dark mode — the
+   trap documented under "Buttons must use the CTA tokens" in CLAUDE.md. The
+   tokens resolve to ink/green in light (identical to litbible) and flip to a
+   pale fill in dark. */
+.unsub-form__submit:hover,
+.unsub-form__submit:focus {
+  background: var(--cta-bg);
+  border-color: var(--cta-bg);
+  color: var(--cta-text);
+}
+
+.unsub-form__submit:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: 2px;
+}
+
+/* Only disabled while a submit is in flight. */
+.unsub-form__submit:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+/* litbible uses a flat #661d1d. Unlike the status panels above, this text has
+   no background of its own — it sits straight on the page — and #661d1d is
+   ~1.3:1 on this site's dark page background, i.e. invisible. So the value is
+   carried by a page-scoped token flipped in the same three blocks global.css
+   uses for its own tokens, rather than by re-declaring `color` in a media
+   query (see CLAUDE.md, "Buttons must use the CTA tokens"). */
+.unsub-page {
+  --unsub-error-fg: #661d1d;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .unsub-page {
+    --unsub-error-fg: #ff9a9a;
+  }
+}
+
+:root[data-theme="dark"] .unsub-page {
+  --unsub-error-fg: #ff9a9a;
+}
+
+.unsub-form__field-error {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--unsub-error-fg);
+  min-height: 0;
+}
+
+.unsub-form__honeypot {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .unsub-form__input,
+  .unsub-form__submit {
+    transition: none;
+  }
+}
+
+@media (max-width: 720px) {
+  .unsub-page {
+    padding: 3rem 1.25rem 4rem;
+  }
+}

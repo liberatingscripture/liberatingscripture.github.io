@@ -81,12 +81,16 @@ src/
     contact.astro       #   Contact form (posts to the contact Worker)
     contact/thanks.astro #  Native-POST success page (Worker 303s here as a
                         #     fallback when fetch fails/unavailable; noindex)
+    unsubscribe.astro   #   Self-serve newsletter opt-out (noindex; hides the
+                        #     footer newsletter — see The newsletter submits
+                        #     itself). Reached from email footers, not nav.
     privacy.astro       #   Privacy policy (covers this site AND the LIT Bible
                         #     apps; app sections mirror litbible — see Privacy)
     404.astro
   styles/
     global.css          # Full design system (see Design System below)
     pages/
+      unsubscribe.css   # /unsubscribe's own stylesheet (ported from litbible)
       apps.css          # /apps's own stylesheet — litbible's apps.css ported
                         #   verbatim, plus an LSC bridge ahead of it (see
                         #   Apps Page). Imported ONLY by pages/apps.astro.
@@ -225,11 +229,16 @@ These are configured in-page; update the IDs/keys here if they ever change:
   has it, and `contact.astro` resets its widget by container
   (`turnstile.reset("#contact-turnstile")`) rather than with a bare `reset()`,
   which is ambiguous with two widgets.
-- **Brevo** — the footer newsletter (`SiteFooter.astro`), posting to **LSC's
-  own list/form**, in the same Brevo account as litbible.net but a dedicated
-  list (not litbible's translation-update list). **We do not load Brevo's
-  `main.js`** — see "The newsletter submits itself" below. Turnstile is
-  lazy-loaded on first hover/focus of the form; the POST is our own `fetch`.
+- **Brevo** — two forms, both posting to **LSC's own list**, in the same Brevo
+  account as litbible.net but a dedicated list (not litbible's
+  translation-update list): the footer newsletter (`SiteFooter.astro`) and the
+  opt-out on `/unsubscribe` (`pages/unsubscribe.astro`). They are separate
+  Brevo forms with **separate `action` tokens**, and litbible's tokens are not
+  interchangeable with these — a litbible token would act on litbible's list.
+  **We do not load Brevo's `main.js`** for either — see "The newsletter submits
+  itself" below. Turnstile is lazy-loaded on first hover/focus of the subscribe
+  form (the unsubscribe form has no captcha — Brevo's unsubscription form
+  carries none); both POSTs are our own `fetch`.
   **The enforced CSP's `form-action` must list `sibforms.com`** or the POST is
   silently blocked; see `docs/security-headers.md`.
 - **Give Lively** — donations (live; slug `liberating-scripture-collective`).
@@ -349,9 +358,10 @@ ever render an icon outside it:
 
 ## The newsletter submits itself — don't reintroduce Brevo's `main.js`
 
-The footer newsletter in `SiteFooter.astro` posts with its **own `fetch`**, not
-with `https://sibforms.com/forms/end-form/build/main.js`. This is deliberate and
-was arrived at by debugging a silent failure, so don't "restore" the script.
+The footer newsletter in `SiteFooter.astro` **and the opt-out form on
+`/unsubscribe`** post with their **own `fetch`**, not with
+`https://sibforms.com/forms/end-form/build/main.js`. This is deliberate and was
+arrived at by debugging a silent failure, so don't "restore" the script.
 
 **Why.** Brevo's `main.js` binds to the structural markup its generated snippet
 ships with: `.sib-form`, `#sib-form-container`, `#sib-container`,
@@ -383,6 +393,35 @@ Consequences worth knowing:
   with litbible, but nothing external depends on them now.
 - **Keep the honeypot and `locale` hidden fields** — Brevo still expects both
   in the POST body.
+
+### `/unsubscribe` and the `hideFooterNewsletter` prop
+
+Brevo's markup pins a handful of ids (`sib-form`, `error-message`,
+`success-message`), and both LSC forms inherit them — so the two **collide on
+any page carrying both**. `Layout.astro` therefore takes
+`hideFooterNewsletter`, which it forwards to `SiteFooter.astro` as
+`hideNewsletter`; that guard omits **both** the newsletter markup and its
+inline submit script (leave the script guarded — unguarded, it binds
+`#sib-form` and would hijack the unsubscribe form's submit). `/unsubscribe`
+is the only page that sets it. Same mechanism as litbible's.
+
+Two deliberate divergences from litbible's `unsubscribe.css`, both because
+LSC's page background flips with the theme and litbible's flat values don't
+survive it — don't "restore" them to match litbible:
+
+- The submit's **hover** uses `--cta-bg`/`--cta-text`, not raw `--ink`/`--green`
+  (see "Buttons must use the CTA tokens": an ink pill on the `#1a1e1a` dark page
+  is invisible). Resolves identically to litbible in light mode.
+- `.unsub-form__field-error` reads a page-scoped `--unsub-error-fg` token,
+  flipped in the same three blocks `global.css` uses. litbible's flat `#661d1d`
+  measures ~1.3:1 on the dark page; the token gives 8.96:1 light / 8.31:1 dark.
+  The status *panels* keep litbible's flat colors — those pin a background too,
+  so they're legible either way.
+
+The page is `noindex` and excluded from the sitemap (`astro.config.mjs`), and
+`AppsLaunchPopover` suppresses itself there — nobody should be pitched an app
+mid-opt-out. It's linked from `/privacy`, and otherwise reached from email
+footers; it is deliberately not in the nav.
 
 ## Privacy Policy (`/privacy`)
 

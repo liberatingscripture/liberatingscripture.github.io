@@ -391,9 +391,12 @@ const APPS_URL = "/apps/";
   // Never on a session entrance (a modal on a search-landing page is exactly
   // what Google's intrusive-interstitial penalty targets), and never on /apps
   // (the CTA's own destination) or /lit-bible (which carries the announcement
-  // in-page), nor on /privacy or the contact confirmation — pages people open
-  // to read or to finish a task, not to be pitched to.
-  const SUPPRESSED_PATHS = /^\/(apps|lit-bible|privacy|contact\/thanks)\/?$/;
+  // in-page), nor on /privacy, /unsubscribe, or the contact confirmation —
+  // pages people open to read or to finish a task, not to be pitched to.
+  // (/unsubscribe especially: pitching an app to someone mid-opt-out is the
+  // worst possible moment for it.)
+  const SUPPRESSED_PATHS =
+    /^\/(apps|lit-bible|privacy|unsubscribe|contact\/thanks)\/?$/;
   const eligible =
     !SUPPRESSED_PATHS.test(location.pathname) && pageviews >= 2;
 
