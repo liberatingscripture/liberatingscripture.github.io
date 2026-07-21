@@ -992,7 +992,7 @@ accessibility defects), then F2→OW1 (security headers).
   flip that toggle in this repo's GitHub Settings. No code change; nothing
   a model can do here.
 
-- [ ] **(OW9) Confirm the newsletter's Turnstile widget works end-to-end on
+- [x] **(OW9) Confirm the newsletter's Turnstile widget works end-to-end on
   liberatingscripture.org.**
   Added 2026-07-20 with the footer newsletter, which originally reused
   **litbible's** sitekey (`0x4AAAAAACyvexOxVuDiY_85`) unchanged.
@@ -1035,6 +1035,14 @@ accessibility defects), then F2→OW1 (security headers).
   If it fails, check Brevo's form/captcha settings for that pairing.
   Verify: submit a real email through the live footer form; confirm the
   success message shows and the address appears in the LSC Brevo list.
+  **DONE 2026-07-21:** the owner ran that live subscribe and it succeeded, so
+  the secret paired with `0x4AAAAAAD6VVgt-e5g_YNul` is configured correctly in
+  Brevo and the whole chain — Turnstile render → token → `fetch` POST → Brevo
+  — is confirmed working server-side as well as client-side. Closes the last
+  unverified link in this item. `/unsubscribe` (added the same day, and using
+  the same no-`main.js` fetch approach) was live-tested by the owner in the
+  same pass and also works, so both directions of the Brevo integration are
+  now proven end-to-end.
 
 - [ ] **(OW10) litbible.net's footer newsletter is broken the same way.**
   Found 2026-07-21 while debugging OW9, by running the same probe against
