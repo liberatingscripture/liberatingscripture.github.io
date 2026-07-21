@@ -69,16 +69,24 @@ const year = new Date().getFullYear();
         <span>Read the LIT Bible ↗</span>
       </a>
 
-      {/* Brevo newsletter — posts to LSC's own list/form (same Brevo account
-          as litbible.net, but a dedicated list — not litbible's translation-
-          update list). The fixed ids below (sib-form, error-message,
-          success-message, sib-captcha), the handleCaptchaResponse global, the
-          honeypot, and the locale field are all required by Brevo's main.js —
-          don't rename them. If this site ever gains a page with its own Brevo
-          form (litbible has /unsubscribe), add litbible's `hideNewsletter`
-          prop: two forms on one page collide on the shared sib-form id.
-          NOTE: the Turnstile sitekey below is now a dedicated widget scoped
-          to this domain (not litbible's shared one) — see FIXLIST OW9. */}
+      {/* Newsletter — posts to LSC's own Brevo list (same Brevo account as
+          litbible.net, but a dedicated list, not litbible's translation-update
+          list). The Turnstile widget is likewise our own, scoped to this
+          domain.
+
+          This deliberately does NOT load Brevo's `main.js`. That script binds
+          to the structural markup Brevo's generated snippet ships with
+          (.sib-form, #sib-form-container, #sib-container, .entry__field,
+          .sib-form-block__button, and id="EMAIL" on the input) — none of which
+          survives restyling the form into this site's design system. It loads
+          without error, silently never attaches a submit handler, and the
+          Subscribe button does nothing. Verified live on both this site and
+          litbible.net, which carries the same ported markup. So we submit with
+          our own fetch() instead: the sibforms endpoint accepts cross-origin
+          POSTs and returns a readable status, which is all we need.
+
+          Keep the hidden `email_address_check` honeypot and `locale` fields —
+          Brevo still expects both in the POST body. */}
       <section
         class="footer-newsletter"
         aria-labelledby="footer-newsletter-heading"
@@ -90,7 +98,7 @@ const year = new Date().getFullYear();
           News about LSC projects and updates, direct to your inbox.
         </p>
 
-        {/* Brevo success/error panels — visibility toggled by Brevo main.js */}
+        {/* Status panels — hidden until the submit handler reveals one */}
         <div
           id="error-message"
           class="footer-newsletter__message footer-newsletter__message--error"
@@ -128,39 +136,31 @@ const year = new Date().getFullYear();
               placeholder="your@email.com"
               autocomplete="email"
               required
-              data-required="true"
               class="footer-newsletter__input"
             />
-            <button
-              type="submit"
-              class="footer-newsletter__submit"
-              form="sib-form"
-              disabled
-            >
+            <button type="submit" class="footer-newsletter__submit" form="sib-form">
               Subscribe
             </button>
           </div>
 
-          {/* Inline field error — populated by Brevo main.js */}
+          {/* Inline validation message for the email field */}
           <label
-            class="entry__error entry__error--primary footer-newsletter__field-error"
+            class="footer-newsletter__field-error"
+            for="footer-email"
             aria-live="polite"></label>
 
-          {/* Turnstile — our own dedicated widget for this domain; callback
-              required by main.js */}
+          {/* Turnstile — our own dedicated widget for this domain. Rendered
+              implicitly by the API script scanning for .cf-turnstile; the
+              token lands in a hidden cf-turnstile-response input inside. */}
           <div class="footer-newsletter__turnstile">
             <div
-              class="cf-turnstile g-recaptcha"
+              class="cf-turnstile"
               data-sitekey="0x4AAAAAAD6VVgt-e5g_YNul"
               id="sib-captcha"
-              data-callback="handleCaptchaResponse"
               data-language="en"
               data-theme="dark"
             >
             </div>
-            <label
-              class="entry__error entry__error--primary footer-newsletter__field-error"
-              aria-live="polite"></label>
           </div>
 
           {/* Brevo required hidden fields */}
@@ -185,70 +185,105 @@ const year = new Date().getFullYear();
   if (el) el.textContent = String(new Date().getFullYear());
 </script>
 
-{/* Brevo scripts — lazy-loaded on first user interaction with the newsletter
-    form, so the footer costs nothing on pages nobody subscribes from. */}
+{/* Newsletter submit. Turnstile is lazy-loaded on first interaction with the
+    form, so the footer costs nothing on pages nobody subscribes from; the POST
+    is our own fetch (see the markup comment above for why Brevo's main.js is
+    not used). */}
 <script is:inline>
   (function () {
-    var loaded = false;
-    var submitBtn = document.querySelector(".footer-newsletter__submit");
-
-    function loadBrevoScripts() {
-      if (loaded) return;
-      loaded = true;
-
-      // Brevo config globals
-      window.REQUIRED_CODE_ERROR_MESSAGE = "Please choose a country code";
-      window.LOCALE = "en";
-      window.EMAIL_INVALID_MESSAGE = window.SMS_INVALID_MESSAGE =
-        "The information provided is invalid. Please review the field format and try again.";
-      window.REQUIRED_ERROR_MESSAGE = "This field cannot be left blank.";
-      window.GENERIC_INVALID_MESSAGE =
-        "The information provided is invalid. Please review the field format and try again.";
-      window.translation = {
-        common: {
-          selectedList: "{quantity} list selected",
-          selectedLists: "{quantity} lists selected",
-          selectedOption: "{quantity} selected",
-          selectedOptions: "{quantity} selected",
-        },
-      };
-
-      window.handleCaptchaResponse = function () {
-        var event = new Event("captchaChange");
-        document.getElementById("sib-captcha").dispatchEvent(event);
-        window.grecaptcha = window.turnstile;
-      };
-
-      // Inject Brevo form JS — re-enable submit when ready
-      var s1 = document.createElement("script");
-      s1.src = "https://sibforms.com/forms/end-form/build/main.js";
-      s1.onload = function () {
-        if (submitBtn) submitBtn.disabled = false;
-      };
-      document.body.appendChild(s1);
-
-      // Inject Cloudflare Turnstile — /contact/ already loads this for its own
-      // widget, so skip it there rather than double-loading the API.
-      if (!document.querySelector('script[src*="turnstile/v0/api.js"]')) {
-        var s2 = document.createElement("script");
-        s2.src = "https://challenges.cloudflare.com/turnstile/v0/api.js";
-        s2.async = true;
-        document.body.appendChild(s2);
-      }
-    }
-
     var form = document.getElementById("sib-form");
     if (!form) return;
 
-    // Load on first pointer or keyboard interaction with the form
+    var btn = form.querySelector(".footer-newsletter__submit");
+    var input = form.querySelector('[name="EMAIL"]');
+    var fieldError = form.querySelector(".footer-newsletter__field-error");
+    var successEl = document.getElementById("success-message");
+    var errorEl = document.getElementById("error-message");
+    var turnstileRequested = false;
+
+    function loadTurnstile() {
+      if (turnstileRequested) return;
+      turnstileRequested = true;
+      // /contact/ already loads the API for its own widget — don't double-load.
+      if (document.querySelector('script[src*="turnstile/v0/api.js"]')) return;
+      var s = document.createElement("script");
+      s.src = "https://challenges.cloudflare.com/turnstile/v0/api.js";
+      s.async = true;
+      document.body.appendChild(s);
+    }
+
     function onInteraction() {
       form.removeEventListener("pointerover", onInteraction);
       form.removeEventListener("focusin", onInteraction);
-      loadBrevoScripts();
+      loadTurnstile();
     }
-
     form.addEventListener("pointerover", onInteraction);
     form.addEventListener("focusin", onInteraction);
+
+    function show(el) {
+      if (el) el.classList.add("is-visible");
+    }
+    function hide(el) {
+      if (el) el.classList.remove("is-visible");
+    }
+
+    function fail(message) {
+      hide(successEl);
+      if (errorEl) {
+        errorEl.textContent = message;
+        show(errorEl);
+      }
+      btn.disabled = false;
+      // Turnstile tokens are single-use, so the next attempt needs a fresh one.
+      try {
+        if (window.turnstile) window.turnstile.reset("#sib-captcha");
+      } catch (e) {}
+    }
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      fieldError.textContent = "";
+      hide(errorEl);
+
+      if (!input.value || !input.checkValidity()) {
+        fieldError.textContent = "Please enter a valid email address.";
+        input.focus();
+        return;
+      }
+
+      var tokenField = form.querySelector('[name="cf-turnstile-response"]');
+      var token = tokenField ? tokenField.value : "";
+      if (!token) {
+        loadTurnstile();
+        fail("Please wait for the verification to finish, then try again.");
+        return;
+      }
+
+      btn.disabled = true;
+
+      fetch(form.action, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          EMAIL: input.value,
+          email_address_check: "",
+          locale: "en",
+          "cf-turnstile-response": token,
+        }).toString(),
+      })
+        .then(function (res) {
+          if (res.ok) {
+            form.hidden = true;
+            hide(errorEl);
+            show(successEl);
+          } else {
+            fail("Your subscription could not be saved. Please try again.");
+          }
+        })
+        .catch(function () {
+          fail("Couldn't reach the server. Check your connection and try again.");
+        });
+    });
   })();
 </script>
 
@@ -383,7 +418,7 @@ const year = new Date().getFullYear();
     max-width: 34ch;
   }
 
-  /* Brevo status panels — hidden by default, shown by main.js */
+  /* Status panels — hidden until the submit handler adds .is-visible */
   .footer-newsletter__message {
     display: none;
     font-size: 0.85rem;
@@ -391,6 +426,10 @@ const year = new Date().getFullYear();
     padding: 0.6rem 0.75rem;
     border-radius: 6px;
     border: 1px solid transparent;
+  }
+
+  .footer-newsletter__message.is-visible {
+    display: block;
   }
 
   .footer-newsletter__message--error {
@@ -468,11 +507,10 @@ const year = new Date().getFullYear();
     outline-offset: 2px;
   }
 
-  /* Stays clickable while Brevo's main.js loads — the click that lands first
-     is what triggers the load. */
+  /* Only disabled while a submit is in flight. */
   .footer-newsletter__submit:disabled {
-    opacity: 1;
-    cursor: pointer;
+    opacity: 0.6;
+    cursor: default;
   }
 
   .footer-newsletter__field-error {
