@@ -28,6 +28,16 @@
      THEME-INVARIANT — do not redefine it in the dark blocks below, or the
      cream-on-deep-green hero pairing breaks in dark mode. */
   --green-deep: #0F6B33;
+  /* Green as a TEXT color: plain --green (#209D50) is only ~2.6:1 on cream and
+     ~3.5:1 on white — below the 4.5:1 AA bar. Use --green-text wherever green
+     colors text on a light surface; it flips to a light green in both dark
+     blocks so it stays legible there too. Keep plain --green for large green
+     surfaces, button labels on ink/green fills, and graphics. */
+  --green-text: #0F6B33;
+  /* Foreground paired with a --green-text fill (e.g. the theme control hover):
+     white on the deep-green light fill, dark ink on the light-green dark fill.
+     Flip it in BOTH dark blocks alongside --green-text. */
+  --on-green-fill: #ffffff;
   --ink: #1D231C;
   --black: #000000;
 
@@ -38,8 +48,10 @@
   --surface-input: #f9f9f9;
   --text: var(--ink);
   --text-strong: var(--black);
-  --link: var(--green);
+  --text-muted: #5c5b57;
+  --link: var(--green-text);
   --border: rgba(29, 35, 28, 0.15);
+  --badge-bg: rgba(29, 35, 28, 0.07);
 
   /* CTA. --ink is theme-invariant and the dark page background is nearly the
      same color, so a button painted straight onto --ink disappears in dark
@@ -64,8 +76,12 @@
     --surface-input: #2e322e;
     --text: #e4e2dc;
     --text-strong: #eae8e3;
+    --text-muted: #b3b1ab;
+    --green-text: #3abf6a;
+    --on-green-fill: #1d231c;
     --link: #3abf6a;
     --border: rgba(255,255,255,0.12);
+    --badge-bg: rgba(255,255,255,0.08);
     --cta-bg: #d4d2cc;
     --cta-text: #1a1e1a;
     --btn-outline-fg: var(--text);
@@ -80,8 +96,12 @@
   --surface-input: #2e322e;
   --text: #e4e2dc;
   --text-strong: #eae8e3;
+  --text-muted: #b3b1ab;
+  --green-text: #3abf6a;
+  --on-green-fill: #1d231c;
   --link: #3abf6a;
   --border: rgba(255,255,255,0.12);
+  --badge-bg: rgba(255,255,255,0.08);
   --cta-bg: #d4d2cc;
   --cta-text: #1a1e1a;
   --btn-outline-fg: var(--text);
@@ -265,7 +285,7 @@ li { margin-bottom: 0.4rem; }
   font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--green);
+  color: var(--green-text);
   margin: 0 0 0.75rem 0;
 }
 

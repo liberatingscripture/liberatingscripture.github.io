@@ -166,8 +166,10 @@ secret, or integration changes.
 
 ## Design System
 
-A single source of truth in `src/styles/global.css`. **Do not change token
-values** — they're shared with litbible.net for visual consistency.
+A single source of truth in `src/styles/global.css`. **Do not change existing
+token values** — they're shared with litbible.net for visual consistency. New
+*semantic* tokens that flip with the theme are fine to add (litbible's own
+precedent is add-tokens, not change-tokens); several below were added that way.
 
 Colors:
 - `--cream: #E1DFD9` — page background
@@ -179,6 +181,24 @@ Colors:
 - `--ink: #1D231C` — text / dark CTA background
 - `--white: #FFFFFF` — raised surface
 - `--black: #000000` — strong text
+
+Text/semantic tokens that flip with the theme (light → dark):
+- `--green-text: #0F6B33` → `#3abf6a` — **green as a TEXT color on light
+  surfaces.** Plain `--green` fails WCAG AA as body text (2.6:1 cream / 3.5:1
+  white); `--green-text` clears it (4.97:1 cream, 6.62:1 white; 5.5:1 on the
+  dark raised surface). `--link` points at it. **Rule: `--green` never colors
+  text on a light surface — use `--green-text`.** Plain `--green` is still
+  right for green-on-ink pairings (skip link, button hover labels, the ink
+  footer) and for fills/borders/large hero display.
+- `--on-green-fill: #ffffff` → `#1d231c` — foreground paired with a
+  `--green-text` fill (e.g. the theme-toggle hover).
+- `--text-muted: #5c5b57` → `#b3b1ab` — secondary/label gray. Replaced the
+  hardcoded `#5c5b57` that was dark-on-dark before. Dark value is `#b3b1ab`
+  (not a darker gray) specifically so it clears 4.5:1 even on the lightened
+  `--badge-bg` surface (4.75:1 there, ~6:1 on plain dark surfaces).
+- `--badge-bg: rgba(29,35,28,0.07)` → `rgba(255,255,255,0.08)` — the faint
+  pill background behind `.project-card__badge` / `.coming-soon-badge`, which
+  vanished on dark before.
 
 Fonts: Crimson Text (headings) · Inter (body) · Fraunces (display / pull quotes)
 
@@ -208,6 +228,44 @@ Two known-soft spots, both pre-existing and left as-is: the footer's solid CTA
 is an ink pill on the ink footer (reads as green text, no visible shape) in
 *both* themes, and hero `.btn--green` on a `--green-deep` hero has ~1.9:1 edge
 contrast. Text contrast passes in both cases; only the button outline is faint.
+
+### Theme: system default, with an explicit toggle
+
+The site follows the OS `prefers-color-scheme` by default, and users can
+override it. Two cooperating pieces (ported from litbible):
+
+- **Pre-paint script** in `Layout.astro`'s `<head>` reads `localStorage`
+  key **`lsc-theme`** and, only for `light`/`dark`, stamps `data-theme` +
+  `style.colorScheme` on `<html>` before first paint. Absence of the key (or
+  value `system`) = follow the OS; no attribute is set and CSS falls through to
+  `prefers-color-scheme`. This is why every dark rule in the CSS comes in two
+  forms: `@media (prefers-color-scheme: dark) :root:not([data-theme="light"])`
+  **and** `:root[data-theme="dark"]` — the first lets a forced-light user opt
+  out on a dark OS, the second forces dark on any OS.
+- **The control** is a mini tray (`#themeTray`, a `role="dialog"` with a
+  System/Light/Dark segmented radio group, `name="lsc-theme"`) in
+  `SiteHeader.astro`. Two openers share `.site-header__theme-toggle`: a desktop
+  one as the last `<li>` in `.site-nav__list` and a mobile one in
+  `.site-header__actions` — each is shown/hidden purely by its container's
+  existing 900px responsive rules, so there's no extra breakpoint to maintain.
+  The tray's script re-parents it to `<body>` (to escape the sticky header's
+  stacking context) and writes/clears `lsc-theme` exactly as the pre-paint
+  script reads it. If the popover's or any component's storage changes, update
+  `/privacy`'s Cookies paragraph too (it names `lsc_apps_launch_v1`/`lsc_pv`;
+  `lsc-theme` is localStorage, not a cookie — mention it if that section ever
+  broadens to storage generally).
+
+### Critical inline CSS (anti-FOUC)
+
+`Layout.astro` emits a small inline `<style>` (the `criticalCSS` const) in
+`<head>` **before** the external stylesheets: html/body reset, body
+background+color for light and both dark selector forms, and the 68px header /
+`50svh` main min-heights. It stops the light-flash for dark-mode users and the
+margin/CLS jump before `global.css` loads. It intentionally mirrors the
+dual-selector dark pattern so the pre-paint `data-theme` wins on first paint.
+`/apps` sets its own body background (apps.css), so it shows the critical
+bg for a beat before repainting — both values are near-identical darks/creams,
+so it's imperceptible and page-local.
 
 ## External Integrations
 

@@ -116,22 +116,9 @@ const APPS_URL = "/apps/";
 </dialog>
 
 <style>
-  /* Accent for the eyebrow and feature icons. Deep Green passes on the light
-     raised surface (6.6:1); in dark mode it goes near-black against #2e322e,
-     so it flips to the site's dark link green. */
-  .applaunch-dialog {
-    --applaunch-accent: var(--green-deep);
-  }
-
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) .applaunch-dialog {
-      --applaunch-accent: #3abf6a;
-    }
-  }
-
-  :root[data-theme="dark"] .applaunch-dialog {
-    --applaunch-accent: #3abf6a;
-  }
+  /* Accent for the eyebrow and feature icons uses the global --green-text
+     token: deep green on the light raised surface (6.6:1), flipping to the
+     dark link green against #2e322e in dark mode. */
 
   /* Backdrop */
   .applaunch-dialog::backdrop {
@@ -227,7 +214,7 @@ const APPS_URL = "/apps/";
     font-weight: 700;
     letter-spacing: 0.09em;
     text-transform: uppercase;
-    color: var(--applaunch-accent);
+    color: var(--green-text);
     margin: 0 0 0.4rem 0;
   }
 
@@ -281,7 +268,7 @@ const APPS_URL = "/apps/";
     width: 38px;
     display: flex;
     align-items: center;
-    color: var(--applaunch-accent);
+    color: var(--green-text);
   }
 
   .applaunch-feature-icon--platforms {

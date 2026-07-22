@@ -241,7 +241,7 @@ import Layout from "../layouts/Layout.astro";
     margin: 0.75rem 0 1rem;
   }
 
-  .contact-hero .eyebrow { color: var(--green); }
+  .contact-hero .eyebrow { color: var(--green-text); }
 
   .contact-content {
     padding: clamp(2.5rem, 5vw, 4.5rem) 0;
@@ -285,7 +285,7 @@ import Layout from "../layouts/Layout.astro";
     color: var(--text-strong);
   }
 
-  .required { color: var(--green); }
+  .required { color: var(--green-text); }
 
   .field input,
   .field select,
@@ -318,7 +318,7 @@ import Layout from "../layouts/Layout.astro";
 
   .contact-notice {
     font-size: 0.8rem;
-    color: #5c5b57;
+    color: var(--text-muted);
     line-height: 1.5;
     margin: 0;
   }
@@ -345,6 +345,27 @@ import Layout from "../layouts/Layout.astro";
     background: rgba(200, 50, 50, 0.08);
     color: #8b1a1a;
     border: 1px solid rgba(200, 50, 50, 0.25);
+  }
+
+  /* Dark mode: the deep success/error/topic text goes dark-on-dark against the
+     subtle tinted panels, so flip it to light variants (backgrounds and borders
+     read fine either way). Same double-block pattern global.css uses. */
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .form-status--success,
+    :root:not([data-theme="light"]) .topic-hint {
+      color: #7ed6a0;
+    }
+    :root:not([data-theme="light"]) .form-status--error {
+      color: #e08a8a;
+    }
+  }
+
+  :root[data-theme="dark"] .form-status--success,
+  :root[data-theme="dark"] .topic-hint {
+    color: #7ed6a0;
+  }
+  :root[data-theme="dark"] .form-status--error {
+    color: #e08a8a;
   }
 
   .cf-turnstile { margin-top: 0.25rem; }
@@ -383,7 +404,7 @@ import Layout from "../layouts/Layout.astro";
   .contact-sidebar__links li { margin: 0; }
   .contact-sidebar__links a {
     font-size: 0.9rem;
-    color: var(--green);
+    color: var(--green-text);
     display: block;
     padding: 0.3rem 0;
   }

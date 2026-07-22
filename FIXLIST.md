@@ -448,8 +448,31 @@ accessibility defects), then F2→OW1 (security headers).
   `--apps-accent` vars (Deep Green on light, #3abf6a on dark) for small green
   labels. When O1 lands `--green-text`, fold those two into it.
 
-- [ ] **(O1) Port the green text-contrast tokens from litbible and sweep
+- [x] **(O1) Port the green text-contrast tokens from litbible and sweep
   green-as-text usages.**
+  DONE 2026-07-21: added `--green-text: #0F6B33` (flips to `#3abf6a` in both
+  dark blocks) and `--on-green-fill: #ffffff` (flips to `#1d231c`) to
+  `src/styles/global.css`, and pointed `--link` at `--green-text`. Did NOT
+  add litbible's `--green-deep` text token — this repo already has
+  `--green-deep` as the theme-invariant hero/CTA green (F1), so a second name
+  wasn't needed. Swept `color: var(--green)` → `var(--green-text)` on every
+  light-surface text usage: base `.eyebrow`, the three light hero eyebrows
+  (`.contact-hero`, `.privacy-hero`, `.thanks-hero`, `.sd-hero` — all on
+  `--surface` since F5), `.project-card__cta` + inline support eyebrow
+  (index), `.status-label` (community), `.required` +
+  `.contact-sidebar__links a` (contact), `.thanks-link`, `.privacy-body a`,
+  `.lit-example__greek` + `.lit-feature h3` (lit-bible), `.platform-link:hover`
+  (podcasts), and the two header nav hovers (`.site-nav__list li a:hover`,
+  `.menu-overlay__close:hover`). Left plain `--green` on green-on-ink pairings
+  (`.skip-link`, `.btn--green:hover`, `.hero .btn:hover`, footer link hover —
+  all pass ~5:1+) and on every background/border use. Folded
+  `--applaunch-accent` (AppsLaunchPopover) into `--green-text` — its
+  light/dark values were identical. Left `apps.css`'s `.apps`-scoped
+  `--green-text` alone (bridge; identical values, shadowing is harmless) and
+  corrected the now-stale comment in `unsubscribe.css`. Verified live (preview,
+  computed WCAG ratios): light green-text 4.97:1 cream / 6.62:1 white; dark
+  `#3abf6a` 5.48:1 on `--surface-raised`; `.apps` bridge token still resolves
+  to the same value in both themes. `npm run check`/`build` clean.
   Problem: brand green `#209D50` used AS TEXT fails WCAG AA on light
   backgrounds — ~2.6:1 on cream (`--cream` #E1DFD9), ~3.5:1 on white,
   vs. the 4.5:1 requirement. Affected: every default link (`--link:
@@ -479,8 +502,27 @@ accessibility defects), then F2→OW1 (security headers).
   in dark mode (`#3abf6a` on the dark surfaces passes); visual pass of every
   page in both themes; `npm run build`.
 
-- [ ] **(O2) Fix dark mode's unreadable hardcoded grays and form-status
+- [x] **(O2) Fix dark mode's unreadable hardcoded grays and form-status
   colors.**
+  DONE 2026-07-21: added `--text-muted` (light `#5c5b57`; dark `#b3b1ab`) and
+  `--badge-bg` (light `rgba(29,35,28,0.07)`; dark `rgba(255,255,255,0.08)`) to
+  `global.css`. Replaced every hardcoded `#5c5b57` with `var(--text-muted)`
+  (`.project-card__badge` index; `.contact-notice` contact;
+  `.podcast-card__hosts`/`.coming-soon-badge`/`.podcast-notify` podcasts;
+  `.privacy-effective`; `.donate-band__sub` support) and both
+  `rgba(29,35,28,0.07)` badge backgrounds with `var(--badge-bg)`. Added
+  dark-mode overrides for `.form-status--success`/`.topic-hint` (text
+  `#7ed6a0`) and `.form-status--error` (text `#e08a8a`) in contact.astro,
+  using the same double-block pattern lit-bible.astro already uses; the light
+  values, backgrounds, and borders are unchanged. The dark `--text-muted` was
+  bumped from the first-pass `#a8a6a0` to `#b3b1ab` after live measurement:
+  the badge's translucent light bg lightens the effective surface, and
+  `#a8a6a0` there measured 4.18:1 — below AA. `#b3b1ab` gives 4.75:1 on the
+  badge and ~6:1 on plain dark surfaces. Left lit-bible's
+  `.lit-example__traditional` local override (alpha-based, different color)
+  and the `.menu-overlay` scrim alone. Verified live (computed ratios, dark):
+  badge 4.75:1, form-status success/hint 8.51:1, error 6.22:1; light badge
+  5.95:1. `npm run check`/`build` clean.
   Problem: multiple components hardcode light-mode grays that sit on
   `--surface-raised` (#2e322e in dark mode) at roughly 1.9:1 — effectively
   invisible. `#5c5b57` text: `.contact-notice` (contact.astro ~287),
@@ -577,7 +619,24 @@ accessibility defects), then F2→OW1 (security headers).
   pushes but is not a deploy dependency.
   Verify: `cd workers/contact-form && npm test` green locally; CI job green.
 
-- [ ] **(O6) Inline critical CSS to prevent theme/background flash.**
+- [x] **(O6) Inline critical CSS to prevent theme/background flash.**
+  DONE 2026-07-21: added a `criticalCSS` const in `Layout.astro`'s frontmatter
+  and emit it via `<Fragment set:html={`<style>${criticalCSS}</style>`} />`
+  early in `<head>` — verified in the built HTML to sit BEFORE the two external
+  `<link rel="stylesheet">` tags (order: pre-paint theme script → critical
+  `<style>` → stylesheets). The block sets html/body margin reset, body
+  background+color for light (`#E1DFD9`/`#1D231C`) and dark (`#1a1e1a`/`#e4e2dc`
+  via both the `@media … :not([data-theme="light"])` and `[data-theme="dark"]`
+  selector forms, so the pre-paint attribute from O7 wins), the 68px
+  `.site-header`/`.site-header__inner` min-height, and `main{min-height:50svh}`.
+  Unlike litbible's version there's no per-page `bg` prop (removed in S6), so
+  it's one static string, and `scrollbar-gutter` was omitted (global.css
+  doesn't set it — didn't want to introduce new layout behavior). Verified
+  live: header inner height reserved at 68px. Minor known transient: on `/apps`
+  (which sets its own body bg via apps.css) the critical bg shows `#1a1e1a`/
+  `#E1DFD9` for a beat before apps.css repaints `#1d1d1f`/`#FAFAF8` — both
+  near-identical, imperceptible, and only on that one page. `npm run build`
+  clean.
   Problem: the page background and text color arrive only with the full
   stylesheet; on slow connections dark-mode users get a light flash.
   litbible inlines a small critical block in its `Layout.astro` (line ~47):
@@ -592,7 +651,31 @@ accessibility defects), then F2→OW1 (security headers).
   colors correct in both themes before the stylesheet loads; no layout
   shift of the header; `npm run build`.
 
-- [ ] **(O7) Port the theme toggle.**
+- [x] **(O7) Port the theme toggle.**
+  DONE 2026-07-21: ported both halves. Pre-paint script (storage key
+  `lsc-theme`) added to `Layout.astro`'s `<head>` before the critical CSS —
+  only `light`/`dark` stamp `data-theme` + `colorScheme`; absent/other =
+  follow system. Control is litbible's **mini tray with a System/Light/Dark
+  segmented radio** (owner decision), opened by a small theme button. Two
+  openers, each shown by its container's existing responsive rules with NO new
+  media query: a desktop opener as the last `<li>` in `.site-nav__list` (the
+  nav is hidden < 900px) and a mobile opener in `.site-header__actions` next to
+  the hamburger (actions is hidden > 900px; owner chose header-actions over the
+  overlay). Both share `.site-header__theme-toggle`, `aria-controls="themeTray"`,
+  and a visually-hidden `<span class="sr-only">Theme</span>` name. The tray is a
+  `role="dialog"` fieldset with three `name="lsc-theme"` radios; a trimmed
+  theme-only script (patterned on litbible's `initFontTray`) re-parents it to
+  `<body>`, positions it under whichever opener fired, syncs the checked radio,
+  and closes on Escape/outside-click with focus return. CSS adapted to LSC
+  tokens (no `--ink-rgb`, so borders use `--border`; hover uses the O1
+  `--green-text`/`--on-green-fill`; selected pill is theme-invariant
+  ink-on-green ~4.6:1; reduced-motion disables the transitions). Verified live:
+  open/position/close, Light/Dark/System all set + clear
+  attribute/colorScheme/localStorage correctly, reload restores via pre-paint
+  (no flash), Escape returns focus to the opener, both openers carry the
+  accessible name "Theme", tray re-parented to body, no console errors. Depends
+  on O6 (critical CSS respects the stamped `data-theme`). `npm run check`/`build`
+  clean.
   Problem: this site's CSS already supports explicit
   `:root[data-theme="dark"]` / `[data-theme="light"]` overrides (global.css
   and lit-bible.astro), but nothing ever sets `data-theme` — users are stuck

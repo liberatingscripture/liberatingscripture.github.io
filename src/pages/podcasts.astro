@@ -246,7 +246,7 @@ import Layout from "../layouts/Layout.astro";
 
   .podcast-card__hosts {
     font-size: 0.9rem;
-    color: #5c5b57;
+    color: var(--text-muted);
     margin: 0 0 0.75rem;
     font-style: normal;
   }
@@ -286,7 +286,7 @@ import Layout from "../layouts/Layout.astro";
 
   .platform-link:hover {
     border-color: var(--green);
-    color: var(--green);
+    color: var(--green-text);
     text-decoration: none;
   }
 
@@ -307,15 +307,15 @@ import Layout from "../layouts/Layout.astro";
     font-weight: 600;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: #5c5b57;
-    background: rgba(29, 35, 28, 0.07);
+    color: var(--text-muted);
+    background: var(--badge-bg);
     padding: 3px 10px;
     border-radius: 4px;
   }
 
   .podcast-notify {
     font-size: 0.95rem;
-    color: #5c5b57;
+    color: var(--text-muted);
     font-style: italic;
     margin: 1rem 0 0.75rem;
   }
