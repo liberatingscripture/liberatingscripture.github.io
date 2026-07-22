@@ -393,9 +393,17 @@ Consequences worth knowing:
 
 - **The button no longer ships `disabled`.** It used to be disabled until
   `main.js` loaded and re-enabled it, which meant a JS failure left a dead
-  button. Now it's live immediately, and with JS off it falls through to a
-  native POST (Turnstile still needs JS, so that isn't a true no-JS path —
-  same caveat as the contact form).
+  button. Now it's live immediately for JS visitors.
+- **With JS off, the form is hidden rather than left to fall through to a
+  native POST.** A token-less POST to sibforms returns HTTP 200
+  `{"success":true}` to the client but is silently dropped server-side —
+  verified live (no contact appears in the Brevo list, no confirmation
+  email sends). Turnstile can't render without JS, and every fallback
+  (Brevo's hosted page, `/contact`) gates on Turnstile too, so no fallback
+  can make no-JS subscription actually work. A `<noscript>` block in
+  `SiteFooter.astro` hides `.footer-newsletter__form` and shows one honest
+  line, "Subscribing requires JavaScript," instead of a route that can't
+  work. Inert when JS is on. Ported from litbible's equivalent fix.
 - **The fixed Brevo ids no longer matter functionally.** `sib-form`,
   `sib-captcha`, `error-message`, `success-message` are kept for continuity
   with litbible, but nothing external depends on them now.
