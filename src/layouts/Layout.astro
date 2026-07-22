@@ -18,6 +18,16 @@ const {
 const siteOrigin = "https://liberatingscripture.org";
 const canonicalUrl = canonical ?? (Astro.site ? new URL(Astro.url.pathname, Astro.site).href : "");
 const ogImageUrl = ogImage ?? `${siteOrigin}/assets/og/og-default.png`;
+
+// Critical inline CSS — applied before the external stylesheet loads so the
+// page background/text and header/main geometry are correct on first paint
+// (no light flash for dark-mode users, no margin/CLS jump). Values mirror
+// global.css's tokens: light --cream/--ink, dark #1a1e1a/#e4e2dc, and the
+// 68px .site-header__inner height. The dark rules use the same dual mechanism
+// as global.css so the pre-paint data-theme attribute wins: the media rule is
+// guarded with :not([data-theme="light"]), and an explicit [data-theme="dark"]
+// rule forces dark on any OS.
+const criticalCSS = `html,body{margin:0;padding:0}body{background:#E1DFD9;color:#1D231C}.site-header{min-height:68px}.site-header__inner{min-height:68px;box-sizing:border-box}main{min-height:50svh}@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) body{background:#1a1e1a;color:#e4e2dc}}:root[data-theme="dark"] body{background:#1a1e1a;color:#e4e2dc}`;
 ---
 
 <!doctype html>
@@ -25,6 +35,16 @@ const ogImageUrl = ogImage ?? `${siteOrigin}/assets/og/og-default.png`;
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Apply the saved theme before first paint to avoid a flash of the wrong
+         scheme. Absence of 'lsc-theme' = follow system (no attribute set, CSS
+         falls through to prefers-color-scheme). Only 'light'/'dark' are honored. -->
+    <script is:inline>try{var t=localStorage.getItem('lsc-theme');if(t==='light'||t==='dark'){document.documentElement.setAttribute('data-theme',t);document.documentElement.style.colorScheme=t;}}catch(_){}</script>
+
+    <!-- Critical inline CSS: correct background/geometry before the external
+         stylesheet loads (see criticalCSS in the frontmatter). -->
+    <Fragment set:html={`<style>${criticalCSS}</style>`} />
+
     <title>{title}</title>
     <meta name="description" content={description} />
     {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
