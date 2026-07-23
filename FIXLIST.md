@@ -752,7 +752,23 @@ accessibility defects), then F2→OW1 (security headers).
   keyboard/AT: the toggle is a button with an accurate accessible name in
   both states.
 
-- [ ] **(O8) Contain focus properly in the mobile menu dialog.**
+- [x] **(O8) Contain focus properly in the mobile menu dialog.**
+  DONE 2026-07-22: took option (a) — the overlay is a sibling of
+  `.site-header__inner` inside `<header>`, so `setOpen` in `SiteHeader.astro`
+  now inerts `.site-header__inner` (not the whole header) alongside the existing
+  `main`/`footer`, plus the `.skip-link` at the top of `<body>` — the four
+  regions live in one array iterated in `setOpen`, reusing the existing
+  `as HTMLElement & { inert: boolean }` cast. No manual focus-trap JS: with every
+  other focusable region inert, native inert IS the trap. Left the panel's
+  `tabindex="-1"`, the Escape handler, and focus-restore untouched; the theme
+  tray (re-parented to `<body>`, `hidden` when closed) and the popover `<dialog>`
+  (`display:none` until `showModal()`) need no handling. Verified live (browser,
+  375px, JS): with the menu open all four regions report `inert=true`; calling
+  `.focus()` on the brand link and skip link is rejected (focus stays on the
+  panel); the only tabbable elements outside inert subtrees are the 7 dialog
+  controls (close + 5 links + Support); a faithful flow (toggle focused → open →
+  Escape) closes the menu, clears all four inert flags, and returns focus to the
+  toggle. `npm run check`/`build`/`check:links` clean.
   Problem: `SiteHeader.astro`'s overlay sets `aria-modal="true"` and makes
   `main`/`footer` inert, but the header itself stays live — the brand link
   remains tabbable BEHIND the open dialog, contradicting aria-modal.
@@ -770,7 +786,27 @@ accessibility defects), then F2→OW1 (security headers).
   VoiceOver/NVDA (or at minimum Chrome's accessibility tree) shows
   background content hidden; closing restores focus to the toggle.
 
-- [ ] **(O9) Give no-JS users a navigation fallback.**
+- [x] **(O9) Give no-JS users a navigation fallback.**
+  DONE 2026-07-22: added a `<noscript>` block in `SiteHeader.astro` (just after
+  `.site-header__inner`, so it renders as a compact second row under the header
+  bar), mirroring SiteFooter's proven pattern — a `<style is:inline>` with
+  GLOBAL selectors plus the fallback markup. The style hides both JS-only
+  controls (`.site-header__menu-toggle`, `.site-header__theme-toggle`, at every
+  width, `!important` to beat their scoped display rules) and shows a plain
+  `.site-header__noscript-nav` (the existing `navLinks` array + Support), scoped
+  to `< 900px` via `@media (min-width: 901px){ display:none }` since the real
+  `.site-nav` already works without JS on desktop. Global selectors were the
+  right call: the built `<nav>` carries an Astro scope attr
+  (`data-astro-cid-…`), which scoped CSS would depend on but global CSS matches
+  regardless. Row uses `--gutter`/`--border`/`--text` so it flips with the
+  theme. Slightly beyond the literal ask (which named only the menu toggle) by
+  also hiding the dead theme toggle in no-JS. Verified: built `dist/index.html`
+  contains the block with all six links; live (JS on, materializing the
+  noscript content) at 375px both toggles compute `display:none` and the
+  fallback nav is `flex` with themed text + border-top; at 1280px the fallback
+  is `none` and the real nav is `flex`; with JS on the noscript content never
+  enters the live DOM, so the real toggles and theme tray are untouched.
+  `npm run check`/`build`/`check:links` clean.
   Problem: under 900px the nav collapses to the JS-only overlay; the toggle
   does nothing without JS, leaving footer links as the only navigation.
   Fix: smallest robust option — a `<noscript>` block in `SiteHeader.astro`

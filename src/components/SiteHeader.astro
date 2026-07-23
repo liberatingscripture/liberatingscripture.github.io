@@ -86,6 +86,48 @@ const navLinks = [
     </div>
   </div>
 
+  <!-- No-JS navigation fallback. Under 900px the real nav collapses to the
+       JS-only overlay, whose toggle does nothing without JS. Render a plain
+       nav row (only shown < 900px, where .site-nav is hidden) and hide the two
+       JS-only toggles. Mirrors SiteFooter's noscript pattern: <style is:inline>
+       with global selectors, since the styled elements are Astro-scoped. -->
+  <noscript>
+    <style is:inline>
+      /* JS-only controls do nothing without JS — hide both toggles at every
+         width. !important beats the scoped display rules on these buttons. */
+      .site-header__menu-toggle,
+      .site-header__theme-toggle { display: none !important; }
+      /* Fallback nav: only under 900px, where the real .site-nav is hidden.
+         On desktop the real nav works without JS, so keep the fallback out. */
+      .site-header__noscript-nav {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.15rem 0.4rem;
+        padding: 0.4rem var(--gutter) 0.7rem;
+        border-top: 1px solid var(--border);
+      }
+      .site-header__noscript-nav a {
+        font-family: Inter, sans-serif;
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: var(--text);
+        text-decoration: none;
+        padding: 0.3rem 0.5rem;
+        border-radius: 8px;
+      }
+      @media (min-width: 901px) {
+        .site-header__noscript-nav { display: none; }
+      }
+    </style>
+    <nav class="site-header__noscript-nav" aria-label="Primary">
+      {navLinks.map(link => (
+        <a href={link.href}>{link.label}</a>
+      ))}
+      <a href="/support/">Support</a>
+    </nav>
+  </noscript>
+
   <!-- Mobile overlay -->
   <div class="menu-overlay" id="mobileMenu">
     <div class="menu-overlay__panel" role="dialog" aria-modal="true" aria-label="Site menu" tabindex="-1">
@@ -141,11 +183,20 @@ const navLinks = [
         toggle.setAttribute("aria-expanded", open ? "true" : "false");
         toggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
         document.documentElement.classList.toggle("menu-open", open);
-        // Mark the rest of the page inert so AT is contained inside the dialog
-        const main = document.querySelector("main");
-        const footer = document.querySelector("footer");
-        if (main) (main as HTMLElement & { inert: boolean }).inert = open;
-        if (footer) (footer as HTMLElement & { inert: boolean }).inert = open;
+        // Inert everything focusable outside the dialog so both the tab order
+        // and the a11y tree are contained inside it. The overlay is a sibling
+        // of .site-header__inner within <header>, so inert the inner (not the
+        // whole header) plus the skip link, main, and footer. Native inert on
+        // all of them IS the focus trap — no manual wrap handling needed.
+        const regions = [
+          document.querySelector(".skip-link"),
+          document.querySelector(".site-header__inner"),
+          document.querySelector("main"),
+          document.querySelector("footer"),
+        ];
+        for (const el of regions) {
+          if (el) (el as HTMLElement & { inert: boolean }).inert = open;
+        }
       };
 
       const open = () => { lastActive = document.activeElement; setOpen(true); panel.focus({ preventScroll: true }); };
