@@ -44,6 +44,8 @@ npm run check:links # Verify every internal href/#fragment in dist/ resolves
                  #   (reads dist/ only, no network — run AFTER build; also runs
                  #   in CI right after the build). See scripts/check-links.mjs
 npm run build:og # Regenerate the per-page OG cards (one-shot; not in the build)
+npm run build:images # Regenerate the right-sized WebP variants of the on-page
+                 #   logo/podcast art (one-shot; not in the build)
 ```
 
 The contact-form Worker has its own test suite (`cd workers/contact-form &&
@@ -103,7 +105,11 @@ src/
                         #   Apps Page). Imported ONLY by pages/apps.astro.
 public/                 # Served as-is at the site root:
   assets/images/        # Logos, podcast art, hero images, and both app icons
-                        #   (lit-app-icon.svg = Android, *-ios.webp = iOS)
+                        #   (lit-app-icon.svg = Android, *-ios.webp = iOS).
+                        #   The full-res PNGs (lsc-logo.png 2200², twb-banner.png)
+                        #   stay for JSON-LD/crawlers; pages load right-sized
+                        #   WebP variants (lsc-logo-{120,240,640}.webp,
+                        #   twb-banner-480.webp) from `build:images` (O3)
   assets/screenshots/   # App screenshots for /apps, as WebP (converted from
                         #   litbible's PNGs — see Apps Page)
     carousel/           #   Hebrews 1 in each of the five liturgical seasons,
@@ -123,6 +129,10 @@ scripts/
   build-og-images.mjs   # One-shot per-page OG-card generator (sharp +
                         #   opentype.js). Run by hand: `npm run build:og`; NOT
                         #   part of the build. Commits PNGs to public/assets/og/
+  build-image-variants.mjs # One-shot WebP resizer (sharp) for the on-page
+                        #   logo/podcast art. Run by hand: `npm run build:images`;
+                        #   NOT part of the build. Commits WebP to
+                        #   public/assets/images/ (see O3)
   check-links.mjs       # Post-build internal link checker (`npm run check:links`,
                         #   dependency-free, reads dist/ only). Ported from
                         #   litbible; runs in CI after the build (O4)

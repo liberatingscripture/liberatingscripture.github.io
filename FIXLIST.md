@@ -558,7 +558,36 @@ accessibility defects), then F2→OW1 (security headers).
   `var(--surface)`. Still open here: the hardcoded grays, badges, and form-status
   colors listed above.
 
-- [ ] **(O3) Right-size the images.**
+- [x] **(O3) Right-size the images.**
+  DONE 2026-07-22: took the committed-`sharp`-script route (matching
+  `build-og-images.mjs`), not `astro:assets` — adopting the `<Image>` component
+  would mean relocating every `public/` image into `src/` and rewiring all
+  `<img>` site-wide, the heavyweight pipeline this item warns against. Added
+  `scripts/build-image-variants.mjs` + `npm run build:images` (one-shot, NOT in
+  the build), which emits WebP variants alongside the source PNGs:
+  `lsc-logo-120.webp` (2.4 KB, header 40px), `lsc-logo-240.webp` (5.6 KB,
+  footer 80px + support 84px), `lsc-logo-640.webp` (18.1 KB, hero ≤280px), and
+  `twb-banner-480.webp` (14.2 KB, 3:2, podcasts cover ≤240px). Repointed the
+  four visible `<img>`s: header (`SiteHeader.astro`), footer
+  (`SiteFooter.astro`), donate band (`support.astro`), homepage hero
+  (`index.astro`), and the TWB cover (`podcasts.astro`, whose `width`/`height`
+  attrs were also corrected 320×320 → 480×320 to match the real 3:2 aspect).
+  The homepage hero dropped `fetchpriority="high"` and switched
+  `loading="eager"` → `"lazy"`: it's decorative (`aria-hidden`) and
+  `display:none` under 700px, so `display:none` + lazy means phones now fetch
+  it zero times. KEPT both original PNGs in place — they back JSON-LD
+  structured data (`index.astro` Organization `logo` 2200×2200;
+  `podcasts.astro` PodcastSeries `image`), which are cold crawler fetches, not
+  visitor cost; no `git rm`, no JSON-LD change.
+  Verified live (`npm run preview`, browser network + `performance` API):
+  desktop `/` loads `lsc-logo-120.webp` (0.3 KB) + `lsc-logo-640.webp` and no
+  174 KB PNG; **mobile `/` never fetches the hero** (element `naturalWidth: 0`,
+  `currentSrc: ""`); `/podcasts/` loads `twb-banner-480.webp` (14.5 KB) with
+  **zero** `twb-banner.png` requests (2.9 MB → 14.5 KB) and the footer's
+  `lsc-logo-240.webp` (5.9 KB). Visual pass in light + dark: header/hero/footer
+  logos and the TWB cover crisp at 2×, TWB cover holds 3:2, no layout shift.
+  `npm run check` (0 errors/warnings; the 1 hint is the pre-existing
+  `ReaderCallouts.astro` apps-port one) and `npm run build` clean.
   Problem: `public/assets/images/lsc-logo.png` is 2200×2200 / 177 KB and is
   loaded eagerly on EVERY page as a 40 px header logo, again as the ~320 px
   hero logo on the homepage with `fetchpriority="high"`, and again at 80 px
