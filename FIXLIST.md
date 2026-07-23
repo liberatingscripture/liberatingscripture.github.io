@@ -358,6 +358,8 @@ accessibility defects), then F2→OW1 (security headers).
   was authored fresh per RFC 9116 (`Contact`, `Policy` pointing at this
   repo's SECURITY.md on GitHub, `Expires` ~1 year out, `Preferred-Languages:
   en`). Did NOT create LICENSE (still gated on OW3).
+  UPDATE 2026-07-23: OW3 has since landed — see below. LICENSE now exists at
+  the repo root.
   Verified: all four files exist at their specified paths; `npm run build`
   copies `security.txt` into `dist/.well-known/`.
   Problem: the site actively invites collaboration ("feedback,
@@ -380,6 +382,7 @@ accessibility defects), then F2→OW1 (security headers).
   SECURITY.md on GitHub, an `Expires:` about one year out, and
   `Preferred-Languages: en`.
   NOTE: do NOT create LICENSE — that's gated on OW3.
+  (Superseded 2026-07-23: OW3 landed; LICENSE now exists.)
   Verify: files exist at the paths above; `npm run build` copies
   security.txt into `dist/.well-known/`; GitHub's Community Standards page
   (repo Insights) recognizes the three markdown files after merge.
@@ -859,6 +862,14 @@ accessibility defects), then F2→OW1 (security headers).
   /podcasts/ links out to Apple/Spotify/YouTube rather than embedding them, so
   no podcast `frame-src` needed. Remaining: OW1 (owner pastes it into
   Cloudflare).
+  UPDATED 2026-07-22: revisited the CSP split with the owner. The goal is
+  narrower than "mirror litbible" (owner wasn't certain that precedent was
+  remembered correctly) — it's specifically to never let CSP silently block
+  a *future* integration because the line wasn't updated.
+  `frame-ancestors`/`object-src`/`base-uri` don't name origins, so they stay
+  enforced. `form-action` does name origins (and is exactly the directive a
+  new form would need added to), so it moved to Report-Only alongside the
+  resource allowlist. `docs/security-headers.md` and OW1 updated to match.
   Problem: the live site sends NO security headers — verified 2026-07-18
   with curl: no HSTS, no X-Content-Type-Options, no Referrer-Policy, no
   CSP, no Permissions-Policy. GitHub Pages can't set them, but Cloudflare
@@ -943,6 +954,9 @@ accessibility defects), then F2→OW1 (security headers).
   page's plain voice. Bumped the effective date and JSON-LD `dateModified` to
   2026-07-18. The "responsible contact identity" question stays with OW5.
   Owner should approve the final wording.
+  UPDATE 2026-07-23: OW5 resolved — owner chose to leave the contact form
+  as the sole channel, no fallback address published. Nothing further
+  needed here.
   Problem: `src/pages/privacy.astro` ("What we don't do") states flatly
   "no cookies set by this site", while /support/ embeds Give Lively's
   third-party script on our origin, which may set cookies/localStorage of
@@ -1095,62 +1109,110 @@ accessibility defects), then F2→OW1 (security headers).
 ## Owner — decisions & dashboard tasks (no model)
 
 - [ ] **(OW1) Apply the security headers in Cloudflare.**
-  Execute the checklist in `docs/security-headers.md` (written in F2) in the
-  Cloudflare dashboard: HSTS via SSL/TLS → Edge Certificates; the static
-  headers + split CSP via Rules → Transform Rules → Modify Response Header.
-  The enforced CSP is structural-only; the resource allowlist stays
-  Report-Only (owner decision). Afterwards run
-  `curl -sI https://liberatingscripture.org/` and click through /support/
-  and /contact/ with the console open, adding any origin the Give Lively
-  payment step flags in Report-Only.
+  Execute the checklist in `docs/security-headers.md` (written in F2, CSP
+  split revised 2026-07-22) in the Cloudflare dashboard: HSTS via SSL/TLS →
+  Edge Certificates; the static headers + split CSP via Rules → Transform
+  Rules → Modify Response Header. The enforced CSP covers only
+  `frame-ancestors`/`object-src`/`base-uri` — directives that never name a
+  third-party origin, so they can't block a future integration if someone
+  forgets to update this file. `form-action` and the full resource allowlist
+  stay Report-Only. Afterwards run `curl -sI https://liberatingscripture.org/`
+  and click through /support/ and /contact/ with the console open, adding any
+  origin the Give Lively payment step flags in Report-Only.
   UPDATED 2026-07-20 (footer newsletter): the checklist now includes
-  `sibforms.com`. Note the **enforced** `form-action` is no longer
-  `'self'`-only — it must carry `https://sibforms.com https://*.sibforms.com`
-  or the newsletter POST is blocked outright (enforced, not Report-Only, so it
-  fails silently rather than logging a violation). Copy the header lines from
-  the doc verbatim; don't reconstruct them from the older audit text.
+  `sibforms.com` in `form-action`.
+  UPDATED 2026-07-22: `form-action` moved from enforced to Report-Only (see
+  above) — the 2026-07-20 note's claim that a missing origin "blocks the
+  newsletter POST outright" no longer applies; a missing origin now just
+  logs a console violation instead of failing the submit. Copy the header
+  lines from the doc verbatim; don't reconstruct them from the older audit
+  text.
+  PROGRESS 2026-07-22: owner enabled HSTS in Cloudflare — **Step 1
+  complete.** Verified live via `curl -sI`: `Strict-Transport-Security:
+  max-age=15552000; includeSubDomains` present, `preload` correctly absent.
+  180-day max-age is an intentional owner choice (confirmed 2026-07-22, not
+  the more common 12 months) — doc updated to match. Remaining: Step 2
+  (static headers + split CSP transform rule) not yet applied — none of
+  those headers present on the live response yet.
 
-- [ ] **(OW2) Verify the Organization schema facts: foundingDate and EIN.**
-  `src/pages/index.astro` JSON-LD says `foundingDate: "2020"` and `taxID:
-  "41-5314350"`. 2020 is when the TRANSLATION began (per /about/); if the
-  501(c)(3) was incorporated later, the schema should carry the org's
-  actual founding/incorporation year. Confirm the EIN digits against IRS
-  paperwork before F6 prints them for humans. Report the correct values;
-  any model can then patch the JSON-LD.
+- [x] **(OW2) Verify the Organization schema facts: foundingDate and EIN.**
+  DONE 2026-07-23: owner confirmed LSC's actual founding/incorporation year
+  is 2026 (distinct from 2020, when the translation itself began — that
+  claim on `/about/` was already correct and untouched) and confirmed the
+  EIN `41-5314350` is correct as printed (no change needed there — it
+  appears in both the homepage JSON-LD and, since F6, on `/support/`).
+  Patched `src/pages/index.astro`'s JSON-LD `foundingDate: "2020"` →
+  `"2026"`. Verified: `grep` on `about.astro` confirmed no other page claims
+  2020 as the org's founding (only the translation-start sentence, which is
+  correct and unrelated); `npm run build` clean; built
+  `dist/index.html` serves `"foundingDate":"2026"`.
+  Problem (original): `src/pages/index.astro` JSON-LD said
+  `foundingDate: "2020"` and `taxID: "41-5314350"`. 2020 is when the
+  TRANSLATION began (per /about/); if the 501(c)(3) was incorporated later,
+  the schema should carry the org's actual founding/incorporation year.
+  Confirm the EIN digits against IRS paperwork before F6 prints them for
+  humans.
 
-- [ ] **(OW3) Decide the repo LICENSE.**
-  The public repo has no LICENSE file, so the code defaults to
-  all-rights-reserved and the content's terms live only in llms.txt.
-  litbible's `LICENSE` is a dual-license structure (code under one
-  license, translation/content under CC BY-NC-ND 4.0) — decide whether to
-  mirror that split here (e.g. MIT for the site code, © LSC for the
-  copy). Once decided, a model can draft it from litbible's file.
+- [x] **(OW3) Decide the repo LICENSE.**
+  DONE 2026-07-23: owner decided NOT to mirror litbible's CC BY-NC-ND for
+  content — "nothing CC on LSC; the content should not be used by others."
+  Code: MIT (owner: "fine for others to use"). Drafted `LICENSE` at the repo
+  root from litbible's file, adapted: same two-bucket SOFTWARE/CONTENT
+  structure, but CONTENT is plain all-rights-reserved (no public license
+  grant at all, unlike litbible's CC BY-NC-ND) with a contact-for-permission
+  pointer to `/contact/`. Noted one real structural difference from
+  litbible's clean directory split: this repo's page prose lives inline in
+  `src/pages/*.astro` alongside markup/code, not in separate content files,
+  so the LICENSE explains the split conceptually (markup/logic = SOFTWARE,
+  the actual prose within = CONTENT) rather than by a clean file list.
+  CONTENT was scoped to cover `public/assets/` (images/logos/screenshots/OG
+  cards), `src/content/` (the /apps port's markdown copy), and the embedded
+  page prose. Cross-referenced from CLAUDE.md's structure listing; closed
+  the two stale "gated on OW3" notes in S16 above.
+  Verified: `LICENSE` exists at repo root; `npm run build` unaffected (not a
+  shipped/served file).
+  Problem (original): the public repo had no LICENSE file, so the code
+  defaulted to all-rights-reserved and the content's terms lived only in
+  llms.txt. litbible's `LICENSE` is a dual-license structure (code under one
+  license, translation/content under CC BY-NC-ND 4.0).
 
-- [ ] **(OW4) Confirm whether `public/assets/og/og-square.png` is used
+- [x] **(OW4) Confirm whether `public/assets/og/og-square.png` is used
   anywhere off-site.**
-  It's referenced nowhere in this repo (S4 already removed the other
-  unused images), but square brand images often get pasted into podcast
-  directories, social profiles, or Google Business listings by URL. If
-  nothing external hotlinks it, tell a model to delete it; if something
-  does, keep it and add a note to CLAUDE.md's structure section saying
-  what references it.
+  DONE 2026-07-23: owner decided to keep it — not because it's confirmed
+  hotlinked anywhere, but as a deliberate choice to have a ready square
+  brand asset on hand for future use. Added a short note to CLAUDE.md's
+  `public/` structure listing so a future "remove unused assets" sweep
+  (like S4) doesn't delete it under the assumption that unreferenced means
+  unwanted.
+  Problem (original): the file is referenced nowhere in this repo (S4
+  already removed the other unused images), but square brand images often
+  get pasted into podcast directories, social profiles, or Google Business
+  listings by URL, so deleting it without checking risked breaking an
+  external reference this repo can't see.
 
-- [ ] **(OW5) Decide whether to publish a fallback contact address.**
-  If the contact form is ever down (Worker outage, Turnstile failure),
-  the site has no other contact path — the only true dead-end found in
-  the audit. Publishing e.g. `contact@liberatingscripture.org` (which
-  already exists for sending) on /contact/ or /privacy/ fixes that at the
-  cost of scraper spam. Decide; a model implements either way (including
-  F4's privacy-policy contact-identity question).
+- [x] **(OW5) Decide whether to publish a fallback contact address.**
+  DONE 2026-07-23: owner decided to leave the site as-is — the contact form
+  stays the sole channel, no fallback email address published on /contact/
+  or /privacy/. Closes F4's deferred "responsible contact identity"
+  question too (no identity to add). No code change.
+  Problem (original): if the contact form is ever down (Worker outage,
+  Turnstile failure), the site has no other contact path — the only true
+  dead-end found in the audit. Publishing e.g.
+  `contact@liberatingscripture.org` (which already exists for sending) on
+  /contact/ or /privacy/ would fix that at the cost of scraper spam
+  exposure.
 
-- [ ] **(OW6) Check charitable-solicitation registration obligations.**
-  The site solicits donations nationally (Give Lively embed). Most US
-  states require charitable registration before solicitation, with varying
-  small-nonprofit exemptions. This is outside the repo — confirm with
-  whoever handles LSC's compliance (Give Lively's help docs cover it at a
-  high level). Nothing to change in the repo unless disclosures are
-  required (some states mandate specific disclosure text on donation
-  pages — if so, feed the required text to F6).
+- [x] **(OW6) Check charitable-solicitation registration obligations.**
+  DONE 2026-07-23: owner confirmed LSC is registered for charitable
+  solicitation with the Oregon DOJ. (Flagging for the record: the original
+  item was framed around the Give Lively embed soliciting nationally, and
+  the confirmed registration is Oregon-specific — worth another look if
+  other states' requirements ever become relevant, but treating this as
+  resolved per the owner.) No repo changes needed — no state-mandated
+  disclosure text was identified for the donation page.
+  Problem (original): the site solicits donations nationally (Give Lively
+  embed). Most US states require charitable registration before
+  solicitation, with varying small-nonprofit exemptions.
 
 - [ ] **(OW7) Finalize the LSC values statement.**
   Carried over from CLAUDE.md's old Open Items: the working values now
@@ -1222,7 +1284,17 @@ accessibility defects), then F2→OW1 (security headers).
   same pass and also works, so both directions of the Brevo integration are
   now proven end-to-end.
 
-- [ ] **(OW10) litbible.net's footer newsletter is broken the same way.**
+- [x] **(OW10) litbible.net's footer newsletter is broken the same way.**
+  DONE 2026-07-23: owner fixed it directly in the litbible repo. Verified
+  from this session (litbible checked out locally at
+  `C:\Users\bcjoh\GitHub\litbible`): `src/components/SiteFooter.astro` no
+  longer references `sibforms.com/forms/end-form/build/main.js` anywhere,
+  and now reads the `cf-turnstile-response` token and posts `EMAIL` via its
+  own `fetch`, matching the pattern this repo already uses (see CLAUDE.md's
+  "The newsletter submits itself"). Not independently live-tested from
+  here (that would require a real subscribe against litbible's Brevo list,
+  which is out of scope for this repo's session) — took the owner's
+  confirmation plus the code match as sufficient.
   Found 2026-07-21 while debugging OW9, by running the same probe against
   litbible.net's live footer form: `main.js` loads, the submit event fires,
   and no request is ever made — its Subscribe button silently does nothing,

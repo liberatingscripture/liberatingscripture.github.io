@@ -12,23 +12,31 @@
 > live and inventorying every third-party origin they actually load (2026-07-18)
 > — re-verify it if the site ever adds an embed or widget.
 
-## Design decisions (owner, 2026-07-18)
+## Design decisions (owner, 2026-07-18; CSP split revised 2026-07-22)
 
-- **HSTS without `preload`.** `max-age=31536000; includeSubDomains`, no
-  `preload`. Full protection for anyone who's visited once, and reversible;
-  `preload` is a near-permanent, whole-domain commitment we can add later if
-  ever wanted.
-- **CSP is split in two, mirroring litbible** (its owner decision 2026-07-10 —
-  same rationale holds here):
-  1. an **enforced** policy with only *structural* directives — the ones that
-     constrain attackers but never need editing when we add a widget; and
-  2. a **Report-Only** resource allowlist that logs violations to the console
-     and blocks nothing. It's kept as living documentation of every third-party
-     origin the site uses, and as free telemetry. Enforcing it was rejected
-     because a single missed origin would silently break Turnstile or the Give
-     Lively donate widget, and on a static site with no logins that failure mode
-     is likelier than the threat enforcing would stop. Revisit only if the site
-     ever gains accounts/logins.
+- **HSTS at 180 days, without `preload`.** `max-age=15552000;
+  includeSubDomains`, no `preload` — owner-confirmed intentional value
+  (2026-07-22), not the more common 12-month max-age. Reversible either way;
+  `preload` is the near-permanent, whole-domain commitment being avoided for
+  now.
+- **CSP enforcement is scoped to directives that never name a third-party
+  origin**, so nothing here can silently block a future integration just
+  because someone forgot to update this file:
+  1. **Enforced**: `frame-ancestors 'none'`, `object-src 'none'`,
+     `base-uri 'self'`. These constrain attackers but never allowlist a
+     specific origin, so adding a widget/form/embed later never requires
+     touching them.
+  2. **Report-Only**: `form-action` plus the full resource allowlist
+     (script-src, style-src, connect-src, frame-src, img-src, font-src).
+     `form-action` is grouped here, not with the enforced set, because it
+     *does* name specific origins (every target a form may submit to) —
+     exactly the kind of line a future integration could need and someone
+     could forget to update. The whole Report-Only header is kept as living
+     documentation of every third-party origin the site uses, and as free
+     telemetry. On a static site with no logins, a missed origin silently
+     breaking Turnstile, the Give Lively widget, or the newsletter is a
+     likelier and worse failure mode than what enforcing would stop. Revisit
+     only if the site ever gains accounts/logins.
 
 ## What the pages actually load (origin inventory, 2026-07-18)
 
@@ -54,7 +62,7 @@ Cloudflare has a dedicated HSTS control; use it rather than a transform rule.
 
 1. Dashboard → the `liberatingscripture.org` zone → **SSL/TLS → Edge
    Certificates → HTTP Strict Transport Security (HSTS) → Enable**.
-2. Set: **Max-Age = 12 months** (`31536000`), **Apply HSTS to subdomains
+2. Set: **Max-Age = 180 days** (`15552000`), **Apply HSTS to subdomains
    (includeSubDomains) = On**, **Preload = Off**, **No-Sniff header** can stay
    off here (we set `X-Content-Type-Options` in step 2 instead).
 3. Confirm the acknowledgement prompt (HSTS means browsers will refuse plain
@@ -72,24 +80,31 @@ X-Content-Type-Options: nosniff
 X-Frame-Options: DENY
 Referrer-Policy: strict-origin-when-cross-origin
 Permissions-Policy: camera=(), microphone=(), geolocation=()
-Content-Security-Policy: frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self' https://sibforms.com https://*.sibforms.com
-Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://secure.givelively.org https://static.cloudflareinsights.com https://sibforms.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://secure.givelively.org; img-src 'self' data: https://secure.givelively.org; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://secure.givelively.org https://static.cloudflareinsights.com https://cloudflareinsights.com https://sibforms.com; frame-src https://challenges.cloudflare.com https://secure.givelively.org; media-src 'self'
+Content-Security-Policy: frame-ancestors 'none'; object-src 'none'; base-uri 'self'
+Content-Security-Policy-Report-Only: default-src 'self'; form-action 'self' https://sibforms.com https://*.sibforms.com; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://secure.givelively.org https://static.cloudflareinsights.com https://sibforms.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://secure.givelively.org; img-src 'self' data: https://secure.givelively.org; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://secure.givelively.org https://static.cloudflareinsights.com https://cloudflareinsights.com https://sibforms.com; frame-src https://challenges.cloudflare.com https://secure.givelively.org; media-src 'self'
 ```
 
 Notes on the values:
 
-- **Enforced CSP (structural only).** `frame-ancestors 'none'` backs up
-  `X-Frame-Options: DENY` (nothing may frame us). `object-src 'none'` and
-  `base-uri 'self'` are cheap, universally-safe hardening.
-- **`form-action` is the one enforced directive that tracks the site's forms.**
-  It lists every origin a form may submit to, and because it is *enforced*, a
-  missing origin means the browser silently blocks the submit — no fallback, no
-  error the visitor can act on. Today: `/contact/submit` is same-origin
+- **Enforced CSP is limited to directives that never name a third-party
+  origin.** `frame-ancestors 'none'` backs up `X-Frame-Options: DENY`
+  (nothing may frame us). `object-src 'none'` and `base-uri 'self'` are
+  cheap, universally-safe hardening. None of the three need editing when a
+  widget/form/integration is added later — that's why they're safe to
+  enforce permanently.
+- **`form-action` lives in Report-Only, not with the other three.** It's the
+  one directive that lists specific origins (every target a form may submit
+  to), so if it were enforced, a missing origin would mean the browser
+  silently blocks the submit — no fallback, no error the visitor can act on.
+  That's the same maintenance risk as the resource allowlist below, so it's
+  grouped with it instead. Today: `/contact/submit` is same-origin
   (`'self'`), and the footer newsletter posts cross-origin to Brevo, hence
-  `https://sibforms.com https://*.sibforms.com`. The wildcard is needed because
-  the form's action is on a per-account subdomain (`1742a6b7.sibforms.com`).
-  **If a form is ever added, removed, or repointed, update this line in the same
-  change.** The other three enforced directives need no such maintenance.
+  `https://sibforms.com https://*.sibforms.com`. The wildcard is needed
+  because the form's action is on a per-account subdomain
+  (`1742a6b7.sibforms.com`). **If a form is ever added, removed, or
+  repointed, update this line and watch Report-Only for violations** —
+  nothing will block the submit if you forget, but nothing will warn you
+  either unless you're watching the console.
 - **`'unsafe-inline'` in the Report-Only script-src** is required by Astro's
   `is:inline` scripts and the inline Give Lively bootstrap; JSON-LD `<script
   type="application/ld+json">` blocks are data, not executable, and are exempt.
@@ -103,17 +118,19 @@ Notes on the values:
    **every** page — especially **/support/** (exercise the donate widget, open
    the amount/checkout modal) and **/contact/** (let Turnstile render). Also
    hover the **footer newsletter** on any page to trigger its lazy load, and
-   send a real test subscribe through it: the Brevo POST is governed by the
-   *enforced* `form-action`, so unlike the resource allowlist it fails hard
-   rather than just reporting. Any `[Report Only]` CSP violation names an origin
-   the allowlist is missing.
+   send a real test subscribe through it. Only the three structural
+   directives (`frame-ancestors`/`object-src`/`base-uri`) are enforced, so a
+   missing origin anywhere else — including `form-action` — shows up as a
+   `[Report Only]` console violation rather than an actual failure. Treat a
+   violation as "add this before ever enforcing," not as a live bug.
 2. The Give Lively **payment step** (card fields, Stripe/PayPal) was not driven
    to completion during the 2026-07-18 inventory, so its deepest origins may not
    be listed. In Report-Only that's harmless — but if you take a real test
    donation, watch the console and add any origin it flags.
 3. Add missing origins to the Report-Only header and re-check. Per the owner
-   decision above, the resource allowlist **stays Report-Only** — do not flip it
-   to enforcing without revisiting that tradeoff.
+   decision above, only `frame-ancestors`/`object-src`/`base-uri` are
+   enforced — `form-action` and the resource allowlist **stay Report-Only** —
+   do not flip either to enforcing without revisiting that tradeoff.
 
 ## Verify (after applying)
 

@@ -115,7 +115,11 @@ public/                 # Served as-is at the site root:
     carousel/           #   Hebrews 1 in each of the five liturgical seasons,
                         #     for ChurchYearCarousel
   assets/og/            # Open Graph share images: og-default.png (site-wide
-                        #   fallback) + per-page cards from scripts/ (F5)
+                        #   fallback) + per-page cards from scripts/ (F5).
+                        #   og-square.png is unreferenced in-repo but kept
+                        #   intentionally (OW4) as a ready square brand asset
+                        #   for possible future use — don't delete it in an
+                        #   unused-assets sweep.
   CNAME                 # Custom domain for GitHub Pages
   favicon.svg, favicon.ico, favicon-96x96.png, apple-touch-icon.png,
   web-app-manifest-*.png, site.webmanifest, robots.txt
@@ -153,6 +157,12 @@ docs/
 DISASTER-RECOVERY.md    # Dashboards/secrets/redeploy path (repo root; not shipped)
 SECURITY.md, CONTRIBUTING.md, CODE_OF_CONDUCT.md # Community-health files
                         #   (repo root; GitHub surfaces these automatically)
+LICENSE                 # Dual: MIT for the code, all-rights-reserved for the
+                        #   org's own written copy and brand/creative assets
+                        #   (no CC license, unlike litbible's translation
+                        #   content — owner decision; see the file for the
+                        #   code/content split, which isn't a clean directory
+                        #   split since page prose lives inline in .astro files)
 .editorconfig, .gitattributes # Editor/line-ending conventions (repo root)
 ```
 

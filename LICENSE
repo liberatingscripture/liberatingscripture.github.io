@@ -1,0 +1,67 @@
+Liberating Scripture Collective — Licensing
+============================================
+
+This repository holds two kinds of material under two different licenses.
+
+1. SOFTWARE — the website's source code (Astro components, layouts, scripts,
+   styles, build tooling, configuration). Licensed under the MIT License
+   (full text below). You may copy, modify, and reuse it freely, including
+   for commercial purposes.
+
+2. CONTENT — the organization's written copy (mission and project
+   descriptions, page text, and similar prose), logos, photos, podcast
+   artwork, and other creative or brand assets. All rights reserved. Unlike
+   the SOFTWARE above, none of this content is available under MIT, Creative
+   Commons, or any other public license — no permission is granted to copy,
+   distribute, modify, or otherwise reuse it. For permission requests,
+   contact https://liberatingscripture.org/contact/.
+
+Which material is CONTENT (all rights reserved), not SOFTWARE:
+  - Everything under public/assets/ (the org's logo, podcast cover art,
+    screenshots, and Open Graph share images)
+  - src/content/ (the /apps page's section copy, in markdown frontmatter
+    and body text)
+  - The site's written copy elsewhere. Most of it is embedded directly in
+    the page templates under src/pages/ and src/components/ rather than
+    kept in separate content files — in those files, the HTML structure,
+    CSS classes, and logic are SOFTWARE (MIT), but the actual prose
+    (headings, body text, meta descriptions, and similar wording) is
+    CONTENT and is NOT covered by the MIT grant below, even though it
+    lives in the same file.
+
+Everything else — the Astro components, layouts, scripts, styles,
+configuration, and build tooling, apart from the embedded prose described
+above — is SOFTWARE under the MIT License.
+
+------------------------------------------------------------------------------
+MIT License (SOFTWARE only)
+
+Copyright (c) 2026 Liberating Scripture Collective
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+------------------------------------------------------------------------------
+All Rights Reserved (CONTENT only)
+
+Copyright (c) 2026 Liberating Scripture Collective. All rights reserved.
+
+No part of the CONTENT described above may be reproduced, distributed, or
+transmitted in any form or by any means, nor stored in a retrieval system,
+without prior written permission — except as already permitted by
+applicable law (such as fair use).
