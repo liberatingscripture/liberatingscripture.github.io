@@ -583,7 +583,18 @@ accessibility defects), then F2→OW1 (security headers).
   ≤ ~10 KB and no 177 KB png on mobile viewport; /podcasts/ no longer
   transfers 3 MB; images look crisp at 2x DPR.
 
-- [ ] **(O4) Port litbible's internal link checker and wire it into CI.**
+- [x] **(O4) Port litbible's internal link checker and wire it into CI.**
+  DONE 2026-07-22: ported litbible's `scripts/check-links.mjs` verbatim except
+  the internal-host check (`liberatingscripture.org`) and the comment's example
+  paths. The `scripts/` dir already existed (F5), so the FIXLIST's "no scripts/
+  dir yet" note was stale. Added `"check:links": "node scripts/check-links.mjs"`
+  to the root `package.json` (no new deps — node:fs/node:path only) and a
+  `- run: npm run check:links` step in deploy.yml's `build` job right after
+  `npm run build`, so a broken link fails the build and blocks deploy. Nothing
+  to fix: it passed clean on first run.
+  Verified: `npm run build && npm run check:links` → OK, scanned 13 pages,
+  checked 457 internal links, no broken targets or fragments. Documented in
+  CLAUDE.md (Commands/Deployment/Structure) and README.
   Problem: nothing validates that internal links in the built site resolve
   (the S1 llms.txt 404 is the class of bug this catches for HTML).
   Fix: copy `scripts/check-links.mjs` from litbible (top-of-file comments
@@ -596,7 +607,26 @@ accessibility defects), then F2→OW1 (security headers).
   Verify: `npm run build && npm run check:links` exits 0 locally; CI runs
   it after build.
 
-- [ ] **(O5) Add a test suite for the contact-form Worker, plus a CI job.**
+- [x] **(O5) Add a test suite for the contact-form Worker, plus a CI job.**
+  DONE 2026-07-22: ported litbible's harness to `workers/contact-form/`
+  (`vitest.config.js` verbatim, `test/index.test.js` adapted) and adapted the
+  cases to THIS single-form Worker — dropped every app-support test (platform
+  whitelist, route selection, the app-support branches of JSON/message-shape),
+  and rewrote the expected strings (subject `liberatingscripture.org contact —`,
+  From `LSC contact form <contact@liberatingscripture.org>`, body lede, error
+  page `href="/contact/"`, thanks Location). Kept: method guard, honeypot,
+  field validation, header injection (CRLF collapse + length caps), Turnstile
+  (reject/missing/throw/secret+IP), rate limit (429 + fail-open),
+  JSON-vs-303-vs-error-page, and the full DISPLAY_TO alias/retry + send-failure
+  500 set. Added `"test": "vitest run"` and devDeps
+  `@cloudflare/vitest-pool-workers`+`vitest` to the worker's package.json
+  (`wrangler` was already there), ran `npm install` to update its lock, and
+  added a top-level `worker-tests` job to deploy.yml (its own `npm ci` in
+  `workers/contact-form/`, matching this file's existing checkout@v4/setup-node@v4/
+  Node 22; not in `deploy`'s `needs`, so it runs on PRs+pushes without gating
+  deploy).
+  Verified: `cd workers/contact-form && npm test` → 28 passed in real workerd;
+  deploy.yml parses; documented in CLAUDE.md/README.
   Problem: `workers/contact-form/` has no tests. litbible's sibling Worker
   (same code lineage) has a full vitest suite running in real workerd:
   `workers/contact-form/test/index.test.js`, `vitest.config.js`, and
