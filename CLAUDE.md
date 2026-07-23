@@ -40,10 +40,17 @@ npm run build    # Production build to dist/
 npm run preview  # Preview the production build
 npm run check    # astro check (type/diagnostics) — also runs in CI on every
                  #   push/PR, before the build
+npm run check:links # Verify every internal href/#fragment in dist/ resolves
+                 #   (reads dist/ only, no network — run AFTER build; also runs
+                 #   in CI right after the build). See scripts/check-links.mjs
 npm run build:og # Regenerate the per-page OG cards (one-shot; not in the build)
 npm run build:images # Regenerate the right-sized WebP variants of the on-page
                  #   logo/podcast art (one-shot; not in the build)
 ```
+
+The contact-form Worker has its own test suite (`cd workers/contact-form &&
+npm test`, vitest in real `workerd`); CI runs it as a separate `worker-tests`
+job — see Deployment.
 
 ## Structure
 
@@ -126,14 +133,21 @@ scripts/
                         #   logo/podcast art. Run by hand: `npm run build:images`;
                         #   NOT part of the build. Commits WebP to
                         #   public/assets/images/ (see O3)
+  check-links.mjs       # Post-build internal link checker (`npm run check:links`,
+                        #   dependency-free, reads dist/ only). Ported from
+                        #   litbible; runs in CI after the build (O4)
   og/                   # Card source assets: committed fonts (+ OFL) and
                         #   lit-logo.png (copied from litbible, not shipped)
 workers/
   contact-form/         # Cloudflare Worker backing /contact/submit — NOT part
                         #   of the site build; deployed separately via wrangler
                         #   (see its README)
+    test/index.test.js  #   vitest suite (real workerd via
+                        #     @cloudflare/vitest-pool-workers) + vitest.config.js;
+                        #     `npm test` here, and CI's worker-tests job (O5)
 .github/workflows/
-  deploy.yml            # Build + deploy to GitHub Pages on push to main
+  deploy.yml            # Build + deploy to GitHub Pages on push to main; also
+                        #   runs check:links and the worker-tests job on PRs
 docs/
   security-headers.md   # Cloudflare header setup the owner applies (FIXLIST OW1)
 DISASTER-RECOVERY.md    # Dashboards/secrets/redeploy path (repo root; not shipped)
@@ -150,11 +164,16 @@ SECURITY.md, CONTRIBUTING.md, CODE_OF_CONDUCT.md # Community-health files
 ## Deployment
 
 `.github/workflows/deploy.yml` runs on every push to `main`, on pull requests,
-and via manual dispatch: it `npm ci`s, `npm run check`s, `npm run build`s,
-uploads `dist/` as a Pages artifact, and deploys to GitHub Pages. The `deploy`
+and via manual dispatch: the `build` job `npm ci`s, `npm run check`s,
+`npm run build`s, `npm run check:links` (validates internal links in `dist/`),
+uploads `dist/` as a Pages artifact, and then the `deploy` job publishes to
+GitHub Pages. A separate `worker-tests` job runs the contact-form Worker's
+vitest suite (its own dependency tree, so its own `npm ci` in
+`workers/contact-form/`); it gates neither `build` nor `deploy`. The `deploy`
 job is skipped on pull requests (`if: github.event_name != 'pull_request'`),
-so PRs build and type-check but never publish. The custom domain comes from
-`public/CNAME` (liberatingscripture.org). Push to `main` is the site deploy.
+so PRs build, type-check, link-check, and run the Worker tests but never
+publish. The custom domain comes from `public/CNAME` (liberatingscripture.org).
+Push to `main` is the site deploy.
 
 Dependency updates: this repo follows litbible's precedent of enabling
 GitHub's native Dependabot security-alert toggle (Settings → Security →

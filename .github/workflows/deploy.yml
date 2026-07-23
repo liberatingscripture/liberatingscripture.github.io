@@ -27,9 +27,30 @@ jobs:
       - run: npm ci
       - run: npm run check
       - run: npm run build
+      # Verify every internal href/#fragment in dist/ resolves (no network).
+      - run: npm run check:links
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist/
+
+  # The contact-form Worker is a separate package with its own dependency tree
+  # (deliberately — it keeps vitest/workerd out of the site's root deps), so the
+  # root `npm ci` above never installs it and its tests need their own job. It
+  # runs on pushes and PRs but is not a deploy dependency.
+  worker-tests:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: workers/contact-form
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: workers/contact-form/package-lock.json
+      - run: npm ci
+      - run: npm test
 
   deploy:
     needs: build

@@ -34,6 +34,7 @@ npm run dev      # Start the dev server at http://localhost:4321
 | `npm run build` | Build the production site to `dist/` |
 | `npm run preview` | Preview the production build locally |
 | `npm run check` | Run `astro check` (type checking / diagnostics) — also runs in CI |
+| `npm run check:links` | Verify internal links in `dist/` resolve (run after `build`) — also runs in CI |
 | `npm run build:og` | Regenerate the per-page Open Graph share cards (one-shot; not part of the build) |
 
 ## Structure
