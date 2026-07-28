@@ -58,6 +58,7 @@ public/         # Served at the site root: images, app screenshots, OG images,
 scripts/        # Build-time tooling (one-shot brand-asset and OG-card generators)
 workers/        # Cloudflare Worker for the contact form (deployed separately)
 .github/workflows/deploy.yml   # Builds and deploys to GitHub Pages
+.github/dependabot.yml         # Grouped weekly/monthly dependency updates
 ```
 
 ## Deployment

@@ -1,0 +1,109 @@
+# Dependabot configuration — scheduled version updates.
+#
+# Why this file exists: without it, Dependabot runs on GitHub's UI defaults,
+# which open ONE PR PER DEPENDENCY and watch only the repo root. That produced
+# a scattered pile of four single-package PRs on 2026-07-28, all of which went
+# stale within the hour when a manual Astro 7 upgrade swept the same versions
+# in. Grouping collapses that into one reviewable PR per stream.
+#
+# IMPORTANT — what this file does NOT cover: grouping applies to *scheduled
+# version updates* only. Dependabot SECURITY updates (driven by advisories,
+# toggled in Settings → Security) still open an individual PR per advisory no
+# matter what is configured here. See CLAUDE.md → Deployment for that tradeoff.
+
+version: 2
+
+updates:
+  # ---------------------------------------------------------------------------
+  # Stream 1 — the site itself (Astro, sitemap, fonts, and the build-time image
+  # tooling in scripts/). This is the tree the UI defaults were already
+  # watching; grouping is the only thing that changes for it.
+  # ---------------------------------------------------------------------------
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: America/Los_Angeles
+    open-pull-requests-limit: 5
+    commit-message:
+      # Matches this repo's Conventional Commits convention (lowercase type +
+      # scope, e.g. "perf(images):", "docs(privacy):") — and matches what
+      # Dependabot was already emitting here before this file existed.
+      prefix: "chore(deps)"
+      prefix-development: "chore(deps-dev)"
+      include: scope
+    groups:
+      # Minor + patch ride together: they are the routine, low-risk stream, and
+      # one PR means one `npm ci` + one CI run instead of five.
+      site-minor-and-patch:
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch
+    # NOTE: majors are deliberately NOT listed in any group above. Anything that
+    # doesn't match a group's update-types falls out into its own PR, which is
+    # exactly what we want — a major needs the changelog read and the built
+    # output diffed by hand. The Astro 6 → 7 bump is the standing example: it
+    # silently rewrote every CSS breakpoint into range syntax and needed
+    # `vite.build.cssTarget` pinned in astro.config.mjs to stay correct on older
+    # browsers (see CLAUDE.md → "Why cssTarget is pinned"). That is not a thing
+    # to discover inside a bundle of patch bumps.
+
+  # ---------------------------------------------------------------------------
+  # Stream 2 — the contact-form Cloudflare Worker. THIS TREE WAS UNWATCHED.
+  # It has its own package.json and its own package-lock.json that the root
+  # `npm ci` never touches (CI gives it a separate `npm ci` in the worker-tests
+  # job), so GitHub's root-only defaults saw none of it — including wrangler,
+  # vitest, and @cloudflare/vitest-pool-workers. Deployed separately via
+  # wrangler, so a stale dep here rots quietly until a deploy fails.
+  # ---------------------------------------------------------------------------
+  - package-ecosystem: npm
+    directory: "/workers/contact-form"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: America/Los_Angeles
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: "chore(deps)"
+      prefix-development: "chore(deps-dev)"
+      include: scope
+    groups:
+      worker-minor-and-patch:
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch
+    # Majors ungrouped here too, and they matter more than usual: a wrangler
+    # major can change wrangler.toml's schema, and a vitest /
+    # @cloudflare/vitest-pool-workers major has to move in lockstep with the
+    # workerd runtime the tests boot. Each gets its own PR.
+
+  # ---------------------------------------------------------------------------
+  # Stream 3 — GitHub Actions used by .github/workflows/deploy.yml
+  # (checkout, setup-node, upload-pages-artifact, deploy-pages). Monthly: these
+  # move slowly, and a stale action is a CI concern, not a shipped-code one.
+  # ---------------------------------------------------------------------------
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: "chore(actions)"
+      include: scope
+    groups:
+      actions-minor-and-patch:
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch
+    # Ungrouped majors again. Action majors are the ones that break the deploy
+    # outright (a deploy-pages or upload-pages-artifact major can change the
+    # Pages artifact contract), so they should never arrive bundled.

@@ -168,9 +168,14 @@ workers/
     test/index.test.js  #   vitest suite (real workerd via
                         #     @cloudflare/vitest-pool-workers) + vitest.config.js;
                         #     `npm test` here, and CI's worker-tests job (O5)
-.github/workflows/
-  deploy.yml            # Build + deploy to GitHub Pages on push to main; also
+.github/
+  workflows/
+    deploy.yml          # Build + deploy to GitHub Pages on push to main; also
                         #   runs check:links and the worker-tests job on PRs
+  dependabot.yml        # Scheduled version updates, three streams: root npm,
+                        #   workers/contact-form npm, and github-actions.
+                        #   Minor+patch grouped per stream; majors ungrouped
+                        #   (see Deployment)
 docs/
   security-headers.md   # Cloudflare header setup the owner applies (FIXLIST OW1)
 DISASTER-RECOVERY.md    # Dashboards/secrets/redeploy path (repo root; not shipped)
@@ -204,23 +209,46 @@ so PRs build, type-check, link-check, and run the Worker tests but never
 publish. The custom domain comes from `public/CNAME` (liberatingscripture.org).
 Push to `main` is the site deploy.
 
-Dependency updates: this repo follows litbible's precedent of enabling
-GitHub's native Dependabot toggles (Settings → Security) rather than
-committing a `dependabot.yml`. **Enabled 2026-07-28** (FIXLIST OW8).
+Dependency updates run on **both** of Dependabot's halves, and the distinction
+between them is the thing to keep straight:
 
-A nuance the earlier wording got wrong: this is *not* a zero-PR setup. The
-**alerts** toggle only notifies, but **Dependabot security updates** — which
-is what actually landed here — opens a PR per advisory, and it opened eight
-on day one. They are security-driven, not routine version bumps, so the
-volume tracks advisories rather than releases and should be far quieter after
-the initial backlog. Routine version-bump PRs are still off; that's the part
-of litbible's tradeoff this repo keeps.
+- **Security updates** come from GitHub's native toggles (Settings → Security),
+  enabled 2026-07-28 (FIXLIST OW8). These are advisory-driven and open **one PR
+  per advisory no matter what `dependabot.yml` says** — grouping does not apply
+  to them. Eight landed on day one.
+- **Scheduled version updates** come from `.github/dependabot.yml`, added
+  2026-07-28. Three streams: root npm and `workers/contact-form` npm (weekly),
+  and github-actions (monthly).
 
-Prefer resolving a batch of these in one branch over merging the PRs
+The config **reverses** the earlier decision recorded in FIXLIST S15/OW8 to
+follow litbible's precedent of toggles-only and no committed yml. That
+precedent was adopted to avoid weekly PR overhead — but the day-one behavior
+disproved the premise it rested on. UI defaults are not low-volume: they open
+one PR per dependency and watch only the repo root, which is what produced a
+scattered pile of four single-package PRs, all stale within the hour when the
+Astro 7 upgrade swept the same versions in. Grouping minor+patch into one PR
+per stream is strictly *fewer* PRs than the default, not more.
+
+Two things the config buys that the toggles could not:
+
+- **`workers/contact-form/` is now watched at all.** It has its own
+  `package.json` and lockfile that the root `npm ci` never touches, so
+  root-only UI defaults saw none of it — wrangler, vitest, and
+  `@cloudflare/vitest-pool-workers` included.
+- **Majors are deliberately ungrouped** in every stream, so each arrives in its
+  own PR. Anything outside a group's `update-types` falls out on its own. The
+  Astro 6 → 7 bump is the standing argument for this: it silently rewrote every
+  CSS breakpoint into range syntax and needed `vite.build.cssTarget` pinned (see
+  "Why `cssTarget` is pinned"). That is not something to discover inside a
+  bundle of patch bumps.
+
+For the security PRs, prefer resolving a batch in one branch over merging them
 individually: several advisories share a root (three of the first eight were
 all "bump astro"), so a single `npm audit fix` pass plus one deliberate major
-upgrade closed all eight, where merging each PR would have meant eight
-lockfile conflicts. Close the superseded Dependabot PRs afterward.
+upgrade closed all eight, where merging each PR would have meant eight lockfile
+conflicts. Close the superseded Dependabot PRs afterward — `@dependabot close`
+as a comment is unreliable, so verify with `gh pr list --author "app/dependabot"
+--state open` and fall back to `gh pr close <n> --delete-branch`.
 
 One nuance: the domain's DNS is on **Cloudflare with the proxy enabled**, so
 Cloudflare sits in front of GitHub Pages. That's what lets the contact-form
