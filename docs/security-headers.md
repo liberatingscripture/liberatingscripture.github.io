@@ -57,6 +57,16 @@
 | `cloudflareinsights.com` | every page | analytics beacon POST target | connect |
 | `/cdn-cgi/*` (rum, challenge-platform, speculation) | every page | Cloudflare edge (same-origin) | covered by `'self'` |
 
+> **Don't prune the two `cloudflareinsights` rows as unused.** The Web
+> Analytics beacon is **edge-injected by Cloudflare** — it appears in no source
+> file in this repo — and injection is **skipped for non-browser user agents**.
+> So `curl https://liberatingscripture.org/` shows no beacon and makes those
+> rows look like dead entries. They aren't: a browser-UA fetch on 2026-07-28
+> confirmed `static.cloudflareinsights.com/beacon.min.js/v4513226…` is served
+> on every page. **Always inventory origins with a real browser**, which is how
+> this table was built; the sibling litbible repo used a non-browser fetch and
+> twice concluded, wrongly, that its beacon was missing.
+
 No page statically embeds an `<iframe>`; the only frames created at runtime are
 Turnstile's and Give Lively's modal. The podcast links on /podcasts/ are plain
 outbound `<a>` links, **not** embedded players — so, unlike litbible, this

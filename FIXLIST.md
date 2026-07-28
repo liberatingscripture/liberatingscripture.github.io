@@ -1166,11 +1166,39 @@ accessibility defects), then F2→OW1 (security headers).
   headers.md` carries the corrected header, and it is now the value live in
   the rule. The enforced CSP and the other five headers were correct as
   pasted and needed no change.
-  REMAINING: only the doc's Verify block — `curl -sI` plus a console pass over
-  /support/ and /contact/, watching for Report-Only violations (especially on
-  a real Give Lively payment step, whose deepest origins were never
-  inventoried). Can't be done from a Claude session: the network policy blocks
-  outbound requests to liberatingscripture.org. Owner-only from here.
+  VERIFIED 2026-07-28 (`curl -sI` half of the doc's Verify block — **done**).
+  The earlier claim that this "can't be done from a Claude session" was
+  environment-specific, not permanent: outbound requests to
+  liberatingscripture.org succeeded from a later session (HTTP 200), so the
+  header check was run directly. All six headers and BOTH CSPs are live on
+  `https://liberatingscripture.org/` and match `docs/security-headers.md`,
+  including the 2026-07-22 `form-action` move and the same-day
+  `*.sibforms.com` correction:
+  - `Strict-Transport-Security: max-age=15552000; includeSubDomains` (no
+    `preload`, as intended)
+  - `X-Content-Type-Options: nosniff`
+  - `Referrer-Policy: strict-origin-when-cross-origin`
+  - `Permissions-Policy: camera=(), microphone=(), geolocation=()`
+  - `X-Frame-Options: DENY`
+  - enforced `Content-Security-Policy: frame-ancestors 'none'; object-src
+    'none'; base-uri 'self'` — correctly WITHOUT `form-action`
+  - `Content-Security-Policy-Report-Only` present with the corrected values
+  Also confirmed while here: the Cloudflare Web Analytics beacon really is
+  serving on this domain (`static.cloudflareinsights.com/beacon.min.js/
+  v4513226…`), so the `cloudflareinsights` entries in the Report-Only policy
+  are earned, not speculative. **Do not "clean them up" as unused** — the
+  beacon is EDGE-INJECTED by Cloudflare (it appears in no source file in this
+  repo) and injection is SKIPPED for non-browser user agents, so a plain
+  `curl` of any page shows no beacon and looks like dead allowlist entries.
+  Verify with a browser User-Agent. The sibling litbible repo learned this the
+  hard way: two of its audits concluded its beacon was missing, and it had to
+  add the two origins its curl-based inventory had missed. F2 got this right
+  here only because it inventoried origins by loading pages in a real browser.
+  REMAINING (owner-only, genuinely): the console pass over /support/ and
+  /contact/, watching for Report-Only violations — especially on a real Give
+  Lively payment step, whose deepest origins (Stripe/PayPal card fields) were
+  never inventoried. That needs a human driving a real payment flow with
+  devtools open; no session can do it.
 
 - [x] **(OW2) Verify the Organization schema facts: foundingDate and EIN.**
   DONE 2026-07-23: owner confirmed LSC's actual founding/incorporation year
