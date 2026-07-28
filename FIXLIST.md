@@ -1303,6 +1303,18 @@ accessibility defects), then F2→OW1 (security headers).
   Worker devDeps (wrangler/vitest-pool-workers/miniflare→sharp) were the same
   story in `workers/contact-form/`. `npm audit` now reports 0 vulnerabilities
   in both trees. The eight Dependabot PRs are superseded and can be closed.
+  CLOSED 2026-07-28: four (#17 fast-uri, #18 defu, #19 svgo, #22 postcss) were
+  still open and every version they proposed was already in main's lockfile;
+  closed with `gh pr close --delete-branch` and verified no `dependabot/*`
+  branches remain. Only #17 had ever run CI; the other three reported no
+  checks at all.
+  SUPERSEDED 2026-07-28: this item's "no committed `dependabot.yml`" premise
+  was itself disproved and `.github/dependabot.yml` now exists. The precedent
+  was adopted to avoid weekly PR overhead, but UI defaults are not low-volume
+  — one PR per dependency, root tree only. Grouped minor+patch is fewer PRs
+  than the default, and it closes the real gap: `workers/contact-form/` has
+  its own lockfile that root-only defaults never watched. Majors stay
+  ungrouped so each gets hand-review. See CLAUDE.md → Deployment.
   Original item text below.
   Moved here from the Sonnet section (was S15) on 2026-07-19: litbible's own
   FIXLIST rejected a committed `dependabot.yml` for the identical problem
