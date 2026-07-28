@@ -1,5 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import LscMark from "../components/LscMark.astro";
 ---
 
 <Layout
@@ -50,15 +51,7 @@ import Layout from "../layouts/Layout.astro";
       <section id="donate" class="support-section">
         <div class="donate-band">
           <div class="donate-band__header">
-            <img
-              src="/assets/images/lsc-logo-240.webp"
-              alt=""
-              width="84"
-              height="84"
-              loading="lazy"
-              decoding="async"
-              aria-hidden="true"
-            />
+            <LscMark size={84} />
             <div>
               <h2>Donate</h2>
               <p class="donate-band__sub">
@@ -245,10 +238,6 @@ import Layout from "../layouts/Layout.astro";
     display: flex;
     align-items: center;
     gap: 1.25rem;
-  }
-
-  .donate-band__header img {
-    border-radius: 12px;
   }
 
   .donate-band__header h2 {

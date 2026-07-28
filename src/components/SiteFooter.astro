@@ -4,6 +4,8 @@
  * embeds its own Brevo form — Brevo markup requires fixed ids (sib-form,
  * error-message, success-message), so two forms on one page collide.
  */
+import LscMark from "./LscMark.astro";
+
 const { hideNewsletter = false } = Astro.props;
 
 const year = new Date().getFullYear();
@@ -12,14 +14,7 @@ const year = new Date().getFullYear();
 <footer class="site-footer">
   <div class="footer-inner container">
     <div class="footer-brand">
-      <img
-        src="/assets/images/lsc-logo-240.webp"
-        alt="Liberating Scripture Collective"
-        width="80"
-        height="80"
-        loading="lazy"
-        decoding="async"
-      />
+      <LscMark size={80} title="Liberating Scripture Collective" class="footer-mark" />
       <p class="footer-tagline">
         Open-access, trauma-informed scripture translation, teaching, and
         community.
@@ -317,6 +312,11 @@ const year = new Date().getFullYear();
     color: #c8c6c0;
     padding: clamp(3rem, 6vw, 5rem) 0 2rem;
     margin-top: 0;
+    /* The footer band is a fixed dark surface in BOTH themes, so the dove mark
+       pins its own pair rather than inheriting the page's — otherwise it would
+       flip to an ink disc on this ink band and disappear in dark mode. */
+    --lsc-mark-disc: #E4E2DC;
+    --lsc-mark-bird: #1D231C;
   }
 
   .footer-inner {
@@ -327,12 +327,8 @@ const year = new Date().getFullYear();
   }
 
   /* Brand column */
-  .footer-brand img {
-    display: block;
-    width: auto;
+  .footer-brand :global(.footer-mark) {
     margin-bottom: 1rem;
-    opacity: 0.9;
-    border-radius: 12px;
   }
 
   .footer-tagline {

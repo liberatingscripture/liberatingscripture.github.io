@@ -43,9 +43,12 @@ npm run check    # astro check (type/diagnostics) — also runs in CI on every
 npm run check:links # Verify every internal href/#fragment in dist/ resolves
                  #   (reads dist/ only, no network — run AFTER build; also runs
                  #   in CI right after the build). See scripts/check-links.mjs
-npm run build:og # Regenerate the per-page OG cards (one-shot; not in the build)
+npm run build:brand # Regenerate every raster/SVG form of the LSC dove mark —
+                 #   favicons, app icons, og-square, and the two lsc-mark PNGs
+                 #   (one-shot; not in the build). Run BEFORE build:og.
+npm run build:og # Regenerate the OG cards (one-shot; not in the build)
 npm run build:images # Regenerate the right-sized WebP variants of the on-page
-                 #   logo/podcast art (one-shot; not in the build)
+                 #   podcast art (one-shot; not in the build)
 ```
 
 The contact-form Worker has its own test suite (`cd workers/contact-form &&
@@ -62,6 +65,7 @@ src/
     AppsLaunchPopover.astro # LIT Bible app announcement modal (see Popover)
     AppIcons.astro      # The iOS + Android app icons as a matched pair
     PlatformIcon.astro  # Apple / Android marks for the store links
+    LscMark.astro       # The LSC dove mark, inline (see The Brand Mark)
     apps/               # /apps page sections, ported verbatim from litbible
                         #   (see Apps Page): Hero, ExamplesSlider,
                         #   ReaderCallouts, ChurchYearCarousel, BigScreens,
@@ -74,6 +78,10 @@ src/
   content/
     callouts/, examples/, seasons/ # /apps section copy as markdown
                         #   frontmatter + body, ported from litbible verbatim
+  lib/
+    lsc-mark.mjs        # The dove mark's path data + SVG builders — the single
+                        #   source of truth, imported by BOTH LscMark.astro and
+                        #   scripts/build-brand-assets.mjs (see The Brand Mark)
   layouts/
     Layout.astro        # Base HTML shell (SEO/OG, fonts, favicons, header/footer,
                         #   and the one announcement popover)
@@ -104,25 +112,29 @@ src/
                         #   verbatim, plus an LSC bridge ahead of it (see
                         #   Apps Page). Imported ONLY by pages/apps.astro.
 public/                 # Served as-is at the site root:
-  assets/images/        # Logos, podcast art, hero images, and both app icons
-                        #   (lit-app-icon.svg = Android, *-ios.webp = iOS).
-                        #   The full-res PNGs (lsc-logo.png 2200², twb-banner.png)
-                        #   stay for JSON-LD/crawlers; pages load right-sized
-                        #   WebP variants (lsc-logo-{120,240,640}.webp,
-                        #   twb-banner-480.webp) from `build:images` (O3)
+  assets/images/        # Podcast art, hero images, and both app icons
+                        #   (lit-app-icon.svg = Android, *-ios.webp = iOS), plus
+                        #   lsc-mark.png / lsc-mark-inverse.png from
+                        #   `build:brand` — raster forms of the dove mark, for
+                        #   JSON-LD and the OG composite only (pages inline the
+                        #   mark instead; see The Brand Mark). The full-res
+                        #   twb-banner.png stays for JSON-LD/crawlers; the
+                        #   podcasts page loads twb-banner-480.webp from
+                        #   `build:images` (O3)
   assets/screenshots/   # App screenshots for /apps, as WebP (converted from
                         #   litbible's PNGs — see Apps Page)
     carousel/           #   Hebrews 1 in each of the five liturgical seasons,
                         #     for ChurchYearCarousel
   assets/og/            # Open Graph share images: og-default.png (site-wide
-                        #   fallback) + per-page cards from scripts/ (F5).
+                        #   fallback) + per-page cards, all from `build:og` (F5).
                         #   og-square.png is unreferenced in-repo but kept
                         #   intentionally (OW4) as a ready square brand asset
                         #   for possible future use — don't delete it in an
-                        #   unused-assets sweep.
+                        #   unused-assets sweep; `build:brand` regenerates it.
   CNAME                 # Custom domain for GitHub Pages
   favicon.svg, favicon.ico, favicon-96x96.png, apple-touch-icon.png,
-  web-app-manifest-*.png, site.webmanifest, robots.txt
+  web-app-manifest-*.png # All from `build:brand` — don't hand-edit
+  site.webmanifest, robots.txt
   llms.txt, llms-full.txt   # LLM-readable site description
   .well-known/
     apple-developer-merchantid-domain-association # Apple Pay domain
@@ -130,11 +142,16 @@ public/                 # Served as-is at the site root:
                         #   don't delete
     security.txt        # RFC 9116 vulnerability-disclosure pointer (S16)
 scripts/
-  build-og-images.mjs   # One-shot per-page OG-card generator (sharp +
-                        #   opentype.js). Run by hand: `npm run build:og`; NOT
-                        #   part of the build. Commits PNGs to public/assets/og/
+  build-brand-assets.mjs # One-shot generator (sharp) for every raster/SVG form
+                        #   of the dove mark: favicons, app icons, og-square,
+                        #   and the two lsc-mark PNGs. Run by hand:
+                        #   `npm run build:brand`, BEFORE build:og; NOT part of
+                        #   the build. Draws from src/lib/lsc-mark.mjs.
+  build-og-images.mjs   # One-shot OG-card generator (sharp + opentype.js). Run
+                        #   by hand: `npm run build:og`; NOT part of the build.
+                        #   Commits PNGs to public/assets/og/
   build-image-variants.mjs # One-shot WebP resizer (sharp) for the on-page
-                        #   logo/podcast art. Run by hand: `npm run build:images`;
+                        #   podcast art. Run by hand: `npm run build:images`;
                         #   NOT part of the build. Commits WebP to
                         #   public/assets/images/ (see O3)
   check-links.mjs       # Post-build internal link checker (`npm run check:links`,
@@ -305,6 +322,62 @@ dual-selector dark pattern so the pre-paint `data-theme` wins on first paint.
 `/apps` sets its own body background (apps.css), so it shows the critical
 bg for a beat before repainting — both values are near-identical darks/creams,
 so it's imperceptible and page-local.
+
+## The Brand Mark
+
+The LSC mark is a monochrome dove. It is drawn **once**, in
+`src/lib/lsc-mark.mjs` (path data + SVG builders), and everything else derives
+from that module — `components/LscMark.astro` inlines it for the page, and
+`scripts/build-brand-assets.mjs` rasterizes it for every favicon, app icon and
+OG source. There is no hand-made logo file anywhere in the tree; if the art
+changes, edit the module and re-run `npm run build:brand && npm run build:og`.
+
+**The treatment is an inverted coin.** The dove sits on a filled disc whose
+color *opposes the surface*, and the dove opposes the disc. Two tokens carry it,
+flipped in `:root` and both dark blocks of `global.css`:
+
+| Token | Light | Dark |
+|---|---|---|
+| `--lsc-mark-disc` | `#1D231C` | `#E4E2DC` |
+| `--lsc-mark-bird` | `#FAFAF8` | `#1D231C` |
+
+**Fixed-darkness surfaces pin their own pair**, because "opposes the surface" is
+wrong for a surface that never flips. Two do it today, and any new one must:
+
+- `.site-footer` — the ink band is dark in *both* themes → cream disc, ink dove.
+- `.hero` on `index.astro` — `--green-deep` is theme-invariant → ink disc, cream
+  dove. (Ink on green-deep is ~2.7:1 at the rim — soft, but exactly the edge
+  contrast the old gold tile had there, and the dove inside is high contrast.)
+
+Get this wrong and the mark vanishes into its own background in one theme only,
+which is easy to miss if you only look at the theme you're developing in.
+
+**Inline SVG, never `<img src>`.** An externally-referenced SVG is its own
+document and can't read the page's custom properties, so an `<img>` can't
+follow the theme at all. That is the whole reason the component exists.
+
+**Coin vs. tile.** `markSvg()` takes a `shape`. The favicon SVG, the OG
+composite and every on-page use are `"coin"` (disc, transparent outside).
+`apple-touch-icon` and the `web-app-manifest-*` icons are `"tile"` (full-bleed
+square) because `site.webmanifest` declares them `purpose: maskable` — the
+platform applies its own crop, and a circle on transparency gets clipped into a
+lens. `favicon.ico` is the tile too; a coin's rim turns to mush at 16px.
+
+**Two things depend on the disc-opposes-surface rule outside the CSS:**
+
+- `build-og-images.mjs` paints an ink field, so its cards composite
+  `lsc-mark-inverse.png` (cream disc, ink dove). The plain coin would be an ink
+  disc on an ink field.
+- `public/favicon.svg` carries its own `prefers-color-scheme` block, so the
+  favicon follows the *browser's* scheme. Generated, not hand-written.
+
+**Mirrored in litbible.net**, which renders the LSC mark on
+`/liberating-scripture-collective`, `/support`, and the home page's fourth
+question card. That repo gets a copy of `lsc-mark.mjs` + `LscMark.astro` and its
+own `--lsc-mark-*` tokens (dark disc `#F0F0F0`, matching its `--text`); it
+generates nothing, since only this repo owns the favicons and OG cards. Its
+`.questions-block` is a fixed `--green` band and pins its pair the same way the
+hero here does. Keep the two component copies in step.
 
 ## External Integrations
 

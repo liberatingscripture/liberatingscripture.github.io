@@ -53,6 +53,14 @@
   --border: rgba(29, 35, 28, 0.15);
   --badge-bg: rgba(29, 35, 28, 0.07);
 
+  /* The LSC dove mark (components/LscMark.astro). It's an "inverted coin": the
+     disc OPPOSES the surface, and the dove opposes the disc. Flip both in the
+     dark blocks. Surfaces that are a fixed darkness in both themes — the ink
+     footer band, the green-deep homepage hero — pin their own pair locally so
+     they don't invert along with the page. */
+  --lsc-mark-disc: #1D231C;
+  --lsc-mark-bird: #FAFAF8;
+
   /* CTA. --ink is theme-invariant and the dark page background is nearly the
      same color, so a button painted straight onto --ink disappears in dark
      mode. These pairs are what .btn / .btn--outline consume so both flip. */
@@ -82,6 +90,8 @@
     --link: #3abf6a;
     --border: rgba(255,255,255,0.12);
     --badge-bg: rgba(255,255,255,0.08);
+    --lsc-mark-disc: #E4E2DC;
+    --lsc-mark-bird: #1D231C;
     --cta-bg: #d4d2cc;
     --cta-text: #1a1e1a;
     --btn-outline-fg: var(--text);
@@ -102,6 +112,8 @@
   --link: #3abf6a;
   --border: rgba(255,255,255,0.12);
   --badge-bg: rgba(255,255,255,0.08);
+  --lsc-mark-disc: #E4E2DC;
+  --lsc-mark-bird: #1D231C;
   --cta-bg: #d4d2cc;
   --cta-text: #1a1e1a;
   --btn-outline-fg: var(--text);

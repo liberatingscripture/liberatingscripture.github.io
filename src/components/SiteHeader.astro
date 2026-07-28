@@ -1,4 +1,6 @@
 ---
+import LscMark from "./LscMark.astro";
+
 const navLinks = [
   { label: "About", href: "/about/" },
   { label: "LIT Bible", href: "/lit-bible/" },
@@ -11,15 +13,7 @@ const navLinks = [
 <header class="site-header">
   <div class="site-header__inner">
     <a href="/" class="site-header__brand" aria-label="Liberating Scripture Collective home">
-      <img
-        src="/assets/images/lsc-logo-120.webp"
-        alt=""
-        class="site-header__logo"
-        width="40"
-        height="40"
-        loading="eager"
-        decoding="async"
-      />
+      <LscMark size={40} />
       <span class="site-header__name">
         <span class="name-long">Liberating Scripture Collective</span>
         <span class="name-short" aria-hidden="true">LSC</span>
@@ -354,14 +348,6 @@ const navLinks = [
     text-decoration: none;
     flex-shrink: 0;
     min-width: 0;
-  }
-
-  .site-header__logo {
-    width: 40px;
-    height: 40px;
-    object-fit: contain;
-    flex-shrink: 0;
-    border-radius: 8px;
   }
 
   .site-header__name {

@@ -113,6 +113,9 @@ accessibility defects), then F2→OW1 (security headers).
   `lsc-logo-text.png`) for possible future use. Deleted only `sd-hero.jpg`
   (5.9 MB), `sevenfold-mandala.png` (3.5 MB), and the duplicate
   `public/assets/images/og/` directory.
+  SUPERSEDED 2026-07-27: the gold mark was retired when the brand changed to
+  the dove (see "The Brand Mark" in CLAUDE.md). All seven `lsc-logo-*` files
+  are gone; the carve-out above no longer applies.
   Verified: grep confirmed zero references to either deleted filename before
   removal; `npm run build` passes; `dist/assets/` no longer contains them.
   Problem: these files under `public/assets/images/` are referenced nowhere
@@ -562,6 +565,12 @@ accessibility defects), then F2→OW1 (security headers).
   colors listed above.
 
 - [x] **(O3) Right-size the images.**
+  PARTLY SUPERSEDED 2026-07-27: the three `lsc-logo-*.webp` variants and their
+  source PNG are gone — the LSC mark is now an inline SVG component
+  (`LscMark.astro`), so it needs no raster variants at all, and its JSON-LD /
+  favicon / OG forms come from `build-brand-assets.mjs`. Everything below still
+  holds for `twb-banner-480.webp`, which is all `build:images` emits now. See
+  "The Brand Mark" in CLAUDE.md.
   DONE 2026-07-22: took the committed-`sharp`-script route (matching
   `build-og-images.mjs`), not `astro:assets` — adopting the `<Image>` component
   would mean relocating every `public/` image into `src/` and rewiring all
@@ -984,9 +993,13 @@ accessibility defects), then F2→OW1 (security headers).
   and litbible's `lit-logo.png` copied to `scripts/og/` as a card source asset.
   Cards (all 1200×630, < 80 KB) written to `public/assets/og/`: house style is
   the ink field (sampled to lsc-logo's exact corner `#1D231C` so the gold emblem
-  composites seamlessly), a green accent bar, the title in Fraunces, the org
+  composites seamlessly — SUPERSEDED 2026-07-27: the gold emblem is retired, and
+  the dove mark that replaced it composites as the *inverse* coin precisely
+  because it must not match the field; og-default.png also moved into this
+  script, having been a hand-made file before. See "The Brand Mark" in
+  CLAUDE.md), a green accent bar, the title in Fraunces, the org
   wordmark in Inter, and `liberatingscripture.org` in green-light. og-support and
-  og-spiritual-direction carry the gold LSC emblem; og-lit-bible carries the LIT
+  og-spiritual-direction carry the LSC mark; og-lit-bible carries the LIT
   Bible's own green-disc logo in a green ring (echoing litbible.net's cards);
   og-podcasts shows the two podcast covers (`fit-cover.webp` + `twb-square.png`,
   both already square so no title gets cropped) as rounded tiles with the footer
