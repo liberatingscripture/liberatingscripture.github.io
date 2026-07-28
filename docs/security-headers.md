@@ -1,7 +1,6 @@
 # Security headers — Cloudflare setup checklist
 
-> **What this is.** The live site sends **no** security headers today (verified
-> 2026-07-18 with `curl -sI`). GitHub Pages can't set response headers, but the
+> **What this is.** GitHub Pages can't set response headers, but the
 > `liberatingscripture.org` zone is **proxied through Cloudflare** (that's how
 > the contact-form Worker owns `/contact/submit` at the edge), so Cloudflare can
 > add them for us. This is the paste-ready checklist for the owner to execute in
@@ -11,6 +10,13 @@
 > The origin allowlist below was built by loading `/support/` and `/contact/`
 > live and inventorying every third-party origin they actually load (2026-07-18)
 > — re-verify it if the site ever adds an embed or widget.
+>
+> **Status.** Step 1 (HSTS) applied 2026-07-22. Step 2 (the transform rule)
+> applied 2026-07-28, with the Report-Only value corrected and re-pasted the
+> same day — the version used when the rule was first created carried a bare
+> `https://sibforms.com`, which matches none of the site's actual form targets
+> (see the `form-action` note below). Step 3's Report-Only watch is the part
+> still outstanding.
 
 ## Design decisions (owner, 2026-07-18; CSP split revised 2026-07-22)
 
@@ -46,7 +52,7 @@
 | `fonts.googleapis.com` | /support/ | Google Fonts stylesheet (pulled in by the GL widget) | style |
 | `fonts.gstatic.com` | /support/ | the font files that stylesheet references | font |
 | `challenges.cloudflare.com` | /contact/, every page (footer newsletter) | Turnstile script + its **iframe** | script/frame |
-| `sibforms.com` | every page (footer newsletter) | Brevo form script (`main.js`) + the subscribe **POST target** | script/connect/**form-action** |
+| `1742a6b7.sibforms.com` | every page (footer newsletter), `/unsubscribe/` | the subscribe/unsubscribe **POST target** only — reached by our own `fetch`, and by a native form POST as fallback | connect/**form-action** |
 | `static.cloudflareinsights.com` | every page | Cloudflare Web Analytics beacon script | script/connect |
 | `cloudflareinsights.com` | every page | analytics beacon POST target | connect |
 | `/cdn-cgi/*` (rum, challenge-platform, speculation) | every page | Cloudflare edge (same-origin) | covered by `'self'` |
@@ -81,7 +87,7 @@ X-Frame-Options: DENY
 Referrer-Policy: strict-origin-when-cross-origin
 Permissions-Policy: camera=(), microphone=(), geolocation=()
 Content-Security-Policy: frame-ancestors 'none'; object-src 'none'; base-uri 'self'
-Content-Security-Policy-Report-Only: default-src 'self'; form-action 'self' https://sibforms.com https://*.sibforms.com; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://secure.givelively.org https://static.cloudflareinsights.com https://sibforms.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://secure.givelively.org; img-src 'self' data: https://secure.givelively.org; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://secure.givelively.org https://static.cloudflareinsights.com https://cloudflareinsights.com https://sibforms.com; frame-src https://challenges.cloudflare.com https://secure.givelively.org; media-src 'self'
+Content-Security-Policy-Report-Only: default-src 'self'; form-action 'self' https://*.sibforms.com; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://secure.givelively.org https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://secure.givelively.org; img-src 'self' data: https://secure.givelively.org; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://secure.givelively.org https://static.cloudflareinsights.com https://cloudflareinsights.com https://*.sibforms.com; frame-src https://challenges.cloudflare.com https://secure.givelively.org; media-src 'self'
 ```
 
 Notes on the values:
@@ -98,16 +104,27 @@ Notes on the values:
   silently blocks the submit — no fallback, no error the visitor can act on.
   That's the same maintenance risk as the resource allowlist below, so it's
   grouped with it instead. Today: `/contact/submit` is same-origin
-  (`'self'`), and the footer newsletter posts cross-origin to Brevo, hence
-  `https://sibforms.com https://*.sibforms.com`. The wildcard is needed
-  because the form's action is on a per-account subdomain
-  (`1742a6b7.sibforms.com`). **If a form is ever added, removed, or
-  repointed, update this line and watch Report-Only for violations** —
+  (`'self'`), and both Brevo forms (the footer newsletter and `/unsubscribe/`)
+  post cross-origin to `https://1742a6b7.sibforms.com`, hence
+  `https://*.sibforms.com`. **The wildcard is load-bearing, not belt-and-
+  braces**: the action is on a per-account subdomain, so a bare
+  `https://sibforms.com` matches nothing and would flag every submit.
+  The same is true of `connect-src` — the forms submit with our own `fetch`
+  (see CLAUDE.md, "The newsletter submits itself"), so the POST is subject to
+  `connect-src` as well as `form-action`, and both need the wildcard.
+  **If a form is ever added, removed, or repointed, update BOTH lines and
+  watch Report-Only for violations** —
   nothing will block the submit if you forget, but nothing will warn you
   either unless you're watching the console.
 - **`'unsafe-inline'` in the Report-Only script-src** is required by Astro's
   `is:inline` scripts and the inline Give Lively bootstrap; JSON-LD `<script
   type="application/ld+json">` blocks are data, not executable, and are exempt.
+  Because this is `'unsafe-inline'` rather than a hash allowlist, the exact
+  bytes of the inline scripts don't matter — an Astro/minifier upgrade that
+  rewrites them (as the Astro 7 bump did) needs no change here.
+- **`sibforms.com` is deliberately absent from `script-src`.** Brevo's
+  `main.js` is not loaded — the forms submit themselves (CLAUDE.md explains
+  why it must not come back). The origin is a POST target only.
 - The rule will also apply on the Worker route `/contact/submit`. That's
   harmless (the Worker sets its own response body/headers; these are additive) —
   **leave it applying to all requests.**

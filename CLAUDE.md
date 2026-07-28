@@ -22,11 +22,13 @@ support and get in touch. The site is **live** at liberatingscripture.org.
 
 ## Tech Stack
 
-- **Framework**: Astro 6 (static site generator, `output` is static).
+- **Framework**: Astro 7 (static site generator, `output` is static).
   Requires **Node 22.12+** (enforced via `engines` in `package.json`; CI uses Node 22)
 - **Language**: TypeScript (strict mode)
 - **Styling**: Vanilla CSS — a single design system in `src/styles/global.css`,
-  shared visually with litbible.net (no utility framework)
+  shared visually with litbible.net (no utility framework). **`astro.config.mjs`
+  pins `vite.build.cssTarget` — don't remove it**; see "Why cssTarget is pinned"
+  below.
 - **Fonts**: Self-hosted via `@fontsource`, Latin subsets only (Crimson Text,
   Inter, Fraunces)
 - **Deploy**: GitHub Actions → GitHub Pages (see Deployment below)
@@ -203,10 +205,22 @@ publish. The custom domain comes from `public/CNAME` (liberatingscripture.org).
 Push to `main` is the site deploy.
 
 Dependency updates: this repo follows litbible's precedent of enabling
-GitHub's native Dependabot security-alert toggle (Settings → Security →
-Dependabot alerts) rather than committing a `dependabot.yml` — that toggle
-surfaces vulnerabilities with zero recurring version-bump PRs to review,
-which litbible's own audit judged the better tradeoff for a small team.
+GitHub's native Dependabot toggles (Settings → Security) rather than
+committing a `dependabot.yml`. **Enabled 2026-07-28** (FIXLIST OW8).
+
+A nuance the earlier wording got wrong: this is *not* a zero-PR setup. The
+**alerts** toggle only notifies, but **Dependabot security updates** — which
+is what actually landed here — opens a PR per advisory, and it opened eight
+on day one. They are security-driven, not routine version bumps, so the
+volume tracks advisories rather than releases and should be far quieter after
+the initial backlog. Routine version-bump PRs are still off; that's the part
+of litbible's tradeoff this repo keeps.
+
+Prefer resolving a batch of these in one branch over merging the PRs
+individually: several advisories share a root (three of the first eight were
+all "bump astro"), so a single `npm audit fix` pass plus one deliberate major
+upgrade closed all eight, where merging each PR would have meant eight
+lockfile conflicts. Close the superseded Dependabot PRs afterward.
 
 One nuance: the domain's DNS is on **Cloudflare with the proxy enabled**, so
 Cloudflare sits in front of GitHub Pages. That's what lets the contact-form
@@ -310,6 +324,33 @@ override it. Two cooperating pieces (ported from litbible):
   `/privacy`'s Cookies paragraph too (it names `lsc_apps_launch_v1`/`lsc_pv`;
   `lsc-theme` is localStorage, not a cookie — mention it if that section ever
   broadens to storage generally).
+
+### Why `cssTarget` is pinned in `astro.config.mjs`
+
+Astro 7 bundles Vite 8, which minifies CSS with **Lightning CSS**. Left at its
+default, Lightning CSS assumes a modern baseline and rewrites every width
+breakpoint into Media Queries Level 4 **range syntax** — `@media (max-width:
+640px)` becomes `@media (width<=640px)`. Browsers older than Safari 16.4 /
+Chrome 104 / Firefox 102 don't parse that, so they ignore the rule *entirely*:
+all 24 of the site's breakpoints would silently drop and a phone on an older
+iOS would render the desktop layout. Astro 6's minifier never did this, so the
+regression arrives purely from the upgrade, invisible unless you diff the
+built CSS or test on an old browser.
+
+`vite.build.cssTarget` pins an older baseline, which keeps the legacy
+`(max-width: …)` form. Verified by building both ways and counting: 24
+range-syntax queries unpinned, 0 pinned.
+
+One visible side effect, and it's benign: at that target Lightning CSS also
+expands `system-ui` into an explicit fallback chain
+(`BlinkMacSystemFont, "Segoe UI", Roboto, …`). `system-ui` stays first, so
+modern browsers resolve identically and old ones get a better fallback than
+bare `sans-serif`. It is the *only* computed-style difference between the
+Astro 6 and Astro 7 builds — confirmed by diffing `getComputedStyle` for
+every element across 13 pages × light/dark × 390px/1280px, which is otherwise
+byte-identical once CSS transitions are disabled (sample mid-animation and the
+popover close button and `/apps` carousel control produce third-decimal noise
+that is not a real difference).
 
 ### Critical inline CSS (anti-FOUC)
 
