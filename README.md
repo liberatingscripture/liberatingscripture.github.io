@@ -35,16 +35,19 @@ npm run dev      # Start the dev server at http://localhost:4321
 | `npm run preview` | Preview the production build locally |
 | `npm run check` | Run `astro check` (type checking / diagnostics) — also runs in CI |
 | `npm run check:links` | Verify internal links in `dist/` resolve (run after `build`) — also runs in CI |
-| `npm run build:og` | Regenerate the per-page Open Graph share cards (one-shot; not part of the build) |
+| `npm run build:brand` | Regenerate the favicons, app icons and logo rasters from the dove mark (one-shot; not part of the build — run before `build:og`) |
+| `npm run build:og` | Regenerate the Open Graph share cards (one-shot; not part of the build) |
 
 ## Structure
 
 ```
 src/
   components/   # SiteHeader, SiteFooter, AppsLaunchPopover, AppIcons,
-                #   PlatformIcon, apps/ (the /apps page sections, ported
-                #   verbatim from litbible.net)
+                #   PlatformIcon, LscMark, apps/ (the /apps page sections,
+                #   ported verbatim from litbible.net)
   content.config.ts, content/   # Content collections backing /apps
+  lib/          # lsc-mark.mjs — the dove mark's geometry, shared by the
+                #   LscMark component and the brand-asset generator
   layouts/      # Layout.astro (base HTML shell)
   pages/        # One file per route: index, about, lit-bible, apps, support,
                 #   podcasts, community, spiritual-direction, contact,
@@ -52,7 +55,7 @@ src/
   styles/       # global.css (the full design system) + pages/apps.css
 public/         # Served at the site root: images, app screenshots, OG images,
                 #   favicons, CNAME, robots.txt, site.webmanifest, .well-known/
-scripts/        # Build-time tooling (the one-shot OG-card generator)
+scripts/        # Build-time tooling (one-shot brand-asset and OG-card generators)
 workers/        # Cloudflare Worker for the contact form (deployed separately)
 .github/workflows/deploy.yml   # Builds and deploys to GitHub Pages
 ```

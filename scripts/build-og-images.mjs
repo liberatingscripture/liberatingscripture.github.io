@@ -3,23 +3,25 @@
  * build-og-images.mjs — per-page social share cards for the LSC site.
  *
  * Generates a fixed set of 1200×630 cards into public/assets/og/ for the
- * pages with distinctive art or a distinct call to action (FIXLIST F5).
- * Each page wires its card via Layout's `ogImage` prop; the rest of the
- * site keeps the shared og-default.png.
+ * pages with distinctive art or a distinct call to action (FIXLIST F5), plus
+ * og-default.png, the fallback every other page shares. Each page wires its
+ * own card via Layout's `ogImage` prop.
  *
  * This is a ONE-SHOT tool, run by hand (`npm run build:og`) when a card's
  * text or art changes — it is deliberately NOT part of `astro build` or the
  * deploy pipeline (a handful of cards, and they rarely change). Committing
- * the output PNGs is intentional.
+ * the output PNGs is intentional. Run `npm run build:brand` FIRST if the mark
+ * itself changed: the emblem cards composite lsc-mark-inverse.png, which that
+ * script writes.
  *
- * Design (house style, matching og-default.png): ink field, a green accent
- * bar, the page title in Fraunces (display cut, opsz 144), the org wordmark
- * in Inter, liberatingscripture.org bottom-right. The right third carries
- * art: the gold LSC emblem (support, companionship), the LIT Bible's own
- * green-disc logo in a green ring (lit-bible, echoing litbible.net's cards),
- * the LIT app icon (Android's gradient mark) in a rounded tile (apps, which
- * also carries a tagline under the title — the only card that does), or the
- * two podcast covers as rounded tiles (podcasts).
+ * Design (house style): ink field, a green accent bar, the page title in
+ * Fraunces (display cut, opsz 144), the org wordmark in Inter,
+ * liberatingscripture.org bottom-right. The right third carries art: the LSC
+ * dove mark (support, companionship), the LIT Bible's own green-disc logo in a
+ * green ring (lit-bible, echoing litbible.net's cards), the LIT app icon
+ * (Android's gradient mark) in a rounded tile (apps, which also carries a
+ * tagline under the title — the only card that does), or the two podcast covers
+ * as rounded tiles (podcasts).
  *
  * Rendering: text is converted to SVG paths with opentype.js using the fonts
  * committed under scripts/og/fonts/ (see the README there), then sharp
@@ -41,8 +43,9 @@ const IMAGES = path.join(ROOT, "public", "assets", "images");
 const WIDTH = 1200;
 const HEIGHT = 630;
 
-// INK is the exact corner color of lsc-logo.png, so the gold emblem, which
-// ships on its own ink square, composites onto the field with no seam.
+// The card field. The dove mark's rule is that its disc opposes the surface it
+// sits on, so on this ink field the cards composite the INVERSE coin (cream
+// disc, ink dove) — see emblemCard. Keep this in step with --ink in global.css.
 const INK = "#1D231C";
 const GREEN = "#209D50";
 const GREEN_LIGHT = "#3abf6a";
@@ -186,15 +189,44 @@ async function writeCard(slug, svg, composites) {
 
 // --- Cards ---------------------------------------------------------------
 
-// Gold LSC emblem, right-of-center, on the seamless ink field.
+// The LSC dove mark, right-of-center. The mark's rule is that its disc opposes
+// the surface, and this field is ink — so these cards take the INVERSE coin
+// (cream disc, ink dove). The plain coin would be an ink disc on an ink field.
 async function emblemCard(slug, title) {
   const d = 340;
   const cx = 955;
   const cy = 345;
-  const logo = await sharp(path.join(IMAGES, "lsc-logo.png"))
+  const logo = await sharp(path.join(IMAGES, "lsc-mark-inverse.png"))
     .resize(d, d)
     .toBuffer();
   await writeCard(slug, baseSVG(title), [
+    { input: logo, left: Math.round(cx - d / 2), top: Math.round(cy - d / 2) },
+  ]);
+}
+
+// The site-wide OG fallback: the mark centered over the wordmark, no page title.
+// Every page without its own card shares this one, so it is the most-seen card.
+async function defaultCard() {
+  const d = 300;
+  const cx = WIDTH / 2;
+  const cy = 250;
+  const logo = await sharp(path.join(IMAGES, "lsc-mark-inverse.png"))
+    .resize(d, d)
+    .toBuffer();
+
+  const nameSize = 62;
+  const nameW = width(fraunces, WORDMARK, nameSize);
+  const siteSize = 34;
+  const siteW = width(inter, SITE, siteSize);
+
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${WIDTH}" height="${HEIGHT}" viewBox="0 0 ${WIDTH} ${HEIGHT}">
+<rect width="${WIDTH}" height="${HEIGHT}" fill="${INK}"/>
+${textPath(fraunces, WORDMARK, Math.round(cx - nameW / 2), 470, nameSize, `fill="${CREAM_BRIGHT}"`)}
+<rect x="${Math.round(cx - 80)}" y="506" width="160" height="8" fill="${GREEN}"/>
+${textPath(inter, SITE, Math.round(cx - siteW / 2), 570, siteSize, `fill="${GREEN_LIGHT}"`)}
+</svg>`;
+
+  await writeCard("og-default", svg, [
     { input: logo, left: Math.round(cx - d / 2), top: Math.round(cy - d / 2) },
   ]);
 }
@@ -294,6 +326,7 @@ ${textPath(inter, taglinePost, MARGIN + taglinePreW + taglineEmW, taglineY, tagl
 
 mkdirSync(OUT_DIR, { recursive: true });
 
+await defaultCard();
 await emblemCard("og-home", "Scripture that liberates rather than controls");
 await emblemCard("og-support", "Support the Work");
 await emblemCard("og-spiritual-direction", "Spiritual Companionship");

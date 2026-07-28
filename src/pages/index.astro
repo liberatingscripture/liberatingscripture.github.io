@@ -1,5 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import LscMark from "../components/LscMark.astro";
 
 const projects = [
   {
@@ -88,9 +89,9 @@ const projects = [
             url: "https://liberatingscripture.org/",
             logo: {
               "@type": "ImageObject",
-              url: "https://liberatingscripture.org/assets/images/lsc-logo.png",
-              width: 2200,
-              height: 2200,
+              url: "https://liberatingscripture.org/assets/images/lsc-mark.png",
+              width: 1024,
+              height: 1024,
             },
             foundingDate: "2026",
             nonprofitStatus: "Nonprofit501c3",
@@ -155,15 +156,8 @@ const projects = [
           </a>
         </div>
       </div>
-      <div class="hero__logo" aria-hidden="true">
-        <img
-          src="/assets/images/lsc-logo-640.webp"
-          alt=""
-          width="320"
-          height="320"
-          loading="lazy"
-          decoding="async"
-        />
+      <div class="hero__logo">
+        <LscMark size={320} class="hero__mark" />
       </div>
     </div>
   </section>
@@ -259,6 +253,11 @@ const projects = [
     padding: clamp(4rem, 9vw, 8rem) 0 clamp(3rem, 7vw, 6rem);
     overflow: hidden;
     position: relative;
+    /* --green-deep is theme-invariant, so the dove mark pins its own pair here
+       rather than inheriting the page's — otherwise it would flip to a cream
+       disc in dark mode on a hero that never got darker. */
+    --lsc-mark-disc: #1D231C;
+    --lsc-mark-bird: #FAFAF8;
   }
 
   .hero__inner {
@@ -326,12 +325,11 @@ const projects = [
     flex-shrink: 0;
   }
 
-  .hero__logo img {
+  .hero__logo :global(.hero__mark) {
     width: clamp(140px, 18vw, 280px);
     height: auto;
     opacity: 0.92;
     filter: drop-shadow(0 8px 32px rgba(0, 0, 0, 0.22));
-    border-radius: 16px;
   }
 
   @media (max-width: 700px) {
