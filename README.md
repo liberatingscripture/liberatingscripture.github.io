@@ -8,7 +8,7 @@ Live at **[liberatingscripture.org](https://liberatingscripture.org)**.
 
 ## Stack
 
-- **Framework**: [Astro](https://astro.build) 6 (static site)
+- **Framework**: [Astro](https://astro.build) 7 (static site)
 - **Language**: TypeScript (strict)
 - **Styling**: Vanilla CSS — a single design system, shared visually with litbible.net
 - **Fonts**: Crimson Text, Inter, Fraunces (self-hosted via `@fontsource`)
@@ -19,7 +19,7 @@ Live at **[liberatingscripture.org](https://liberatingscripture.org)**.
 
 ## Getting started
 
-You'll need [Node.js](https://nodejs.org) **v22.12 or newer** (required by Astro 6).
+You'll need [Node.js](https://nodejs.org) **v22.12 or newer** (required by Astro 7).
 
 ```sh
 npm install      # Install dependencies

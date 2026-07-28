@@ -1144,9 +1144,33 @@ accessibility defects), then F2→OW1 (security headers).
   complete.** Verified live via `curl -sI`: `Strict-Transport-Security:
   max-age=15552000; includeSubDomains` present, `preload` correctly absent.
   180-day max-age is an intentional owner choice (confirmed 2026-07-22, not
-  the more common 12 months) — doc updated to match. Remaining: Step 2
-  (static headers + split CSP transform rule) not yet applied — none of
-  those headers present on the live response yet.
+  the more common 12 months) — doc updated to match.
+  PROGRESS 2026-07-28: owner created the `security-headers` transform rule —
+  **Step 2 applied**, all six headers set (confirmed from a dashboard
+  screenshot showing the rule's six `Set static` entries, matching Step 2's
+  list). Not independently re-verified with `curl` here: this session's
+  network policy blocks outbound requests to liberatingscripture.org, so the
+  Verify block at the end of the doc is still owed by whoever can reach the
+  domain.
+  CORRECTION 2026-07-28 (applied): the Report-Only value pasted at rule
+  creation was wrong in two places, both found by checking the doc against the
+  built site rather than against the live response; the owner re-pasted the
+  corrected value the same day. (1) `form-action` and
+  `connect-src` listed the apex `https://sibforms.com`, but both Brevo forms
+  post to the per-account subdomain `https://1742a6b7.sibforms.com`, so the
+  apex matches nothing and every subscribe/unsubscribe submit would log a
+  violation — must be `https://*.sibforms.com` in BOTH directives, since the
+  forms submit via our own `fetch` (connect-src) as well as being form posts
+  (form-action). (2) `script-src` listed `https://sibforms.com` for Brevo's
+  `main.js`, which this site deliberately does not load. `docs/security-
+  headers.md` carries the corrected header, and it is now the value live in
+  the rule. The enforced CSP and the other five headers were correct as
+  pasted and needed no change.
+  REMAINING: only the doc's Verify block — `curl -sI` plus a console pass over
+  /support/ and /contact/, watching for Report-Only violations (especially on
+  a real Give Lively payment step, whose deepest origins were never
+  inventoried). Can't be done from a Claude session: the network policy blocks
+  outbound requests to liberatingscripture.org. Owner-only from here.
 
 - [x] **(OW2) Verify the Organization schema facts: foundingDate and EIN.**
   DONE 2026-07-23: owner confirmed LSC's actual founding/incorporation year
@@ -1234,7 +1258,24 @@ accessibility defects), then F2→OW1 (security headers).
   reconcile the About page (and any echoes on the homepage) with the
   final language.
 
-- [ ] **(OW8) Enable Dependabot security alerts.**
+- [x] **(OW8) Enable Dependabot security alerts.**
+  DONE 2026-07-28: owner enabled the Dependabot toggles in GitHub Settings.
+  Worth recording what it actually produced, because it differs from what
+  this item predicted: the owner enabled **security updates**, not just
+  alerts, so Dependabot opened **eight PRs** (#17–#24) within the hour rather
+  than the "zero recurring version-bump PRs" this item promised. Those eight
+  are advisory-driven, not routine release bumps, so the ongoing volume
+  should track advisories — but the claim as written was wrong and CLAUDE.md's
+  Deployment section has been corrected to match.
+  All eight advisories were then resolved in one branch rather than by
+  merging the PRs one at a time (they overlapped heavily — three were all
+  "bump astro"): `npm audit fix` cleared five transitively (defu, fast-uri,
+  js-yaml, postcss, svgo), and the remaining three (astro's own XSS trio,
+  plus the nested sharp and esbuild they pinned) needed the Astro 6→7 major.
+  Worker devDeps (wrangler/vitest-pool-workers/miniflare→sharp) were the same
+  story in `workers/contact-form/`. `npm audit` now reports 0 vulnerabilities
+  in both trees. The eight Dependabot PRs are superseded and can be closed.
+  Original item text below.
   Moved here from the Sonnet section (was S15) on 2026-07-19: litbible's own
   FIXLIST rejected a committed `dependabot.yml` for the identical problem
   (no automated visibility into vulnerable deps) in favor of a one-time
