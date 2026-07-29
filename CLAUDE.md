@@ -269,8 +269,8 @@ Two things the config buys that the toggles could not:
   "Why `cssTarget` is pinned"). That is not something to discover inside a
   bundle of patch bumps.
 
-Three details in that file were corrected on 2026-07-28 after watching its first
-real run, and each is a trap worth not re-entering:
+Three details in that file were settled on 2026-07-28/29 after watching its first
+real runs, and each is a trap worth not re-entering:
 
 - **`commit-message.prefix` is bare `chore`, never `chore(deps)`.**
   `include: scope` makes Dependabot append the scope itself (`(deps)` /
@@ -282,16 +282,23 @@ real run, and each is a trap worth not re-entering:
   ungrouped, checkout/deploy-pages/upload-pages-artifact took every slot and
   `setup-node` got no PR at all. A starved stream fails silently — nothing
   reports the suppressed update.
-- **`typescript` majors are on the `ignore` list, and that is an upstream block,
-  not a taste call.** `@astrojs/check` (0.9.10, its latest) peers on
-  `typescript@"^5.0.0 || ^6.0.0"`, so TS 7 fails `npm ci` with ERESOLVE. Without
-  the ignore, Dependabot re-opens the same un-mergeable PR weekly. **Remove it
-  once `@astrojs/check` widens that range.** Know the cost of leaving it: an
-  `ignore` entry applies to **security updates too**, not just version updates,
-  so this also suppresses any security PR whose only remedy is TS 7. Accepted
-  because `typescript` is a build-time devDependency that never reaches a
-  visitor — but it is the reason not to let the entry outlive the peer-range
-  block.
+- **A failing TypeScript 7 PR is expected, and there is deliberately NO `ignore`
+  entry for it.** `@astrojs/check` (0.9.10, its latest) peers on
+  `typescript@"^5.0.0 || ^6.0.0"`, so TS 7 fails `npm ci` with ERESOLVE — that
+  was PR #32, closed 2026-07-28. An `ignore` was briefly added and then removed
+  the same day, because suppressing the PR suppresses the only thing that would
+  ever tell you the block had lifted: **the PR turning green IS the
+  notification.** Hidden, it degrades to a code comment nobody re-reads. An
+  `ignore` also applies to **security updates**, so it would mute a real
+  typescript advisory whose only remedy is 7.x.
+
+  Do not "fix" the red by re-adding one. Leave the PR open or close it —
+  closing suppresses that specific version, and a new one arrives only when a
+  new stable 7.x ships (as of 2026-07-29, 7.0.2 is the only stable 7.x; the rest
+  are `7.1.0-dev.*` nightlies). To check whether it is finally mergeable:
+  `npm view @astrojs/check peerDependencies`. When that range admits `^7`, merge
+  it. **litbible.net's repo made the same call independently — keep the two in
+  agreement.**
 
 With grouped security updates on, Dependabot now does most of that batching
 itself. The manual technique still matters when the real remedy is a major
