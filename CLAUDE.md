@@ -228,10 +228,21 @@ Two things in that workflow are load-bearing and easy to "clean up" by mistake:
 Dependency updates run on **both** of Dependabot's halves, and the distinction
 between them is the thing to keep straight:
 
-- **Security updates** come from GitHub's native toggles (Settings → Security),
-  enabled 2026-07-28 (FIXLIST OW8). These are advisory-driven and open **one PR
-  per advisory no matter what `dependabot.yml` says** — grouping does not apply
-  to them. Eight landed on day one.
+- **Security updates** come from GitHub's native toggles (Settings → Code
+  security), enabled 2026-07-28 (FIXLIST OW8). Verified live on 2026-07-28:
+  alerts on, `automated-security-fixes` reports
+  `{"enabled":true,"paused":false}`, and the repo stands at **0 open / 13 fixed**
+  advisories.
+
+  Two separate mechanisms decide how these arrive, and conflating them is the
+  easy mistake: **`dependabot.yml`'s `groups:` do NOT batch security PRs** —
+  those default to `applies-to: version-updates`. What batches them is the
+  distinct **"Grouped security updates"** toggle on the same settings page,
+  turned on 2026-07-28: one PR per package manager + directory instead of one
+  per advisory. That toggle is the actual fix for the day-one pile of eight
+  PRs, three of which were all "bump astro". To drive security grouping from
+  the yml instead, a group would need an explicit `applies-to: security-updates`
+  — none does today, so the toggle governs unopposed.
 - **Scheduled version updates** come from `.github/dependabot.yml`, added
   2026-07-28. Three streams: root npm and `workers/contact-form` npm (weekly),
   and github-actions (monthly).
@@ -275,15 +286,25 @@ real run, and each is a trap worth not re-entering:
   not a taste call.** `@astrojs/check` (0.9.10, its latest) peers on
   `typescript@"^5.0.0 || ^6.0.0"`, so TS 7 fails `npm ci` with ERESOLVE. Without
   the ignore, Dependabot re-opens the same un-mergeable PR weekly. **Remove it
-  once `@astrojs/check` widens that range.**
+  once `@astrojs/check` widens that range.** Know the cost of leaving it: an
+  `ignore` entry applies to **security updates too**, not just version updates,
+  so this also suppresses any security PR whose only remedy is TS 7. Accepted
+  because `typescript` is a build-time devDependency that never reaches a
+  visitor — but it is the reason not to let the entry outlive the peer-range
+  block.
 
-For the security PRs, prefer resolving a batch in one branch over merging them
-individually: several advisories share a root (three of the first eight were
-all "bump astro"), so a single `npm audit fix` pass plus one deliberate major
-upgrade closed all eight, where merging each PR would have meant eight lockfile
-conflicts. Close the superseded Dependabot PRs afterward — `@dependabot close`
-as a comment is unreliable, so verify with `gh pr list --author "app/dependabot"
---state open` and fall back to `gh pr close <n> --delete-branch`.
+With grouped security updates on, Dependabot now does most of that batching
+itself. The manual technique still matters when the real remedy is a major
+upgrade the grouped PR can't reach on its own: resolve the batch in one branch
+rather than merging PRs individually, since several advisories usually share a
+root (three of the first eight were all "bump astro") and a single
+`npm audit fix` plus one deliberate major closed all eight, where merging each
+PR would have meant eight lockfile conflicts. Close any superseded Dependabot
+PRs afterward — `@dependabot close` as a comment is unreliable, so verify with
+`gh pr list --author "app/dependabot" --state open` and fall back to
+`gh pr close <n> --delete-branch`. That fallback is also the one to reach for in
+a worktree, where `--delete-branch` skips the *local* branch but still deletes
+the remote one correctly.
 
 One nuance: the domain's DNS is on **Cloudflare with the proxy enabled**, so
 Cloudflare sits in front of GitHub Pages. That's what lets the contact-form
