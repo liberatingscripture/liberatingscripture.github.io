@@ -11,16 +11,12 @@ permissions:
   pages: write
   id-token: write
 
-concurrency:
-  group: pages
-  cancel-in-progress: false
-
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
@@ -29,9 +25,17 @@ jobs:
       - run: npm run build
       # Verify every internal href/#fragment in dist/ resolves (no network).
       - run: npm run check:links
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: dist/
+          # REQUIRED — do not remove. As of v4 this action excludes dotfiles and
+          # dot-directories by default, and dist/ contains .well-known/ (the
+          # Apple Pay domain-verification file the Give Lively donate widget
+          # needs, plus security.txt). Without this the deploy silently ships a
+          # site missing /.well-known/ and nothing in CI catches it: check:links
+          # inspects dist/ *before* the upload, and the deploy job below never
+          # runs on a pull request.
+          include-hidden-files: true
 
   # The contact-form Worker is a separate package with its own dependency tree
   # (deliberately — it keeps vitest/workerd out of the site's root deps), so the
@@ -43,8 +47,8 @@ jobs:
       run:
         working-directory: workers/contact-form
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
@@ -56,9 +60,18 @@ jobs:
     needs: build
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
+    # The `pages` singleton belongs HERE, on the deploy job, not at the workflow
+    # level. GitHub Pages only requires that real *deployments* be serialized —
+    # scoping it to the workflow made every PR contend for one global slot, so a
+    # batch of PRs opened together cancelled each other's builds before they ran
+    # (three of five Dependabot PRs got zero checks on 2026-07-28 this way).
+    # Grouped Dependabot delivers PRs in batches by design, so keep it job-level.
+    concurrency:
+      group: pages
+      cancel-in-progress: false
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
