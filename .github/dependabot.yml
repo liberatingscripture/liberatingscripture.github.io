@@ -29,11 +29,24 @@ updates:
     open-pull-requests-limit: 5
     commit-message:
       # Matches this repo's Conventional Commits convention (lowercase type +
-      # scope, e.g. "perf(images):", "docs(privacy):") — and matches what
-      # Dependabot was already emitting here before this file existed.
-      prefix: "chore(deps)"
-      prefix-development: "chore(deps-dev)"
+      # scope, e.g. "perf(images):", "docs(privacy):").
+      #
+      # The prefix is bare "chore" ON PURPOSE. `include: scope` makes Dependabot
+      # append the scope itself — "(deps)" for runtime deps, "(deps-dev)" for
+      # dev deps — so this yields "chore(deps):" / "chore(deps-dev):". Writing
+      # the scope into the prefix as well produced the doubled
+      # "chore(deps)(deps): bump …" subjects seen on the first run. Set one or
+      # the other, never both.
+      prefix: "chore"
       include: scope
+    ignore:
+      # typescript majors: BLOCKED UPSTREAM, not a preference. @astrojs/check
+      # (through 0.9.10, its latest) declares peer typescript@"^5.0.0 || ^6.0.0",
+      # so TS 7 fails `npm ci` outright with ERESOLVE — PR #32 on 2026-07-28.
+      # Without this, Dependabot re-opens that un-mergeable PR every Monday.
+      # REMOVE THIS once @astrojs/check widens the peer range to include ^7.
+      - dependency-name: typescript
+        update-types: ["version-update:semver-major"]
     groups:
       # Minor + patch ride together: they are the routine, low-risk stream, and
       # one PR means one `npm ci` + one CI run instead of five.
@@ -69,8 +82,9 @@ updates:
       timezone: America/Los_Angeles
     open-pull-requests-limit: 3
     commit-message:
-      prefix: "chore(deps)"
-      prefix-development: "chore(deps-dev)"
+      # Bare "chore" + include: scope — see stream 1 for why the scope must not
+      # also be written into the prefix.
+      prefix: "chore"
       include: scope
     groups:
       worker-minor-and-patch:
@@ -93,10 +107,15 @@ updates:
     directory: "/"
     schedule:
       interval: monthly
-    open-pull-requests-limit: 3
+    # 5, not 3. There are four actions in deploy.yml and majors are ungrouped,
+    # so a limit of 3 silently starved setup-node on the first run: checkout,
+    # deploy-pages and upload-pages-artifact filled every slot and setup-node's
+    # bump never got a PR at all. Keep this at least one above the action count.
+    open-pull-requests-limit: 5
     commit-message:
+      # No `include: scope` here — the scope is already "(actions)", and adding
+      # it would render "chore(actions)(deps):".
       prefix: "chore(actions)"
-      include: scope
     groups:
       actions-minor-and-patch:
         patterns:

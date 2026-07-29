@@ -209,6 +209,22 @@ so PRs build, type-check, link-check, and run the Worker tests but never
 publish. The custom domain comes from `public/CNAME` (liberatingscripture.org).
 Push to `main` is the site deploy.
 
+Two things in that workflow are load-bearing and easy to "clean up" by mistake:
+
+- **`upload-pages-artifact` must keep `include-hidden-files: true`.** From v4 on,
+  that action excludes dotfiles and dot-directories by default, and `dist/`
+  contains `.well-known/` — the Apple Pay domain-verification file the Give
+  Lively widget depends on, plus `security.txt`. Dropping the input ships a site
+  silently missing `/.well-known/`, and **no CI job catches it**: `check:links`
+  reads `dist/` *before* the upload, and `deploy` never runs on a PR. The only
+  signal is the live site 404ing.
+- **The `pages` concurrency group lives on the `deploy` job, not the workflow.**
+  Pages only needs real deployments serialized. At workflow level, every PR
+  contended for one global slot, so PRs opened together cancelled each other's
+  builds before they ran — three of five Dependabot PRs got zero checks that way
+  on 2026-07-28. Grouped Dependabot delivers PRs in batches by design, so this
+  has to stay job-scoped.
+
 Dependency updates run on **both** of Dependabot's halves, and the distinction
 between them is the thing to keep straight:
 
@@ -241,6 +257,25 @@ Two things the config buys that the toggles could not:
   CSS breakpoint into range syntax and needed `vite.build.cssTarget` pinned (see
   "Why `cssTarget` is pinned"). That is not something to discover inside a
   bundle of patch bumps.
+
+Three details in that file were corrected on 2026-07-28 after watching its first
+real run, and each is a trap worth not re-entering:
+
+- **`commit-message.prefix` is bare `chore`, never `chore(deps)`.**
+  `include: scope` makes Dependabot append the scope itself (`(deps)` /
+  `(deps-dev)`), so writing it into the prefix too emits
+  `chore(deps)(deps): bump …`. Set one or the other. The actions stream does the
+  opposite — prefix `chore(actions)` with **no** `include: scope`.
+- **`open-pull-requests-limit` must exceed the number of things in the stream.**
+  The actions stream sat at 3 against four actions in `deploy.yml`; with majors
+  ungrouped, checkout/deploy-pages/upload-pages-artifact took every slot and
+  `setup-node` got no PR at all. A starved stream fails silently — nothing
+  reports the suppressed update.
+- **`typescript` majors are on the `ignore` list, and that is an upstream block,
+  not a taste call.** `@astrojs/check` (0.9.10, its latest) peers on
+  `typescript@"^5.0.0 || ^6.0.0"`, so TS 7 fails `npm ci` with ERESOLVE. Without
+  the ignore, Dependabot re-opens the same un-mergeable PR weekly. **Remove it
+  once `@astrojs/check` widens that range.**
 
 For the security PRs, prefer resolving a batch in one branch over merging them
 individually: several advisories share a root (three of the first eight were
