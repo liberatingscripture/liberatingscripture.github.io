@@ -39,14 +39,25 @@ updates:
       # the other, never both.
       prefix: "chore"
       include: scope
-    ignore:
-      # typescript majors: BLOCKED UPSTREAM, not a preference. @astrojs/check
-      # (through 0.9.10, its latest) declares peer typescript@"^5.0.0 || ^6.0.0",
-      # so TS 7 fails `npm ci` outright with ERESOLVE — PR #32 on 2026-07-28.
-      # Without this, Dependabot re-opens that un-mergeable PR every Monday.
-      # REMOVE THIS once @astrojs/check widens the peer range to include ^7.
-      - dependency-name: typescript
-        update-types: ["version-update:semver-major"]
+    # NO `ignore:` ENTRY FOR typescript — deliberately, and it is worth knowing
+    # why, because a failing TypeScript 7 PR looks exactly like something that
+    # wants "fixing" with one.
+    #
+    # TS 7 genuinely cannot merge today: @astrojs/check (0.9.10, its latest)
+    # declares peer typescript@"^5.0.0 || ^6.0.0", so `npm ci` dies with
+    # ERESOLVE — that was PR #32, closed 2026-07-28. An ignore would hide the
+    # PR, and hiding it is the problem: the PR turning green IS the notification
+    # that upstream widened the range. Suppress it and nothing ever tells you;
+    # you are left with a code comment nobody re-reads. An ignore also applies
+    # to SECURITY updates, so it would mute a genuine typescript advisory whose
+    # only remedy is 7.x.
+    #
+    # So a red TypeScript PR here is EXPECTED, not breakage. Leave it open or
+    # close it — closing suppresses that specific version, and a new one only
+    # arrives when a new stable 7.x ships. Check whether it is finally mergeable
+    # with:  npm view @astrojs/check peerDependencies
+    # When that range includes ^7, merge the PR. Matches litbible.net's repo,
+    # which reached the same conclusion independently.
     groups:
       # Minor + patch ride together: they are the routine, low-risk stream, and
       # one PR means one `npm ci` + one CI run instead of five.
