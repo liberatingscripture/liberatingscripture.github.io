@@ -13,8 +13,15 @@
  *                                   so its Layout props + JSON-LD are ours
  *   - src/styles/pages/apps-bridge.css  LSC-only; exists precisely so that
  *                                   apps.css can stay a pure mirror
- *   - public/assets/screenshots/*   same names, but litbible ships copies
- *                                   downscaled to ~2x display size
+ *
+ * Absent for a different reason:
+ *   - public/assets/screenshots/*   these ARE byte-identical to litbible's
+ *                                   now, but this script reads every file as
+ *                                   UTF-8 and folds CRLF (see lf() below),
+ *                                   which corrupts binary comparison. Covering
+ *                                   them means reading Buffers and comparing
+ *                                   hashes for binary extensions. Until then
+ *                                   they are mirrored by hand.
  *
  * Usage:
  *   node scripts/check-apps-mirror.mjs           compare against litbible main

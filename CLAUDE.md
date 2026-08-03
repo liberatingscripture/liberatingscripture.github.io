@@ -126,8 +126,8 @@ public/                 # Served as-is at the site root:
                         #   twb-banner.png stays for JSON-LD/crawlers; the
                         #   podcasts page loads twb-banner-480.webp from
                         #   `build:images` (O3)
-  assets/screenshots/   # App screenshots for /apps, as WebP (converted from
-                        #   litbible's PNGs — see Apps Page)
+  assets/screenshots/   # App screenshots for /apps, as WebP — copied byte-for-
+                        #   byte from litbible, but by hand, not CI (see Apps Page)
     carousel/           #   Hebrews 1 in each of the five liturgical seasons,
                         #     for ChurchYearCarousel
   assets/og/            # Open Graph share images: og-default.png (site-wide
@@ -588,14 +588,22 @@ here — never the other way round.
   `apps-mirror`, whenever it publishes a change worth carrying across. To fix
   drift, copy litbible's file wholesale (the check prints the exact `curl`
   commands); don't hand-patch.
-- **Three things are deliberately NOT mirrored.** `src/pages/apps.astro` — two
+- **Two things are deliberately NOT mirrored.** `src/pages/apps.astro` — two
   sites can't share a canonical URL, so its Layout props and JSON-LD head stay
-  LSC's own; keep only the *section list* in step. `src/styles/pages/apps-bridge.css`
-  — LSC-only, and the reason `apps.css` can be a pure mirror. And the screenshot
-  **bytes** under `public/assets/screenshots/`: same filenames as litbible, but
-  litbible ships copies downscaled to ~2x display size while this repo ships
-  full-resolution originals. Filenames are lowercase-kebab with no spaces on
-  both sides precisely so the components can carry identical `src` strings.
+  LSC's own; keep only the *section list* in step. And
+  `src/styles/pages/apps-bridge.css` — LSC-only, and the reason `apps.css` can
+  be a pure mirror.
+- **The screenshot bytes are mirrored by hand, not by CI.** They used to be a
+  third exception (this repo shipped full-resolution originals); it now ships
+  litbible's ~2x-display-size copies, so all 12 files under
+  `public/assets/screenshots/` are byte-identical to litbible's. They are
+  deliberately absent from `MIRRORED` in `check-apps-mirror.mjs`, which reads
+  files as UTF-8 and folds CRLF — that mangles binaries, so enforcing them
+  needs a hash path the script doesn't have yet. Re-copy by hand if either side
+  re-exports. The full-resolution originals are archived in litbible's
+  `_source-images/screenshots/`, not here. Filenames are lowercase-kebab with no
+  spaces on both sides precisely so the components can carry identical `src`
+  strings.
   litbible's `ExampleSideBySide.astro` is absent here on purpose — it's unused
   dead code even in litbible's own repo, so mirroring it would add a file with
   no rendering effect.
