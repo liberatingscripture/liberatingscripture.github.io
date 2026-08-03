@@ -1,0 +1,49 @@
+name: Apps mirror
+
+# The /apps page mirrors litbible.net/apps. The files listed in
+# scripts/check-apps-mirror.mjs must stay byte-for-byte identical to
+# litbible's copies at the same paths.
+#
+# This check runs ONLY over the files a PR actually touches. That is
+# deliberate: litbible is upstream and will often be ahead of this repo, and
+# an unrelated PR here should not go red just because someone published a
+# change over there. What this catches is the real mistake — editing a
+# mirrored file in this repo instead of on litbible.
+#
+# The "this repo is behind litbible" signal comes from the other direction:
+# litbible's apps-mirror-notify.yml opens an issue here when it publishes a
+# change to a mirrored file.
+
+on:
+  pull_request:
+    paths:
+      - 'src/components/apps/**'
+      - 'src/styles/pages/apps.css'
+      - 'src/content/callouts/**'
+      - 'src/content/examples/**'
+      - 'src/content/seasons/**'
+  workflow_dispatch: # full check on demand, ignoring which files changed
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+
+      - name: Check mirrored files against litbible
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            node scripts/check-apps-mirror.mjs
+          else
+            CHANGED=$(git diff --name-only \
+              "origin/${{ github.base_ref }}...HEAD")
+            echo "Changed in this PR:"
+            echo "$CHANGED" | sed 's/^/  /'
+            node scripts/check-apps-mirror.mjs --changed $CHANGED
+          fi

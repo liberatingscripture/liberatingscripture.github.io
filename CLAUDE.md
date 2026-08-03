@@ -65,14 +65,14 @@ src/
     SiteHeader.astro    # Sticky header with mobile menu
     SiteFooter.astro    # Dark footer + the Brevo newsletter form (see Privacy)
     AppsLaunchPopover.astro # LIT Bible app announcement modal (see Popover)
-    AppIcons.astro      # The iOS + Android app icons as a matched pair
-    PlatformIcon.astro  # Apple / Android marks for the store links
     LscMark.astro       # The LSC dove mark, inline (see The Brand Mark)
-    apps/               # /apps page sections, ported verbatim from litbible
-                        #   (see Apps Page): Hero, ExamplesSlider,
-                        #   ReaderCallouts, ChurchYearCarousel, BigScreens,
-                        #   HumaneByDesign, JoinBeta, AboutTranslation. These
-                        #   import the top-level AppIcons/PlatformIcon above
+    apps/               # /apps sections, a byte-for-byte MIRROR of litbible's
+                        #   (see Apps Page; enforced by apps-mirror.yml): Hero,
+                        #   ExamplesSlider, ReaderCallouts, ChurchYearCarousel,
+                        #   BigScreens, HumaneByDesign, JoinBeta,
+                        #   AboutTranslation, plus AppIcons + PlatformIcon
+                        #   (which live here, not top-level, so the imports
+                        #   match litbible's). Edit these on litbible, not here.
                         #   rather than forking their own copies.
   content.config.ts     # Astro content collections backing /apps: callouts,
                         #   examples, seasons (see Apps Page) — ported from
@@ -110,9 +110,12 @@ src/
     global.css          # Full design system (see Design System below)
     pages/
       unsubscribe.css   # /unsubscribe's own stylesheet (ported from litbible)
-      apps.css          # /apps's own stylesheet — litbible's apps.css ported
-                        #   verbatim, plus an LSC bridge ahead of it (see
-                        #   Apps Page). Imported ONLY by pages/apps.astro.
+      apps-bridge.css   # LSC-only half of /apps styling. Imported by
+                        #   pages/apps.astro BEFORE apps.css — that order is
+                        #   load-bearing (see Apps Page).
+      apps.css          # Byte-for-byte MIRROR of litbible's apps.css. Never
+                        #   hand-edit here; change it on litbible and copy the
+                        #   whole file across. Imported ONLY by pages/apps.astro.
 public/                 # Served as-is at the site root:
   assets/images/        # Podcast art, hero images, and both app icons
                         #   (lit-app-icon.svg = Android, *-ios.webp = iOS), plus
@@ -159,6 +162,10 @@ scripts/
   check-links.mjs       # Post-build internal link checker (`npm run check:links`,
                         #   dependency-free, reads dist/ only). Ported from
                         #   litbible; runs in CI after the build (O4)
+  check-apps-mirror.mjs # Authoritative list of the /apps files mirrored from
+                        #   litbible, + the comparison against litbible's main
+                        #   (`npm run check:mirror`; --local <path> compares a
+                        #   working copy). See Apps Page
   og/                   # Card source assets: committed fonts (+ OFL) and
                         #   lit-logo.png (copied from litbible, not shipped)
 workers/
@@ -172,6 +179,10 @@ workers/
   workflows/
     deploy.yml          # Build + deploy to GitHub Pages on push to main; also
                         #   runs check:links and the worker-tests job on PRs
+    apps-mirror.yml     # Fails a PR that edits a mirrored /apps file into a
+                        #   state that doesn't match litbible's main. Scoped to
+                        #   the PR's own changed files, so being behind litbible
+                        #   never reddens an unrelated PR (see Apps Page)
   dependabot.yml        # Scheduled version updates, three streams: root npm,
                         #   workers/contact-form npm, and github-actions.
                         #   Minor+patch grouped per stream; majors ungrouped
@@ -561,31 +572,40 @@ the litbible side; this site only links to them.
 ## Apps Page & Announcement Popover
 
 `/apps` tells the LIT Bible app's story on this site, and
-`AppsLaunchPopover.astro` announces it. `/apps` is a **verbatim port** of
-litbible.net/apps — it should render identically to litbible's page except for
-LSC's own header/footer. **When litbible's `/apps` changes, re-copy it here**
-(see below for exactly what that means).
+`AppsLaunchPopover.astro` announces it. **litbible is upstream**: `/apps` is a
+byte-for-byte mirror of litbible.net/apps and should render identically except
+for LSC's own header/footer. Change these files **on litbible**, then copy them
+here — never the other way round.
 
-- **The page is a port, not a rewrite.** It used to retell the same content in
-  LSC's own design system; that drifted visibly from litbible's actual page
-  (a missing hero image, the wrong background) and was replaced with a real
-  port: litbible's `src/pages/apps.astro` shell (with LSC's own SEO
-  title/canonical/OG/JSON-LD kept), its `src/styles/pages/apps.css`, its 8
-  `components/apps/` section components (`Hero`, `ExamplesSlider`,
-  `ReaderCallouts`, `ChurchYearCarousel`, `BigScreens`, `HumaneByDesign`,
-  `JoinBeta`, `AboutTranslation`), and its three content collections
-  (`callouts`, `examples`, `seasons` — `src/content.config.ts` +
-  `src/content/`, driving the callout cards and the season carousel from
-  markdown `image:`/copy frontmatter). litbible's `ExampleSideBySide.astro`
-  was **not** ported — it's unused dead code even in litbible's own repo
-  (not imported by `ExamplesSlider.astro` or anything else there), so
-  porting it would add a file with no rendering effect. The ported
-  components import LSC's existing top-level `AppIcons.astro` /
-  `PlatformIcon.astro` rather than forking their own copies — they already
-  match litbible's byte-for-byte. Screenshots were converted from litbible's
-  PNGs to WebP and live in `public/assets/screenshots/`.
-- **`apps.css` carries an "LSC bridge" ahead of litbible's verbatim CSS,
-  in a specific order that matters.** litbible's `apps.css` intentionally
+- **The mirror is enforced, not just documented.** `scripts/check-apps-mirror.mjs`
+  holds the authoritative file list and compares each one against litbible's
+  `main`; `npm run check:mirror` runs it locally, and
+  `.github/workflows/apps-mirror.yml` runs it on any PR touching those paths.
+  The CI check is scoped to the PR's **own changed files**, so this repo simply
+  being behind litbible never reddens an unrelated PR — what it catches is a
+  mirrored file edited *here*. The reverse signal comes from litbible:
+  its `apps-mirror-notify.yml` opens (or comments on) an issue here, labelled
+  `apps-mirror`, whenever it publishes a change worth carrying across. To fix
+  drift, copy litbible's file wholesale (the check prints the exact `curl`
+  commands); don't hand-patch.
+- **Three things are deliberately NOT mirrored.** `src/pages/apps.astro` — two
+  sites can't share a canonical URL, so its Layout props and JSON-LD head stay
+  LSC's own; keep only the *section list* in step. `src/styles/pages/apps-bridge.css`
+  — LSC-only, and the reason `apps.css` can be a pure mirror. And the screenshot
+  **bytes** under `public/assets/screenshots/`: same filenames as litbible, but
+  litbible ships copies downscaled to ~2x display size while this repo ships
+  full-resolution originals. Filenames are lowercase-kebab with no spaces on
+  both sides precisely so the components can carry identical `src` strings.
+  litbible's `ExampleSideBySide.astro` is absent here on purpose — it's unused
+  dead code even in litbible's own repo, so mirroring it would add a file with
+  no rendering effect.
+- **`AppIcons.astro` and `PlatformIcon.astro` live under `components/apps/`**,
+  not at the top level, so `Hero.astro` and `JoinBeta.astro` can use the same
+  relative import string litbible uses. Their two consumers outside `/apps`
+  (`AppsLaunchPopover.astro`, `pages/lit-bible.astro`) reach into that folder.
+  Both files are mirrored — don't edit them here.
+- **`apps-bridge.css` carries everything LSC-specific, and is imported BEFORE
+  `apps.css`. That order matters.** litbible's `apps.css` intentionally
   inherits several tokens (`--serif`, `--text`, `--text-strong`,
   `--surface-raised`, `--green`, `--green-text`) from litbible's *own*
   `global.css` rather than redefining them. LSC's `global.css` either doesn't
@@ -598,26 +618,26 @@ LSC's own header/footer. **When litbible's `/apps` changes, re-copy it here**
   `.btn` to cancel), and reproduces one line from litbible's global
   `.container` (`padding-bottom: 80px`) that genuinely is part of
   litbible.net's rendering. The bridge's `.btn` reset **must stay physically
-  before** litbible's verbatim `.btn-primary`/`.btn-secondary` rules in the
-  file: both selectors are the same specificity (two classes), so within one
-  stylesheet the later rule wins ties on shared properties. Bridge-first lets
-  litbible's own rules (later, in the verbatim section) win back what they
-  actually set — background, border, hover colors — while the bridge's
+  before** litbible's `.btn-primary`/`.btn-secondary` rules, which is why
+  `apps.astro` imports `apps-bridge.css` first: both selectors are the same
+  specificity (two classes), so the later rule wins ties on shared properties.
+  Bridge-first lets litbible's own rules (later, in `apps.css`) win back what
+  they actually set — background, border, hover colors — while the bridge's
   resets only stick where litbible is silent (LSC's uppercase text, its
   swipe-fill `::before`, the `position`/`overflow`/`isolation` trick behind
   it, `nowrap`). Getting this backwards is a real, easy-to-miss bug: it
   silently produced a transparent primary button and a borderless secondary
   button here, caught only by diffing computed styles against the live
   litbible.net page in both themes — a visual glance didn't catch it. If you
-  touch this file, re-verify computed styles (`getComputedStyle`, not just
+  touch the bridge, re-verify computed styles (`getComputedStyle`, not just
   eyeballing) against litbible.net before trusting a change.
-- **The body background is set by `apps.css`, not a Layout prop.** litbible's
-  `apps.astro` passes `Layout bg="white"`, which litbible's `global.css`
-  resolves to `body { background: var(--surface-raised) }` (`#FAFAF8` light /
-  `#1d1d1f` dark). LSC's `Layout.astro` has no such prop, so `apps.css`
-  (imported *only* by `apps.astro`) sets a literal `body` background instead
-  — page-scoped by construction, since Astro only ships a page's imported CSS
-  to that page. Don't import `apps.css` from anywhere else, or this leaks
+- **The body background is set by `apps-bridge.css`, not a Layout prop.**
+  litbible's `apps.astro` passes `Layout bg="white"`, which litbible's
+  `global.css` resolves to `body { background: var(--surface-raised) }`
+  (`#FAFAF8` light / `#1d1d1f` dark). LSC's `Layout.astro` has no such prop, so
+  the bridge (imported *only* by `apps.astro`) sets a literal `body` background
+  instead — page-scoped by construction, since Astro only ships a page's
+  imported CSS to that page. Don't import either stylesheet elsewhere, or this leaks
   site-wide.
 - **The season colors live in `apps.css` now**, ported verbatim with the rest
   of the file — they're litbible's own liturgical palette

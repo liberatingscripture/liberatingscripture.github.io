@@ -7,10 +7,11 @@
  * normalized to the same rounded square here so the pair reads as one unit.
  *
  * The Android mark arrives on transparency and its lime end washes out on the
- * light surface, so it keeps an ink tile; the iOS art already carries its own
- * background and only needs the corner radius. Padding is fixed rather than a
- * percentage — percentage padding resolves against the containing block, not
- * the icon, which silently collapses the mark in a wide container.
+ * light surface, so it keeps an ink tile (the same one it wears on-device);
+ * the iOS art already carries its own background and only needs the corner
+ * radius. Padding is fixed rather than a percentage — percentage padding
+ * resolves against the containing block, not the icon, which silently
+ * collapses the mark in a wide container.
  */
 interface Props {
   /** Edge length of each icon, in px. */
@@ -61,5 +62,6 @@ const pad = Math.round(size * 0.09);
   .app-icons__icon--android {
     background: #1b2318;
     padding: var(--icon-pad);
+    box-sizing: border-box;
   }
 </style>
