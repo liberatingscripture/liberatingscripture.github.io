@@ -1,158 +1,21 @@
 /* =========================================================
    /apps — LIT Bible mobile-apps promo page.
 
-   VERBATIM PORT of litbible.net's src/styles/pages/apps.css. This page is
-   meant to render identically to litbible.net/apps (except LSC's header/
-   footer) — see CLAUDE.md "Apps Page & Announcement Popover". To keep it in
-   step: re-copy litbible's apps.css wholesale back into the "litbible
-   verbatim" section below, then re-check the LSC bridge above it still
-   covers every token/selector that section references.
+   Design ported from the standalone app-promo (BDRhodes/LIT-app-Promo).
+   Everything here is scoped under `.apps` so the promo's design system does
+   not leak into the rest of the site. The section components carry their own
+   Astro-scoped <style> blocks and reference the token NAMES defined here.
 
-   This stylesheet is imported ONLY by src/pages/apps.astro. Its `body` rule
-   (in the LSC bridge, below) is scoped this way deliberately — importing it
-   from any other page would leak that background site-wide.
-
-   The LSC bridge below MUST stay before the litbible-verbatim section: the
-   bridge's `.apps .btn` reset and litbible's own `.apps .btn-primary` /
-   `.btn-secondary` rules are the same specificity (0,2,0), so within this
-   one file, whichever comes LAST wins ties. Putting the bridge first lets
-   litbible's own button rules (later) win back the properties they care
-   about (background, border, hover colors); the bridge's resets only stick
-   for properties litbible's rules never touch (LSC's global uppercase
-   text-transform, swipe-fill ::before, position/overflow/isolation tricks,
-   nowrap) — which is exactly what it's for. Don't reorder without re-testing
-   computed styles against litbible.net (see CLAUDE.md).
-   ========================================================= */
-
-/* =========================================================
-   LSC bridge — LSC-specific, not part of litbible's apps.css. LSC's
-   global.css defines different values (or none at all) for several tokens
-   litbible's file below inherits from ITS OWN global.css, and LSC's
-   global.css carries a site-wide .btn litbible's doesn't have. Nothing here
-   changes an LSC global token — see CLAUDE.md Design System: "Do not change
-   token values." All bridging happens inside `.apps`.
-   ========================================================= */
-
-/* ---- Font fallbacks ----
-   litbible's global.css declares these metric-matched @font-face blocks
-   (copied verbatim); LSC's global.css imports the same @fontsource files but
-   never names these fallback families, and --font-sans/--font-serif/
-   .hero__title below reference them by name. Without these, the promo page
-   would just skip straight to system-ui/Georgia during the font-load
-   window — a harmless but visible extra layout shift litbible doesn't have. */
-@font-face {
-  font-family: "Inter Fallback";
-  src: local("Arial");
-  size-adjust: 107.40%;
-  ascent-override: 90%;
-  descent-override: 22.43%;
-  line-gap-override: 0%;
-}
-@font-face {
-  font-family: "Crimson Fallback";
-  src: local("Georgia");
-  size-adjust: 104.72%;
-  ascent-override: 92.18%;
-  descent-override: 23.23%;
-  line-gap-override: 8.73%;
-}
-@font-face {
-  font-family: "Fraunces Fallback";
-  src: local("Georgia");
-  size-adjust: 112%;
-  ascent-override: 87.5%;
-  descent-override: 22.3%;
-  line-gap-override: 0%;
-}
-
-/* ---- Body background ----
-   litbible's apps.astro passes Layout bg="white", which resolves (via
-   litbible's global.css) to body { background: var(--surface-raised) } —
-   #FAFAF8 light / #1d1d1f dark. LSC's Layout has no such prop and its body
-   sits on --page-bg (cream). Since this file is imported only by
-   apps.astro, a plain `body` rule here reproduces litbible's page surface
-   without adding a prop to LSC's shared Layout.astro or touching
-   global.css. Literal colors, not LSC tokens: LSC's own --surface-raised
-   is a different value (#FFFFFF / #2e322e) that must stay unchanged. */
-body {
-  background: #FAFAF8;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) body {
-    background: #1d1d1f;
-  }
-}
-:root[data-theme="dark"] body {
-  background: #1d1d1f;
-}
-
-/* ---- Token bridge ----
-   litbible's apps.css (below) intentionally inherits --serif, --text,
-   --text-strong, --surface-raised, --green, and --green-text from ITS OWN
-   global.css rather than redefining them — see that file's header comment.
-   LSC's global.css either lacks these tokens entirely (--serif,
-   --green-text) or defines different values for the same names
-   (--text, --text-strong, --surface-raised in dark mode). Redefine
-   litbible's actual values here, scoped to `.apps`, so the promo page
-   matches litbible.net exactly without changing what these tokens mean
-   anywhere else on the LSC site. Light values match litbible's global.css;
-   dark values match its two dark blocks. */
-.apps {
-  --serif: "Crimson Text", "Crimson Fallback", Georgia, "Times New Roman", serif;
-  --text: #1D231C;
-  --text-strong: #000000;
-  --surface-raised: #FAFAF8;
-  --green: #209D50;
-  --green-text: #0F6B33;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .apps {
-    --text: #F0F0F0;
-    --text-strong: #F7F7F7;
-    --surface-raised: #1d1d1f;
-    --green-text: #3abf6a;
-  }
-}
-:root[data-theme="dark"] .apps {
-  --text: #F0F0F0;
-  --text-strong: #F7F7F7;
-  --surface-raised: #1d1d1f;
-  --green-text: #3abf6a;
-}
-
-/* ---- Neutralize LSC's global .btn / reproduce litbible's global .container ----
-   litbible's global.css has no .btn class at all — its apps.css (below) is
-   the ONLY source of button styling there. LSC's global.css DOES define a
-   site-wide .btn (uppercase text, 2px border, a green ::before swipe-fill on
-   hover, position/overflow/isolation for that effect, nowrap), which would
-   otherwise bleed into these promo buttons. Reset just those properties;
-   litbible's own .btn/.btn-primary/.btn-secondary rules below (same
-   specificity, later in this file) win back everything they actually set
-   — see file header. Conversely, litbible's global .container carries
-   `padding-bottom: 80px` that IS part of litbible.net's real layout (its
-   apps.css .container rule below doesn't override it, and doesn't set
-   padding-bottom at all — so there's no ordering concern for this one);
-   LSC's .container has no such padding, so it's reproduced explicitly. */
-.apps .btn {
-  text-transform: none;
-  border: 0;
-  background: none;
-  position: static;
-  overflow: visible;
-  isolation: auto;
-  white-space: normal;
-}
-.apps .btn::before {
-  content: none;
-}
-.apps .container {
-  padding-bottom: 80px; /* litbible's global .container has this; LSC's doesn't */
-}
-
-/* =========================================================
-   litbible verbatim — everything from here down is litbible's
-   src/styles/pages/apps.css, unedited. Re-copy this whole section (only)
-   when litbible's file changes.
+   Reconciliation with the site brand:
+   - Structural tokens (type scale, spacing, radii, easings) + the seasonal
+     liturgical colors are kept verbatim from the promo.
+   - Serif maps to the site's Crimson Text (--serif); the hero display cut uses
+     Fraunces, like the homepage.
+   - Sans is Inter (shared already).
+   - Accent maps to the site's a11y green: --green-text (dark enough to double
+     as an accessible surface behind the near-white button/selection text).
+   - Surface/text tokens follow the near-white / near-black brand from
+     global.css; --text is inherited (themes correctly), so it is NOT redefined.
    ========================================================= */
 
 .apps {
@@ -213,16 +76,19 @@ body {
   --bg: var(--surface-raised);  /* page surface — used for button/selection text color */
   --bg-soft: #F2F2EE;           /* subtle section tint base */
   --text-soft: #5A5A57;
-  --text-faint: #8A8A85;
+  --text-faint: #6C6C67;
   --rule: rgba(26, 26, 26, 0.10);
   --rule-soft: rgba(26, 26, 26, 0.05);
 
   /* ---- Comparison cards (the "A first taste" section) ----
-     Cards float as raised surfaces on the section's --bg-soft band.
-     LIT keeps a faint green wash (composited over the raised surface in
-     the component); the traditional card is the plain raised surface. */
+     Two tinted cards on the plain section so the LIT and traditional
+     renderings read as distinct objects to compare. Both must sit on the
+     SAME side of the page background: darker in light mode, lighter in
+     dark. --card-lit is translucent, so it composites over the page and
+     follows automatically; --card-trad is opaque, so it needs its own
+     value in each dark block below. */
   --card-lit: rgba(32, 157, 80, 0.09); /* faint LIT-green wash */
-  --card-trad: var(--bg);               /* plain raised surface */
+  --card-trad: var(--bg-soft);          /* neutral grey card */
 
   /* ---- Seasonal liturgical colors (verbatim, light) ---- */
   --season-advent: #1A4FA0;
@@ -239,11 +105,12 @@ body {
   :root:not([data-theme="light"]) .apps {
     --bg-soft: #161617;
     --text-soft: #A8A8A6;
-    --text-faint: #6E6E6A;
+    --text-faint: #98988F;
     --rule: rgba(240, 240, 240, 0.10);
     --rule-soft: rgba(240, 240, 240, 0.05);
 
     --card-lit: rgba(77, 184, 77, 0.14);
+    --card-trad: #2F2F31;
 
     --season-advent: #6BA3E8;
     --season-christmas: #F05252;
@@ -255,11 +122,12 @@ body {
 :root[data-theme="dark"] .apps {
   --bg-soft: #161617;
   --text-soft: #A8A8A6;
-  --text-faint: #6E6E6A;
+  --text-faint: #98988F;
   --rule: rgba(240, 240, 240, 0.10);
   --rule-soft: rgba(240, 240, 240, 0.05);
 
   --card-lit: rgba(77, 184, 77, 0.14);
+  --card-trad: #2F2F31;
 
   --season-advent: #6BA3E8;
   --season-christmas: #F05252;

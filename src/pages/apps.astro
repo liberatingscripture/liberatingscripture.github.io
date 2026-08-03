@@ -1,11 +1,20 @@
 ---
-// VERBATIM PORT of litbible.net/apps (structure + components + apps.css) —
-// this page should render identically to litbible.net/apps except for LSC's
-// site header/footer. See CLAUDE.md "Apps Page & Announcement Popover".
-// To keep it in step: re-copy litbible's src/pages/apps.astro (the section
-// list below) and its 8 components under src/components/apps/, then reapply
-// LSC's Layout props + JSON-LD head, which litbible's own page doesn't have.
+// MIRROR of litbible.net/apps — this page should render identically to
+// litbible.net/apps except for LSC's site header/footer. See CLAUDE.md
+// "Apps Page & Announcement Popover".
+//
+// THIS FILE is the one deliberate fork: two sites cannot share a canonical
+// URL, so the Layout props and JSON-LD head below are LSC's own. Keep only
+// the section list in step with litbible's src/pages/apps.astro.
+//
+// Everything else is byte-identical and enforced by CI (.github/workflows/
+// apps-mirror.yml): the components under src/components/apps/ and
+// src/styles/pages/apps.css. Don't hand-edit those here — change them on
+// litbible and copy the whole file across. LSC-only styling belongs in
+// apps-bridge.css.
 import Layout from "../layouts/Layout.astro";
+// Bridge FIRST, then the litbible mirror — see apps-bridge.css's header.
+import "../styles/pages/apps-bridge.css";
 import "../styles/pages/apps.css";
 import Hero from "../components/apps/Hero.astro";
 import ExamplesSlider from "../components/apps/ExamplesSlider.astro";
@@ -83,11 +92,11 @@ const ANDROID_URL =
 
   <div class="apps">
     <Hero />
+    <AboutTranslation />
     <ExamplesSlider />
     <ReaderCallouts />
     <BigScreens />
     <HumaneByDesign />
     <JoinBeta />
-    <AboutTranslation />
   </div>
 </Layout>

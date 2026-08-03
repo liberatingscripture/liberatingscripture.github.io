@@ -1,0 +1,152 @@
+/* =========================================================
+   /apps bridge — LSC-specific, and the ONLY half of the /apps styling
+   that belongs to this repo.
+
+   apps.astro imports this file and then apps.css. That order is required
+   and load-bearing:
+
+     import "../styles/pages/apps-bridge.css";
+     import "../styles/pages/apps.css";
+
+   apps.css is a byte-for-byte MIRROR of litbible's
+   src/styles/pages/apps.css. Never hand-edit it here — change it on
+   litbible and copy the whole file across, or CI's apps-mirror check will
+   fail. Anything LSC needs that litbible's file doesn't provide goes in
+   THIS file instead. That split is what lets the two repos hold an
+   identical apps.css while the pages still render correctly on two sites
+   with different global stylesheets.
+
+   Why a bridge is needed at all: litbible's apps.css deliberately inherits
+   several tokens from ITS OWN global.css rather than redefining them, and
+   litbible's global.css has no site-wide .btn. LSC's global.css either
+   lacks those tokens, defines different values for the same names, or adds
+   a .btn that would bleed into the promo buttons. Nothing here changes an
+   LSC global token — see CLAUDE.md Design System: "Do not change token
+   values." All bridging happens inside `.apps`.
+
+   Ordering detail worth keeping in mind: this file's `.apps .btn` reset and
+   litbible's `.apps .btn-primary` / `.btn-secondary` rules are the same
+   specificity (0,2,0), so the later one wins ties. Because the bridge is
+   imported FIRST, litbible's own button rules win back the properties they
+   care about (background, border, hover colors), and the resets below only
+   stick for properties litbible's rules never touch — which is exactly what
+   they are for. Don't flip the import order without re-testing computed
+   styles against litbible.net.
+   ========================================================= */
+
+/* ---- Font fallbacks ----
+   litbible's global.css declares these metric-matched @font-face blocks
+   (copied verbatim); LSC's global.css imports the same @fontsource files but
+   never names these fallback families, and --font-sans/--font-serif/
+   .hero__title below reference them by name. Without these, the promo page
+   would just skip straight to system-ui/Georgia during the font-load
+   window — a harmless but visible extra layout shift litbible doesn't have. */
+@font-face {
+  font-family: "Inter Fallback";
+  src: local("Arial");
+  size-adjust: 107.40%;
+  ascent-override: 90%;
+  descent-override: 22.43%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Crimson Fallback";
+  src: local("Georgia");
+  size-adjust: 104.72%;
+  ascent-override: 92.18%;
+  descent-override: 23.23%;
+  line-gap-override: 8.73%;
+}
+@font-face {
+  font-family: "Fraunces Fallback";
+  src: local("Georgia");
+  size-adjust: 112%;
+  ascent-override: 87.5%;
+  descent-override: 22.3%;
+  line-gap-override: 0%;
+}
+
+/* ---- Body background ----
+   litbible's apps.astro passes Layout bg="white", which resolves (via
+   litbible's global.css) to body { background: var(--surface-raised) } —
+   #FAFAF8 light / #1d1d1f dark. LSC's Layout has no such prop and its body
+   sits on --page-bg (cream). Since this file is imported only by
+   apps.astro, a plain `body` rule here reproduces litbible's page surface
+   without adding a prop to LSC's shared Layout.astro or touching
+   global.css. Literal colors, not LSC tokens: LSC's own --surface-raised
+   is a different value (#FFFFFF / #2e322e) that must stay unchanged. */
+body {
+  background: #FAFAF8;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) body {
+    background: #1d1d1f;
+  }
+}
+:root[data-theme="dark"] body {
+  background: #1d1d1f;
+}
+
+/* ---- Token bridge ----
+   litbible's apps.css (below) intentionally inherits --serif, --text,
+   --text-strong, --surface-raised, --green, and --green-text from ITS OWN
+   global.css rather than redefining them — see that file's header comment.
+   LSC's global.css either lacks these tokens entirely (--serif,
+   --green-text) or defines different values for the same names
+   (--text, --text-strong, --surface-raised in dark mode). Redefine
+   litbible's actual values here, scoped to `.apps`, so the promo page
+   matches litbible.net exactly without changing what these tokens mean
+   anywhere else on the LSC site. Light values match litbible's global.css;
+   dark values match its two dark blocks. */
+.apps {
+  --serif: "Crimson Text", "Crimson Fallback", Georgia, "Times New Roman", serif;
+  --text: #1D231C;
+  --text-strong: #000000;
+  --surface-raised: #FAFAF8;
+  --green: #209D50;
+  --green-text: #0F6B33;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .apps {
+    --text: #F0F0F0;
+    --text-strong: #F7F7F7;
+    --surface-raised: #1d1d1f;
+    --green-text: #3abf6a;
+  }
+}
+:root[data-theme="dark"] .apps {
+  --text: #F0F0F0;
+  --text-strong: #F7F7F7;
+  --surface-raised: #1d1d1f;
+  --green-text: #3abf6a;
+}
+
+/* ---- Neutralize LSC's global .btn / reproduce litbible's global .container ----
+   litbible's global.css has no .btn class at all — its apps.css (below) is
+   the ONLY source of button styling there. LSC's global.css DOES define a
+   site-wide .btn (uppercase text, 2px border, a green ::before swipe-fill on
+   hover, position/overflow/isolation for that effect, nowrap), which would
+   otherwise bleed into these promo buttons. Reset just those properties;
+   litbible's own .btn/.btn-primary/.btn-secondary rules below (same
+   specificity, later in this file) win back everything they actually set
+   — see file header. Conversely, litbible's global .container carries
+   `padding-bottom: 80px` that IS part of litbible.net's real layout (its
+   apps.css .container rule below doesn't override it, and doesn't set
+   padding-bottom at all — so there's no ordering concern for this one);
+   LSC's .container has no such padding, so it's reproduced explicitly. */
+.apps .btn {
+  text-transform: none;
+  border: 0;
+  background: none;
+  position: static;
+  overflow: visible;
+  isolation: auto;
+  white-space: normal;
+}
+.apps .btn::before {
+  content: none;
+}
+.apps .container {
+  padding-bottom: 80px; /* litbible's global .container has this; LSC's doesn't */
+}
+
