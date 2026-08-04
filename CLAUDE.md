@@ -279,6 +279,20 @@ Two things the config buys that the toggles could not:
   CSS breakpoint into range syntax and needed `vite.build.cssTarget` pinned (see
   "Why `cssTarget` is pinned"). That is not something to discover inside a
   bundle of patch bumps.
+- **0.x dependencies are `exclude-patterns`'d out of both npm groups, because
+  the ungrouped-majors rule above does not otherwise reach them.** Under npm
+  caret rules a 0.x minor *is* breaking — `^0.19.0` means `>=0.19.0 <0.20.0`,
+  so 0.19 → 0.20 rewrites the range — but Dependabot's semver classifier grades
+  it `minor`, it matches `update-types`, and it rides into the group. Today that
+  means `@astrojs/check` + `sharp` (root) and `@cloudflare/vitest-pool-workers`
+  (worker); **keep the lists in step with the 0.x entries in each
+  `package.json`.** The proof was PR #41 on 2026-08-03: pool-workers 0.19.0 →
+  0.20.1 arrived as a grouped "minor" carrying release notes headed *"Breaking
+  change"*, an **alpha** miniflare 5, and a transitive zod 3 → 4 — in the one
+  package that boots the workerd runtime the Worker tests run inside. It was
+  closed rather than merged, because checking its lockfile showed it left
+  `undici` on the vulnerable 7.28.0 anyway, so it bought no security fix for
+  that risk (see "The undici advisories are knowingly open" below).
 
 Three details in that file were settled on 2026-07-28/29 after watching its first
 real runs, and each is a trap worth not re-entering:
@@ -292,7 +306,10 @@ real runs, and each is a trap worth not re-entering:
   The actions stream sat at 3 against four actions in `deploy.yml`; with majors
   ungrouped, checkout/deploy-pages/upload-pages-artifact took every slot and
   `setup-node` got no PR at all. A starved stream fails silently — nothing
-  reports the suppressed update.
+  reports the suppressed update. The npm limits were raised (root 5 → 8 against
+  9 deps, worker 3 → 5 against 4) when the 0.x `exclude-patterns` landed: every
+  exclusion moves a package out of the shared group PR and into one of its own,
+  so anything that raises the exclusion count has to re-check these.
 - **A failing TypeScript 7 PR is expected, and there is deliberately NO `ignore`
   entry for it.** `@astrojs/check` (0.9.10, its latest) peers on
   `typescript@"^5.0.0 || ^6.0.0"`, so TS 7 fails `npm ci` with ERESOLVE — that
@@ -323,6 +340,33 @@ PRs afterward — `@dependabot close` as a comment is unreliable, so verify with
 `gh pr close <n> --delete-branch`. That fallback is also the one to reach for in
 a worktree, where `--delete-branch` skips the *local* branch but still deletes
 the remote one correctly.
+
+### The `undici` advisories in the Worker tree are knowingly open
+
+`npm audit` in `workers/contact-form/` reports four `undici` advisories (three
+moderate, one high) and **they are deliberately not fixed.** Re-verify before
+"fixing" them, because every obvious remedy is worse than the finding:
+
+- **`npm audit fix --force` is a trap here.** Its proposed remedy is to
+  *downgrade* `@cloudflare/vitest-pool-workers` to 0.8.71 — years of regression
+  in the test harness to patch a dev-only HTTP client.
+- **Upstream has no fix to take.** `undici` is pulled in by `miniflare`, and as
+  of 2026-08-03 `miniflare@latest` (4.20260730.0, stable) still pins the
+  affected `undici` 7.28.0; the patched 7.29.0 only reaches us when Cloudflare
+  moves. miniflare 5 exists solely as an alpha.
+- **An `overrides` pin was considered and rejected.** Forcing `undici` ^7.29.0
+  would override a vendor's *exact* pin, and a stale override is the classic way
+  to silently hold a package back long after the advisory is moot.
+- **Nothing shipped is affected.** `undici` reaches only the local
+  simulator/test harness — the deployed Worker runs on Cloudflare's runtime and
+  bundles none of it, and the site build never touches this tree.
+
+Revisit when `npm view miniflare@latest dependencies.undici` reports ≥ 7.29.0,
+or when a stable miniflare 5 ships. Note also that GitHub's **Dependabot alerts
+API reported 0 open alerts while `npm audit` reported these** (checked
+2026-08-03 with a token that does carry `security_events` — it was not a
+permissions error). Do not treat a green alerts page as proof the trees are
+clean; run `npm audit` in **both** of them.
 
 One nuance: the domain's DNS is on **Cloudflare with the proxy enabled**, so
 Cloudflare sits in front of GitHub Pages. That's what lets the contact-form
