@@ -26,7 +26,13 @@ updates:
       day: monday
       time: "09:00"
       timezone: America/Los_Angeles
-    open-pull-requests-limit: 5
+    # 8, against 9 direct dependencies. Raised from 5 when the 0.x
+    # exclude-patterns went in: every exclusion converts a package from "rides
+    # in the group PR" to "gets its own PR", so the worst-case PR count for
+    # this stream went up, and a starved stream fails SILENTLY — nothing
+    # reports the update that never got a slot (see the actions stream below,
+    # where a limit of 3 swallowed setup-node's bump entirely).
+    open-pull-requests-limit: 8
     commit-message:
       # Matches this repo's Conventional Commits convention (lowercase type +
       # scope, e.g. "perf(images):", "docs(privacy):").
@@ -64,6 +70,29 @@ updates:
       site-minor-and-patch:
         patterns:
           - "*"
+        # 0.x DEPENDENCIES ARE EXCLUDED, and this is not fussiness — it is the
+        # hole that let a breaking change into a "patch" PR on 2026-08-03.
+        #
+        # Under npm caret rules a 0.x minor IS breaking: ^0.19.0 resolves to
+        # >=0.19.0 <0.20.0, so 0.19 → 0.20 is a range rewrite, not an in-range
+        # bump. Dependabot's semver classifier disagrees — it grades that same
+        # bump `minor`, which matches `update-types` below and sweeps it into
+        # the group. The net effect is that the "majors are ungrouped" rule
+        # further down silently does not apply to any 0.x package.
+        #
+        # That is exactly how PR #41 arrived: @cloudflare/vitest-pool-workers
+        # 0.19.0 → 0.20.1 rode in as a grouped "minor" while carrying release
+        # notes headed "Breaking change", an alpha miniflare 5, and a
+        # transitive zod 3 → 4. Excluded here, each of these gets its own PR
+        # regardless of how Dependabot grades it.
+        #
+        # Keep this list in sync with the 0.x entries in package.json:
+        #   node -e "const p=require('./package.json');for(const [n,r] of
+        #     Object.entries({...p.dependencies,...p.devDependencies}))
+        #     if(/^\D*0\./.test(r))console.log(n)"
+        exclude-patterns:
+          - "@astrojs/check"
+          - "sharp"
         update-types:
           - minor
           - patch
@@ -91,7 +120,11 @@ updates:
       day: monday
       time: "09:00"
       timezone: America/Los_Angeles
-    open-pull-requests-limit: 3
+    # 5, against 4 direct dependencies — raised from 3 for the same reason as
+    # stream 1. With @cloudflare/vitest-pool-workers now excluded from the
+    # group, this stream can legitimately want a group PR plus one per excluded
+    # or major package at the same time, which 3 could not hold.
+    open-pull-requests-limit: 5
     commit-message:
       # Bare "chore" + include: scope — see stream 1 for why the scope must not
       # also be written into the prefix.
@@ -101,6 +134,14 @@ updates:
       worker-minor-and-patch:
         patterns:
           - "*"
+        # Same 0.x exclusion as stream 1 — see the long comment there for why a
+        # 0.x "minor" is really a major. This is the stream that proved it:
+        # @cloudflare/vitest-pool-workers is the package PR #41 slipped through
+        # on, and it is the worst possible one to bundle, because the pool
+        # boots the workerd runtime the tests run inside (its 0.20.0 notes drop
+        # miniflare override options and move to a miniflare 5 ALPHA).
+        exclude-patterns:
+          - "@cloudflare/vitest-pool-workers"
         update-types:
           - minor
           - patch
