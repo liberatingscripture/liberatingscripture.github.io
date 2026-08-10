@@ -292,7 +292,11 @@ Two things the config buys that the toggles could not:
   package that boots the workerd runtime the Worker tests run inside. It was
   closed rather than merged, because checking its lockfile showed it left
   `undici` on the vulnerable 7.28.0 anyway, so it bought no security fix for
-  that risk (see "The undici advisories are knowingly open" below).
+  that risk. The exclusion kept doing its job: pool-workers 0.20.3 arrived on
+  2026-08-10 as its own PR (#46) rather than inside the group — and that one
+  *does* carry patched `undici`, which is a genuinely different call from #41's.
+  It was still held, on the alpha-runtime grounds in "The `undici` advisories
+  in the Worker tree are knowingly open" below.
 
 Three details in that file were settled on 2026-07-28/29 after watching its first
 real runs, and each is a trap worth not re-entering:
@@ -343,30 +347,58 @@ the remote one correctly.
 
 ### The `undici` advisories in the Worker tree are knowingly open
 
-`npm audit` in `workers/contact-form/` reports four `undici` advisories (three
-moderate, one high) and **they are deliberately not fixed.** Re-verify before
-"fixing" them, because every obvious remedy is worse than the finding:
+`npm audit` in `workers/contact-form/` reports five `undici` advisories (three
+moderate, two high) and **they are deliberately not fixed.** The decision was
+re-taken on 2026-08-10 after its own revisit trigger fired, so re-read this
+before "fixing" them — the reasoning changed, the conclusion did not:
 
-- **`npm audit fix --force` is a trap here.** Its proposed remedy is to
-  *downgrade* `@cloudflare/vitest-pool-workers` to 0.8.71 — years of regression
-  in the test harness to patch a dev-only HTTP client.
-- **Upstream has no fix to take.** `undici` is pulled in by `miniflare`, and as
-  of 2026-08-03 `miniflare@latest` (4.20260730.0, stable) still pins the
-  affected `undici` 7.28.0; the patched 7.29.0 only reaches us when Cloudflare
-  moves. miniflare 5 exists solely as an alpha.
+- **A patched `undici` now exists upstream, but only behind an alpha.** This is
+  the part that moved. `undici` is pulled in by `miniflare`, and the fixed
+  7.29.0 has landed — but only in **miniflare 5, which is still alpha-only**
+  (`miniflare@latest` was `5.20260804.0-alpha` on 2026-08-10). Stable miniflare
+  4 stays on the affected 7.28.0. So the trade is no longer "no fix exists," it
+  is "the fix costs an alpha runtime under the test suite."
+- **`npm audit fix --force` now proposes an *upgrade*, not the old downgrade.**
+  It offers `@cloudflare/vitest-pool-workers@0.21.0 — a breaking change`, which
+  pulls miniflare 5 alpha and zod 3 → 4. (It used to propose *downgrading* to
+  0.8.71; that is no longer what it does. Read the current output rather than
+  trusting either description.)
+- **Plain `npm audit fix` — no `--force` — also overreaches here.** It cannot
+  reach `undici` at all, but it bumps top-level `wrangler` out of step with the
+  lockfile and leaves a *duplicated nested* wrangler under
+  `@cloudflare/vitest-pool-workers`. For a transitive fix in this tree, scope it
+  (`npm update <package> --package-lock-only`) and read the diff.
 - **An `overrides` pin was considered and rejected.** Forcing `undici` ^7.29.0
   would override a vendor's *exact* pin, and a stale override is the classic way
   to silently hold a package back long after the advisory is moot.
 - **Nothing shipped is affected.** `undici` reaches only the local
   simulator/test harness — the deployed Worker runs on Cloudflare's runtime and
-  bundles none of it, and the site build never touches this tree.
+  bundles none of it, and the site build never touches this tree. This is still
+  the load-bearing reason: a dev-only advisory does not justify booting the
+  tests on an alpha.
 
-Revisit when `npm view miniflare@latest dependencies.undici` reports ≥ 7.29.0,
-or when a stable miniflare 5 ships. Note also that GitHub's **Dependabot alerts
-API reported 0 open alerts while `npm audit` reported these** (checked
-2026-08-03 with a token that does carry `security_events` — it was not a
-permissions error). Do not treat a green alerts page as proof the trees are
-clean; run `npm audit` in **both** of them.
+One nuance that is easy to misread as a contradiction: **an alpha miniflare 5 is
+already in the tree**, at `node_modules/wrangler/node_modules/miniflare`
+(`5.20260730.0-alpha`, vendored by stable wrangler 4.118.0 since PR #44). That
+does *not* make the pool-workers move a no-op — that nested copy is wrangler's
+own business and still pins `undici` 7.28.0, whereas moving
+`@cloudflare/vitest-pool-workers` to ≥ 0.20.x makes miniflare 5 alpha the
+runtime **the tests themselves boot inside**. Different blast radius.
+
+Revisit when a **stable** miniflare 5 ships, or when stable miniflare 4 picks up
+`undici` ≥ 7.29.0 — check with `npm view miniflare@latest dependencies.undici`
+and `npm view @cloudflare/vitest-pool-workers@latest dependencies.miniflare`.
+PR #46 (pool-workers 0.19.1 → 0.20.3, which *does* carry the patched undici) was
+left open on 2026-08-10 rather than merged, for exactly the alpha reason above.
+
+**`npm audit` and GitHub's alerts page disagree in both directions — run both.**
+On 2026-08-03 the Dependabot alerts API reported 0 open while `npm audit`
+reported the undici findings. By 2026-08-10 it had caught up and reported all
+five, but was simultaneously silent on two **high** advisories `npm audit` did
+find (`js-yaml` in the root tree, `nanoid` in both). Neither tool is a superset
+of the other, and a token lacking `security_events` would make the API look
+falsely clean on top of that. Run `npm audit` in **both** trees, and do not
+treat a green alerts page as proof of anything.
 
 One nuance: the domain's DNS is on **Cloudflare with the proxy enabled**, so
 Cloudflare sits in front of GitHub Pages. That's what lets the contact-form
