@@ -475,6 +475,61 @@ Text/semantic tokens that flip with the theme (light → dark):
 
 Fonts: Crimson Text (headings) · Inter (body) · Fraunces (display / pull quotes)
 
+### Text columns use `--ch`, never the `ch` unit
+
+**Never write `max-width: 64ch` in this repo.** Write
+`max-width: calc(64 * var(--ch))`. It still reads as "64 characters," and the
+built CSS is checked for stragglers by eye, not by CI — so this is a rule you
+have to keep yourself.
+
+`ch` resolves against **whichever font is currently painting**. Our
+`@fontsource` faces load with `font-display: swap`, so a column was one width
+under the fallback and another once the webfont landed — resizing and, being
+margin-auto, re-centring the whole block mid-load. Measured on `/privacy`:
+621px → 726.75px, x −52.9px, **0.0198 CLS from the swap alone**, now
+**0.0082** (the residue is vertical text reflow, which no width token can fix).
+The tokens are constants, so a column is settled from the first frame.
+
+`ch` is per-element, so **one token can't be right for every face.** Four
+values, all measured, all theme-invariant (never redefine them in the dark
+blocks):
+
+| Token | Value | Face |
+|---|---|---|
+| `--ch` | `0.63086em` | Inter 400 — body text and every plain container |
+| `--ch-display` | `0.6485em` | Fraunces 400 |
+| `--ch-strong` | `0.65967em` | Inter 600 |
+| `--ch-serif` | `0.50391em` | Crimson Text 400 |
+
+**Call sites always read plain `var(--ch)`.** What varies is where `--ch` is
+*re-pointed*: because custom properties inherit, pinning `--ch: var(--ch-…)` in
+the same rule that declares the face makes the override travel with the font,
+exactly as the real `ch` unit did. Four rules do it — `.lede` and `.eyebrow`
+(global.css, so every page inherits them), `.podcast-card__tagline`, and
+`.lit-example__greek`. **If you set a non-Inter face on something a `ch`-sized
+rule can match, pin `--ch` in the same rule.** The failure is silent and easy
+to miss: a single `p` selector routinely covers three faces at once —
+`.podcast-card p` matches Inter 400, Inter 600 and Fraunces — and forgetting
+the pin just quietly changes that one element's measure. `.lit-example__greek`
+was found exactly that way, 158.84px off, only because verification walked
+*every* matched element rather than the first.
+
+**Verify by measuring, not by looking.** The invariant is that every column
+keeps exactly the width its old `Nch` gave it. At runtime, compare each
+element's computed `max-width` against `N ×` its own real `ch` (measure with a
+`width: 1000ch` probe — and set `letter-spacing: normal` on it, or tracked text
+like `.eyebrow` reads ~27% wide and you'll "fix" a bug that isn't there).
+
+**`/apps` is excluded, deliberately.** Its 8 `ch` values live in mirrored files
+(see Apps Page); converting them here would break the mirror. litbible hasn't
+converted its own copies either. `--ch` is defined site-wide, so it's *visible*
+on `/apps` — nothing there consumes it.
+
+Ported from litbible.net, which fixed the same defect (0.25 CLS on its
+scripture pages). Its default matches ours because both set body text in Inter;
+its per-mode `--ch` overrides are for a `data-font` accessibility switcher this
+site doesn't have. Keep `--ch` in step if the body face ever changes.
+
 ### Buttons must use the CTA tokens, never raw `--ink`
 
 `--ink` is theme-invariant, and the dark page background (`#1a1e1a`) sits

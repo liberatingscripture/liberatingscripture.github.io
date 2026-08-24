@@ -73,6 +73,24 @@
   --gutter: clamp(1.25rem, 4vw, 2.5rem);
   --content-max: 1200px;
   --container-max: 1400px;
+
+  /* Stand-in for the `ch` unit, as an em fraction of a face's "0" advance.
+     Every text column here used to be sized in `ch`, which reads well but is
+     resolved against WHICHEVER FONT IS CURRENTLY PAINTING. Our @fontsource
+     faces load with `font-display: swap`, so a column was one width under the
+     fallback and another once the webfont arrived — resizing and, being
+     margin-auto, re-centring the whole block mid-load. Measured on /privacy:
+     621px -> 726.75px, x -52.9px, 0.0198 CLS from the swap alone.
+     These are constants, so a column's width is settled from the first frame
+     and no font swap can move it. Values are each face's measured "0" advance,
+     so every column keeps exactly the width its old `Nch` gave it.
+     Ported from litbible.net, which fixed the same defect (0.25 CLS on its
+     scripture pages); its default matches ours because both sites set body
+     text in Inter. Keep `--ch` in step if the body face ever changes. */
+  --ch: 0.63086em;         /* Inter 400 — body text, and every plain container */
+  --ch-display: 0.6485em;  /* Fraunces 400 — .lede, podcast taglines */
+  --ch-strong: 0.65967em;  /* Inter 600 — .eyebrow */
+  --ch-serif: 0.50391em;   /* Crimson Text 400 — the Greek example lines */
 }
 
 /* ---------- Dark mode ---------- */
@@ -292,6 +310,9 @@ li { margin-bottom: 0.4rem; }
 
 /* ---------- Eyebrow label ---------- */
 .eyebrow {
+  /* Pin --ch wherever the face is declared, so it travels with the font the
+     way the real `ch` unit did. Inherits to children, which are in this face. */
+  --ch: var(--ch-strong);
   font-family: Inter, sans-serif;
   font-size: 0.8rem;
   font-weight: 600;
@@ -303,6 +324,7 @@ li { margin-bottom: 0.4rem; }
 
 /* ---------- Lede text ---------- */
 .lede {
+  --ch: var(--ch-display); /* see .eyebrow */
   font-family: "Fraunces", serif;
   font-size: clamp(1.2rem, 2vw, 1.5rem);
   font-weight: 400;

@@ -137,7 +137,7 @@ import Layout from "../layouts/Layout.astro";
   }
 
   .community-hero .content {
-    max-width: 64ch;
+    max-width: calc(64 * var(--ch));
   }
 
   .community-hero h1 {
@@ -152,7 +152,7 @@ import Layout from "../layouts/Layout.astro";
   }
   .community-hero .lede {
     color: #c8c6c0;
-    max-width: 52ch;
+    max-width: calc(52 * var(--ch));
   }
 
   .community-content {
@@ -163,7 +163,7 @@ import Layout from "../layouts/Layout.astro";
   }
 
   .community-content .community-section:first-child {
-    max-width: 64ch;
+    max-width: calc(64 * var(--ch));
     margin-inline: auto;
   }
 
@@ -173,7 +173,7 @@ import Layout from "../layouts/Layout.astro";
   }
 
   .community-section p {
-    max-width: 68ch;
+    max-width: calc(68 * var(--ch));
   }
 
   .community-grid {

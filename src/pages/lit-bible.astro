@@ -354,7 +354,7 @@ import AppIcons from "../components/apps/AppIcons.astro";
   }
 
   .lit-hero__inner {
-    max-width: 64ch;
+    max-width: calc(64 * var(--ch));
   }
 
   .lit-hero h1 {
@@ -420,7 +420,7 @@ import AppIcons from "../components/apps/AppIcons.astro";
   .lit-apps__copy p:last-child {
     margin: 0;
     font-size: 0.95rem;
-    max-width: 54ch;
+    max-width: calc(54 * var(--ch));
   }
 
   .lit-apps__actions {
@@ -452,7 +452,7 @@ import AppIcons from "../components/apps/AppIcons.astro";
   }
 
   .lit-section {
-    max-width: 64ch;
+    max-width: calc(64 * var(--ch));
     margin-inline: auto;
   }
 
@@ -475,7 +475,7 @@ import AppIcons from "../components/apps/AppIcons.astro";
   }
 
   .lit-section p {
-    max-width: 68ch;
+    max-width: calc(68 * var(--ch));
   }
 
   /* ---- Translation examples grid ---- */
@@ -504,6 +504,7 @@ import AppIcons from "../components/apps/AppIcons.astro";
   }
 
   .lit-example__greek {
+    --ch: var(--ch-serif); /* Crimson, under .lit-section p's measure */
     font-family: "Crimson Text", Georgia, serif;
     font-size: 1.15rem !important;
     color: var(--green-text);

@@ -155,7 +155,7 @@ import Layout from "../layouts/Layout.astro";
   }
 
   .sd-hero .content {
-    max-width: 64ch;
+    max-width: calc(64 * var(--ch));
   }
 
   .sd-hero::before {
@@ -187,7 +187,7 @@ import Layout from "../layouts/Layout.astro";
   }
 
   .sd-section {
-    max-width: 64ch;
+    max-width: calc(64 * var(--ch));
     margin-inline: auto;
   }
 
@@ -200,7 +200,7 @@ import Layout from "../layouts/Layout.astro";
   }
 
   .sd-section p {
-    max-width: 68ch;
+    max-width: calc(68 * var(--ch));
   }
 
   .sd-questions__list {
