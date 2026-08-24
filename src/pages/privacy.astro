@@ -338,7 +338,7 @@ import Layout from "../layouts/Layout.astro";
   }
 
   .privacy-hero .content {
-    max-width: 64ch;
+    max-width: calc(64 * var(--ch));
   }
 
   .privacy-hero .eyebrow { color: var(--green-text); }
@@ -357,7 +357,7 @@ import Layout from "../layouts/Layout.astro";
   }
 
   .privacy-body {
-    max-width: 64ch;
+    max-width: calc(64 * var(--ch));
     padding: clamp(2.5rem, 5vw, 4rem) 0 clamp(3rem, 6vw, 5rem);
   }
 

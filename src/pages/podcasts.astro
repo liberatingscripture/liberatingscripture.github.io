@@ -183,7 +183,7 @@ import Layout from "../layouts/Layout.astro";
   }
 
   .podcasts-hero .content {
-    max-width: 64ch;
+    max-width: calc(64 * var(--ch));
   }
 
   .podcasts-hero h1 {
@@ -198,7 +198,7 @@ import Layout from "../layouts/Layout.astro";
   }
   .podcasts-hero .lede {
     color: var(--cream);
-    max-width: 52ch;
+    max-width: calc(52 * var(--ch));
   }
 
   .podcasts-content {
@@ -252,6 +252,7 @@ import Layout from "../layouts/Layout.astro";
   }
 
   .podcast-card__tagline {
+    --ch: var(--ch-display); /* Fraunces, under .podcast-card p's measure */
     font-family: "Fraunces", serif;
     font-size: 1.05rem;
     color: var(--text);
@@ -259,7 +260,7 @@ import Layout from "../layouts/Layout.astro";
   }
 
   .podcast-card p {
-    max-width: 58ch;
+    max-width: calc(58 * var(--ch));
   }
 
   .podcast-card__platforms {

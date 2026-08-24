@@ -282,7 +282,7 @@ const projects = [
   }
   .hero .lede {
     color: var(--cream);
-    max-width: 46ch;
+    max-width: calc(46 * var(--ch));
   }
 
   .hero__actions {
@@ -349,13 +349,13 @@ const projects = [
 
   .explainer__inner {
     padding: 1.75rem 0;
-    max-width: 64ch;
+    max-width: calc(64 * var(--ch));
   }
 
   .explainer__text p {
     font-size: 1.05rem;
     line-height: 1.7;
-    max-width: 72ch;
+    max-width: calc(72 * var(--ch));
     color: var(--text);
     margin: 0;
   }
@@ -523,7 +523,7 @@ const projects = [
   .support-strip p {
     font-size: 0.95rem;
     line-height: 1.7;
-    max-width: 58ch;
+    max-width: calc(58 * var(--ch));
     color: #c8c6c0;
     margin: 0;
   }
