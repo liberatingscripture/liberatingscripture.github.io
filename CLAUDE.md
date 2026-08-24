@@ -751,8 +751,14 @@ here — never the other way round.
 - **The season colors live in `apps.css` now**, ported verbatim with the rest
   of the file — they're litbible's own liturgical palette
   (`--season-advent`, etc.), not LSC design tokens. Keep the two in agreement
-  if litbible's palette changes. Auto-advance pauses on hover and focus, and
-  doesn't start at all under `prefers-reduced-motion`.
+  if litbible's palette changes. Auto-advance is gated four ways: it doesn't
+  start at all under `prefers-reduced-motion`, and otherwise runs only while
+  the card is unhovered, intersecting the viewport (`IntersectionObserver`,
+  100px margin; absent the API it behaves as always), and the tab is visible.
+  Each tick crossfades two full-height screenshots and transitions a
+  `color-mix()` background across the card, so an ungated cycle repaints every
+  3.8s for the life of the page — on the phones this page is pitching an app
+  to. Keep the gating if you touch the component.
 - **The popover is the site's single announcement slot.** `Layout.astro`
   renders exactly one. It shows once per visitor (cookie `lsc_apps_launch_v1`,
   30 days) and only from the **2nd pageview of a session**, never on a session
