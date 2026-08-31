@@ -386,7 +386,20 @@ Two consequences worth holding onto:
 - **Closing that PR suppresses nothing.** Dependabot says so itself on grouped
   PRs: *"Closing it will not ignore any of these versions in future pull
   requests."* The bump returns weekly, dragging the group's genuinely useful
-  half (a `vitest` patch, say) with it. Expect to re-decline it.
+  half (a `vitest` patch, say) with it. Expect to re-decline it — it has now
+  arrived three times (#50, #55, #64).
+- **Take the group's useful half by hand rather than losing it to the
+  decline.** Closing the PR throws away a real patch along with the split, so
+  bump the wanted package alone, scoped so npm cannot touch the `wrangler`
+  range: `npm update <pkg> --package-lock-only` in `workers/contact-form/`,
+  then edit that one range in `package.json` to match (otherwise Dependabot
+  just re-proposes it next week, re-bundled with `wrangler`). That is how
+  `vitest` 4.1.11 landed on 2026-08-31 after #64 was closed. **Verify the tree
+  stayed flat afterward** — no `node_modules/*/node_modules/wrangler` key in
+  the lockfile — since the whole point is to avoid the split the group PR
+  would have caused. Expect a lockfile diff much larger than the version bump
+  implies: `vitest` drags `vite` and `rolldown` platform binaries with it,
+  which is benign as long as `wrangler` itself has not moved.
 - **Do not reach for an `ignore` rule**, tempting as it is here — see the
   standing argument against `ignore` above. This resolves on its own once
   pool-workers pins a `wrangler` at or above our range, at which point the
