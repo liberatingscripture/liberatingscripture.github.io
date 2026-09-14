@@ -387,7 +387,16 @@ Two consequences worth holding onto:
   PRs: *"Closing it will not ignore any of these versions in future pull
   requests."* The bump returns weekly, dragging the group's genuinely useful
   half (a `vitest` patch, say) with it. Expect to re-decline it — it has now
-  arrived three times (#50, #55, #64).
+  arrived four times (#50, #55, #64, #71). #71 (2026-09-14, `^4.118.0` →
+  `^4.131.1`) arrived alone, with no group-mate to salvage, and was motivated
+  by a real HIGH `npm audit` finding (sharp/libheif via miniflare and
+  wrangler, GHSA-rgj7-g3m4-5g8c-adjacent) — but bumping only the top-level
+  range does not fix it: pool-workers 0.22.0 (still latest) pins `miniflare`
+  and `wrangler` directly, so the nested copies the split creates stay on the
+  vulnerable versions regardless. The audit finding is real but unresolved by
+  this route; see "The `undici` advisories are closed" above for why dev-only
+  miniflare/wrangler exposure here is an acceptable, tracked risk rather than
+  something to route around with a tree split.
 - **Take the group's useful half by hand rather than losing it to the
   decline.** Closing the PR throws away a real patch along with the split, so
   bump the wanted package alone, scoped so npm cannot touch the `wrangler`
