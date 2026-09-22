@@ -335,6 +335,18 @@ real runs, and each is a trap worth not re-entering:
   `npm view @astrojs/check peerDependencies`. When that range admits `^7`, merge
   it. **litbible.net's repo made the same call independently — keep the two in
   agreement.**
+- **A failing vitest 5 PR is the same shape for the same reason — also no
+  `ignore`.** `@cloudflare/vitest-pool-workers` 0.22.0 (its latest) peers on
+  `vitest: "^4.1.0"`, so vitest 5 dies in `npm ci` with ERESOLVE and reddens
+  the `worker-tests` job — that was PR #77, closed 2026-09-21. Every argument
+  above transfers verbatim: the PR turning green is the only thing that would
+  report the peer range widening, and an `ignore` would mute a genuine vitest
+  advisory alongside it. Check with
+  `npm view @cloudflare/vitest-pool-workers peerDependencies`; merge when that
+  range admits `^5`. **The event to watch for is a pool-workers release, not a
+  vitest one** — this unblocks in lockstep with the exact pin described below,
+  which is also why a vitest major and a pool-workers major cannot be reviewed
+  independently of each other.
 
 With grouped security updates on, Dependabot now does most of that batching
 itself. The manual technique still matters when the real remedy is a major
@@ -387,7 +399,7 @@ Two consequences worth holding onto:
   PRs: *"Closing it will not ignore any of these versions in future pull
   requests."* The bump returns weekly, dragging the group's genuinely useful
   half (a `vitest` patch, say) with it. Expect to re-decline it — it has now
-  arrived four times (#50, #55, #64, #71). #71 (2026-09-14, `^4.118.0` →
+  arrived five times (#50, #55, #64, #71, #76). #71 (2026-09-14, `^4.118.0` →
   `^4.131.1`) arrived alone, with no group-mate to salvage, and was motivated
   by a real HIGH `npm audit` finding (sharp/libheif via miniflare and
   wrangler, GHSA-rgj7-g3m4-5g8c-adjacent) — but bumping only the top-level
@@ -397,6 +409,16 @@ Two consequences worth holding onto:
   this route; see "The `undici` advisories are closed" above for why dev-only
   miniflare/wrangler exposure here is an acceptable, tracked risk rather than
   something to route around with a tree split.
+
+  **#76 (2026-09-21, `^4.118.0` → `^4.135.0`) repeated #71 exactly**, and is
+  the cleanest proof of the rule so far: pool-workers was *still* 0.22.0, still
+  pinning `wrangler: "4.124.0"`; the diff came in at **+786/−11** against #57's
+  symmetric 40/40; and the PR's own lockfile added the
+  `node_modules/@cloudflare/vitest-pool-workers/node_modules/wrangler` key
+  outright. So the split needed no inference from diff size — grep the diff for
+  it directly, which is faster and less arguable:
+  `gh pr diff <n> | grep '^+.*vitest-pool-workers/node_modules'`. Like #71 it
+  carried no group-mate, so declining it lost nothing.
 - **Take the group's useful half by hand rather than losing it to the
   decline.** Closing the PR throws away a real patch along with the split, so
   bump the wanted package alone, scoped so npm cannot touch the `wrangler`
@@ -417,12 +439,28 @@ Two consequences worth holding onto:
 
 ### The `undici` advisories are closed — on an alpha miniflare, deliberately
 
-`npm audit` in `workers/contact-form/` reports **0 vulnerabilities** as of
-2026-08-24, and GitHub's alerts page agrees (21 fixed, 0 open). Getting there
+`npm audit` in `workers/contact-form/` reported **0 vulnerabilities** on
+2026-08-24, and GitHub's alerts page agreed (21 fixed, 0 open). Getting there
 meant taking `@cloudflare/vitest-pool-workers` 0.19.1 → **0.21.3** (PR #52),
 which pulls `undici` 7.29.0. The tree has since moved to **0.22.0** (PR #57,
 2026-08-24) — a routine follow-on that changed nothing about the tradeoff
 below: `undici` stays 7.29.0, `zod` stays 4.4.3.
+
+**That clean reading did not last, and this heading means `undici`
+specifically.** As of 2026-09-21 the same tree reports **4 HIGH** findings:
+`sharp` <0.35.4 (GHSA-rgj7-g3m4-5g8c, libheif), reached through
+`miniflare` → `wrangler` → pool-workers, carrying one open alert (#30). It is
+**not** fixable from here, and the obvious-looking fix actively makes things
+worse: pool-workers 0.22.0 pins `miniflare` and `wrangler` directly, so raising
+our top-level `wrangler` range splits the tree and leaves the nested — still
+vulnerable — copies in place, which is precisely what #71 and #76 proposed.
+`npm audit fix --force` is worse still: it currently offers to downgrade
+pool-workers to **0.8.30**. The blast radius is the same dev-only one argued
+below, so this is tracked rather than routed around. The trigger to re-check is
+a pool-workers release pinning `miniflare` past `5.20260908.0-alpha`:
+`npm view @cloudflare/vitest-pool-workers dependencies.miniflare`. The **root**
+tree is clean as of the same date — its one open advisory, `devalue`
+GHSA-9rgm-9g3h-6x36, closed with PR #74.
 
 **The price is stated plainly, because it is the whole story:** the Worker tests
 boot inside an **alpha miniflare** (`5.20260815.0-alpha` as of 0.22.0), and
