@@ -61,6 +61,19 @@
   --lsc-mark-disc: #1D231C;
   --lsc-mark-bird: #FAFAF8;
 
+  /* Keyboard focus ring. A focus indicator needs 3:1 against the surface it
+     sits on, and plain --green is only 2.6:1 on cream / 3.5:1 on white, so the
+     ring follows --green-text instead (4.97:1 cream, 6.62:1 white; dark
+     #3abf6a is 7.1:1 on the page, 5.5:1 raised). Never write
+     `outline: … var(--green)` for focus — use var(--focus-ring). Like the dove
+     mark, surfaces that are a fixed color in both themes pin their own ring:
+     ink bands use --green (4.58:1), green-deep heroes use --cream (4.97:1). */
+  --focus-ring: var(--green-text);
+
+  /* Success text on a faint green tint (contact status + topic hint). #085229
+     is the newsletter's success green: 6.38:1 over the tint on cream. */
+  --notice-success-fg: #085229;
+
   /* CTA. --ink is theme-invariant and the dark page background is nearly the
      same color, so a button painted straight onto --ink disappears in dark
      mode. These pairs are what .btn / .btn--outline consume so both flip. */
@@ -110,6 +123,8 @@
     --badge-bg: rgba(255,255,255,0.08);
     --lsc-mark-disc: #E4E2DC;
     --lsc-mark-bird: #1D231C;
+    --focus-ring: var(--green-text);
+    --notice-success-fg: #7ed6a0;
     --cta-bg: #d4d2cc;
     --cta-text: #1a1e1a;
     --btn-outline-fg: var(--text);
@@ -132,6 +147,8 @@
   --badge-bg: rgba(255,255,255,0.08);
   --lsc-mark-disc: #E4E2DC;
   --lsc-mark-bird: #1D231C;
+  --focus-ring: var(--green-text);
+  --notice-success-fg: #7ed6a0;
   --cta-bg: #d4d2cc;
   --cta-text: #1a1e1a;
   --btn-outline-fg: var(--text);
@@ -201,7 +218,7 @@ li { margin-bottom: 0.4rem; }
 }
 
 :focus-visible {
-  outline: 2px solid var(--green);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
 

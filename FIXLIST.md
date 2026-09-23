@@ -526,7 +526,10 @@ accessibility defects), then F2→OW1 (security headers).
   `#a8a6a0` there measured 4.18:1 — below AA. `#b3b1ab` gives 4.75:1 on the
   badge and ~6:1 on plain dark surfaces. Left lit-bible's
   `.lit-example__traditional` local override (alpha-based, different color)
-  and the `.menu-overlay` scrim alone. Verified live (computed ratios, dark):
+  and the `.menu-overlay` scrim alone. (Both since superseded by O10:
+  `.lit-example__traditional` now uses `--text-muted` and the success/hint
+  green moved to `--notice-success-fg`, with light `#166b39` → `#085229`.)
+  Verified live (computed ratios, dark):
   badge 4.75:1, form-status success/hint 8.51:1, error 6.22:1; light badge
   5.95:1. `npm run check`/`build` clean.
   Problem: multiple components hardcode light-mode grays that sit on
@@ -829,6 +832,31 @@ accessibility defects), then F2→OW1 (security headers).
   version proves unworkable visually. Don't regress the JS experience.
   Verify: disable JS (DevTools), viewport < 900px: all five nav links +
   Support reachable in the header area; JS-enabled behavior unchanged.
+
+- [x] **(O10) Fix the focus-ring, "Traditional:" and contact-success contrast
+  failures.**
+  DONE 2026-09-22 (branch `fix/a11y-contrast-tokens`): found while extracting
+  the design system. Added two semantic tokens to `global.css` (`:root` + both
+  dark blocks; no existing token value changed) and consumed them. All ratios
+  measured with `getComputedStyle` in the preview, in light OS, dark OS,
+  forced-light-on-dark and forced-dark-on-light:
+  - **Focus ring** → `--focus-ring: var(--green-text)`. Global
+    `:focus-visible`, contact fields (outline + border), unsubscribe submit,
+    footer newsletter submit. Cream 2.63 → **4.97**, white 3.50 → **6.62**;
+    dark page 4.82 → **7.10**, dark raised 3.72 → **5.48**. Fixed surfaces pin
+    their own ring (see CLAUDE.md "Fixed surfaces pin the focus ring"): ink
+    bands `var(--green)` 4.58 (unchanged), green-deep heroes `var(--cream)`
+    1.89 → **4.97**. `/apps` is held on plain green by a pin in
+    `apps-bridge.css` so it keeps matching litbible (3.35 / 3.12 light, 4.81 /
+    5.17 dark), pending OW11.
+  - **`.lit-example__traditional`** (lit-bible) → `var(--text-muted)`; both
+    local dark overrides deleted. Light 3.69 → **6.80**, dark 3.33 → **6.08**.
+    Still reads secondary (0.85rem muted vs the 1rem `--text-strong` LIT line).
+  - **`.form-status--success` / `.topic-hint`** (contact) →
+    `--notice-success-fg` (`#085229` light / `#7ed6a0` dark), replacing the
+    page-scoped dark overrides. Over the 10% tint on cream 4.49 → **6.38**;
+    dark 8.54 (unchanged).
+  `npm run check` / `build` / `check:links` / `check:mirror` clean.
 
 ## Fable — one session each, owner in the loop
 
@@ -1401,3 +1429,28 @@ accessibility defects), then F2→OW1 (security headers).
   Note this likely supersedes litbible's FIXLIST **O12** (a no-JS fallback for
   the footer subscribe button), which assumed the JS path worked.
   Action: port the fix in the litbible repo and re-test live.
+
+- [ ] **(OW11) Owner calls left open by O10, plus a litbible.net issue.**
+  Measured 2026-09-22; nothing below has been applied.
+  - **Footer "Support the Work" CTA** (`SiteFooter.astro`, `.btn
+    footer-cta-btn`): in light mode it is an ink pill on the ink footer, so its
+    edge is 1:1 (dark mode 10.61:1, since `--cta-bg` flips). Proposed fix: add
+    `btn--green`, as the index support strip does. That gives a 4.58:1 edge and
+    ink-on-green label 4.58:1. Caveat: `.btn--green`'s hover curtain is ink, so
+    on hover the fill goes back to ink-on-ink (edge 1:1; the green label stays
+    4.58:1). A footer-scoped `::before` in cream would avoid that, the way
+    `.btn--outline` already does there.
+  - **Hero `.btn--green` on `--green-deep`** (`/lit-bible` "Read the LIT Bible"):
+    edge 1.89:1; label passes. Report only.
+  - **litbible.net issue, to be filed on that repo (not fixable here):**
+    (a) litbible's global `:focus-visible` is `2px solid var(--green, #209d50)`,
+    2.63:1 on cream. Adopt `--focus-ring` → `--green-text` with the same
+    fixed-surface pins; then delete LSC's `.apps` pin in `apps-bridge.css`.
+    (b) `--season-easter: #B8860B` (apps.css) is 2.88:1 as the 30px callout
+    title on its 8% tint over `#FAFAF8`, under 3:1 even for large text.
+    Candidates: `#9a6f09` 3.92:1, `#8a6508` 4.59:1. The comment says it matches
+    the app's palette, so the app may need the same change.
+    (c) `ReaderCallouts.astro` and `ChurchYearCarousel.astro` raise the tint
+    to 15% over `--bg-soft` under `@media (prefers-color-scheme: dark)` only,
+    so a forced-light visitor on a dark OS gets the dark tint amount. They need
+    the dual-selector pattern.

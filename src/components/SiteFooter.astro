@@ -317,6 +317,9 @@ const year = new Date().getFullYear();
        flip to an ink disc on this ink band and disappear in dark mode. */
     --lsc-mark-disc: #E4E2DC;
     --lsc-mark-bird: #1D231C;
+    /* Fixed ink surface in both themes: pin the focus ring (see --focus-ring
+       in global.css). --green is 4.58:1 on ink; the default would not be. */
+    --focus-ring: var(--green);
   }
 
   .footer-inner {
@@ -523,7 +526,7 @@ const year = new Date().getFullYear();
   }
 
   .footer-newsletter__submit:focus-visible {
-    outline: 2px solid var(--green);
+    outline: 2px solid var(--focus-ring);
     outline-offset: 2px;
   }
 

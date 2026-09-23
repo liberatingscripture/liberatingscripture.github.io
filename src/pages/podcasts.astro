@@ -179,6 +179,9 @@ import Layout from "../layouts/Layout.astro";
 <style>
   .podcasts-hero {
     background: var(--green-deep);
+    /* Fixed --green-deep surface in both themes: pin the focus ring (see
+       --focus-ring in global.css). Cream is 4.97:1 here; --green only 1.89:1. */
+    --focus-ring: var(--cream);
     padding: clamp(3.5rem, 7vw, 6rem) 0;
   }
 

@@ -132,6 +132,9 @@ import Layout from "../layouts/Layout.astro";
 <style>
   .community-hero {
     background: var(--ink);
+    /* Fixed ink surface in both themes: pin the focus ring (see --focus-ring
+       in global.css). --green is 4.58:1 on ink; the default would not be. */
+    --focus-ring: var(--green);
     color: #c8c6c0;
     padding: clamp(3.5rem, 7vw, 6rem) 0;
   }
