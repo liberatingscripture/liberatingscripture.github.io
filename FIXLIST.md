@@ -848,7 +848,8 @@ accessibility defects), then F2→OW1 (security headers).
     bands `var(--green)` 4.58 (unchanged), green-deep heroes `var(--cream)`
     1.89 → **4.97**. `/apps` is held on plain green by a pin in
     `apps-bridge.css` so it keeps matching litbible (3.35 / 3.12 light, 4.81 /
-    5.17 dark), pending OW11.
+    5.17 dark), pending OW11. (Pin removed 2026-09-23 once litbible adopted
+    the token — see OW11.)
   - **`.lit-example__traditional`** (lit-bible) → `var(--text-muted)`; both
     local dark overrides deleted. Light 3.69 → **6.80**, dark 3.33 → **6.08**.
     Still reads secondary (0.85rem muted vs the 1rem `--text-strong` LIT line).
@@ -1442,7 +1443,16 @@ accessibility defects), then F2→OW1 (security headers).
     `.btn--outline` already does there.
   - **Hero `.btn--green` on `--green-deep`** (`/lit-bible` "Read the LIT Bible"):
     edge 1.89:1; label passes. Report only.
-  - **litbible.net issue, to be filed on that repo (not fixable here):**
+  - **litbible.net side — RESOLVED 2026-09-23** by litbible #210
+    (`dee2972`), carried across here for issue #80: (a) litbible adopted
+    `--focus-ring: var(--green-text)`, so LSC's `.apps` pin was deleted and
+    `/apps` now renders litbible's ring by inheritance; (b) Easter gold was
+    **kept at `#B8860B` by owner decision** (logged in litbible's FIXLIST);
+    (c) both components now use the dual-selector pattern and were copied
+    across. #210 also restored the launch popover close button's focus ring
+    (`outline: none` removed), which LSC's non-mirrored copy of
+    `AppsLaunchPopover.astro` had too — fixed here in the same change.
+    Original findings, for the record:
     (a) litbible's global `:focus-visible` is `2px solid var(--green, #209d50)`,
     2.63:1 on cream. Adopt `--focus-ring` → `--green-text` with the same
     fixed-surface pins; then delete LSC's `.apps` pin in `apps-bridge.css`.
