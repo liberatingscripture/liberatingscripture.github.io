@@ -615,7 +615,7 @@ Pinned today — ink: `.site-footer`, `.support-strip` (index), `.support-hero`,
 `.community-hero`; green-deep: `.hero` (index), `.about-hero`, `.lit-hero`,
 `.podcasts-hero`, `.notfound` (404). **A new ink or green-deep band must add
 the pin**, or the default deep-green ring vanishes on it in light mode. `/apps`
-carries a temporary third pin — see Apps Page.
+needs no pin of its own — see Apps Page.
 
 Fonts: Crimson Text (headings) · Inter (body) · Fraunces (display / pull quotes)
 
@@ -948,13 +948,11 @@ here — never the other way round.
   litbible.net page in both themes — a visual glance didn't catch it. If you
   touch the bridge, re-verify computed styles (`getComputedStyle`, not just
   eyeballing) against litbible.net before trusting a change.
-- **`apps-bridge.css` holds `/apps` on litbible's focus ring — temporarily.**
-  litbible's global `:focus-visible` is still `2px solid var(--green)`, so the
-  bridge pins `--focus-ring: var(--green)` inside `.apps` to keep the mirror
-  rendering identically. Plain green passes there (3.35:1 on `#FAFAF8`, 3.12:1
-  on the `#F2F2EE` panels, 4.8:1+ dark) even though it fails on LSC's cream.
-  **Delete the pin once litbible adopts `--focus-ring`** (FIXLIST OW11); the
-  site header/footer on `/apps` sit outside `.apps` and already use LSC's ring.
+- **Both sites define `--focus-ring` the same way** (`var(--green-text)`,
+  litbible since its #210), so `/apps` needs no bridge token for it: the
+  inherited LSC value resolves to exactly what litbible.net renders. If either
+  site ever changes the token's value, the bridge is where to hold `/apps` to
+  litbible's — as it briefly did before litbible adopted the token.
 - **The body background is set by `apps-bridge.css`, not a Layout prop.**
   litbible's `apps.astro` passes `Layout bg="white"`, which litbible's
   `global.css` resolves to `body { background: var(--surface-raised) }`

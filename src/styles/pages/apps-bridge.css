@@ -105,12 +105,6 @@ body {
   --surface-raised: #FAFAF8;
   --green: #209D50;
   --green-text: #0F6B33;
-  /* litbible's global :focus-visible ring is still plain --green, so hold
-     /apps to that rather than LSC's --focus-ring (--green-text): the mirror
-     has to render identically. Plain green passes here — 3.35:1 on #FAFAF8,
-     3.12:1 on the #F2F2EE panels, ~4.8:1 on the dark surfaces. Remove this
-     once litbible adopts --focus-ring. */
-  --focus-ring: var(--green);
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) .apps {
