@@ -258,6 +258,9 @@ const projects = [
        disc in dark mode on a hero that never got darker. */
     --lsc-mark-disc: #1D231C;
     --lsc-mark-bird: #FAFAF8;
+    /* Fixed --green-deep surface in both themes: pin the focus ring (see
+       --focus-ring in global.css). Cream is 4.97:1 here; --green only 1.89:1. */
+    --focus-ring: var(--cream);
   }
 
   .hero__inner {
@@ -499,6 +502,9 @@ const projects = [
   /* ===== SUPPORT STRIP ===== */
   .support-strip {
     background: var(--ink);
+    /* Fixed ink surface in both themes: pin the focus ring (see --focus-ring
+       in global.css). --green is 4.58:1 on ink; the default would not be. */
+    --focus-ring: var(--green);
     color: #c8c6c0;
     padding: clamp(3.5rem, 7vw, 6rem) 0;
     border-bottom: 4px solid var(--green);

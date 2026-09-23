@@ -350,6 +350,9 @@ import AppIcons from "../components/apps/AppIcons.astro";
   /* ---- Hero ---- */
   .lit-hero {
     background: var(--green-deep);
+    /* Fixed --green-deep surface in both themes: pin the focus ring (see
+       --focus-ring in global.css). Cream is 4.97:1 here; --green only 1.89:1. */
+    --focus-ring: var(--cream);
     padding: clamp(3.5rem, 7vw, 6rem) 0;
   }
 
@@ -512,7 +515,7 @@ import AppIcons from "../components/apps/AppIcons.astro";
   }
 
   .lit-example__traditional {
-    color: rgba(29, 35, 28, 0.55);
+    color: var(--text-muted);
     font-size: 0.85rem !important;
   }
 
@@ -558,16 +561,5 @@ import AppIcons from "../components/apps/AppIcons.astro";
 
   .lit-actions .btn {
     padding: 10px 20px;
-  }
-
-  /* ---- Dark mode adjustments ---- */
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) .lit-example__traditional {
-      color: rgba(228, 226, 220, 0.45);
-    }
-  }
-
-  :root[data-theme="dark"] .lit-example__traditional {
-    color: rgba(228, 226, 220, 0.45);
   }
 </style>

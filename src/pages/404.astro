@@ -25,6 +25,9 @@ import Layout from "../layouts/Layout.astro";
 <style>
   .notfound {
     background: var(--green-deep);
+    /* Fixed --green-deep surface in both themes: pin the focus ring (see
+       --focus-ring in global.css). Cream is 4.97:1 here; --green only 1.89:1. */
+    --focus-ring: var(--cream);
     min-height: 60vh;
     display: flex;
     align-items: center;

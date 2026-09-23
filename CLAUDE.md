@@ -583,6 +583,39 @@ Text/semantic tokens that flip with the theme (light → dark):
 - `--badge-bg: rgba(29,35,28,0.07)` → `rgba(255,255,255,0.08)` — the faint
   pill background behind `.project-card__badge` / `.coming-soon-badge`, which
   vanished on dark before.
+- `--focus-ring: var(--green-text)` (both themes) — **the keyboard focus
+  ring.** A focus indicator needs 3:1 against the surface it sits on; plain
+  `--green` is only 2.63:1 on cream and 3.5:1 on white. Via `--green-text` it
+  measures 4.97:1 cream / 6.62:1 white, and dark `#3abf6a` 7.1:1 on the page /
+  5.48:1 raised. **Rule: never write `outline: … var(--green)` for focus —
+  use `var(--focus-ring)`.** The global `:focus-visible` rule, the contact
+  fields, the unsubscribe submit and the footer newsletter submit all do.
+  Fixed-color surfaces pin their own value — see "Fixed surfaces pin the focus
+  ring" below. The theme tray's segment focus uses `--text` on purpose and is
+  not routed through it.
+- `--notice-success-fg: #085229` → `#7ed6a0` — success text on the faint 10%
+  green tint (`.form-status--success`, `.topic-hint` on `/contact`). The old
+  `#166b39` measured 4.49:1 over the tint on cream; this is 6.38:1 (dark
+  8.54:1). Same `#085229` the newsletter's success panel already used.
+
+### Fixed surfaces pin the focus ring
+
+Same logic as the dove mark's "Fixed-darkness surfaces pin their own pair"
+(see The Brand Mark): the outline is drawn *outside* the element, on its
+parent's surface, so a surface that never flips with the theme must pin a ring
+that contrasts with *it*. Put the pin in the same rule that sets the
+background:
+
+| Surface | Pin | Ratio |
+|---|---|---|
+| Ink (`--ink`) | `--focus-ring: var(--green)` | 4.58:1 |
+| Green-deep (`--green-deep`) | `--focus-ring: var(--cream)` | 4.97:1 (plain `--green` is 1.89:1) |
+
+Pinned today — ink: `.site-footer`, `.support-strip` (index), `.support-hero`,
+`.community-hero`; green-deep: `.hero` (index), `.about-hero`, `.lit-hero`,
+`.podcasts-hero`, `.notfound` (404). **A new ink or green-deep band must add
+the pin**, or the default deep-green ring vanishes on it in light mode. `/apps`
+carries a temporary third pin — see Apps Page.
 
 Fonts: Crimson Text (headings) · Inter (body) · Fraunces (display / pull quotes)
 
@@ -663,10 +696,14 @@ the index and support heroes, and 404 all set their own button colors for the
 colored surfaces they sit on, and those still win. Add new button variants the
 same way.
 
-Two known-soft spots, both pre-existing and left as-is: the footer's solid CTA
-is an ink pill on the ink footer (reads as green text, no visible shape) in
-*both* themes, and hero `.btn--green` on a `--green-deep` hero has ~1.9:1 edge
-contrast. Text contrast passes in both cases; only the button outline is faint.
+Two known-soft spots, both pre-existing and left as-is pending an owner
+decision: the footer's solid "Support the Work" CTA is an ink pill on the ink
+footer in **light** mode (edge 1:1 — reads as green text, no visible shape;
+in dark mode `--cta-bg` flips and the edge is 10.61:1), and hero `.btn--green`
+on a `--green-deep` hero has 1.89:1 edge contrast. Text contrast passes in both
+cases; only the button outline is faint. The proposed fix for the footer is
+`btn--green` (4.58:1 edge), with the caveat that its ink hover curtain would
+re-erase the shape on hover — tracked in FIXLIST.md (OW11).
 
 ### Theme: system default, with an explicit toggle
 
@@ -761,6 +798,11 @@ wrong for a surface that never flips. Two do it today, and any new one must:
 
 Get this wrong and the mark vanishes into its own background in one theme only,
 which is easy to miss if you only look at the theme you're developing in.
+
+**The focus ring pins alongside it.** Every fixed ink or green-deep surface
+also sets `--focus-ring` (ink → `--green`, green-deep → `--cream`) in the same
+rule. That is a wider set than the two surfaces carrying the mark, so see
+"Fixed surfaces pin the focus ring" under Design System for the full list.
 
 **Inline SVG, never `<img src>`.** An externally-referenced SVG is its own
 document and can't read the page's custom properties, so an `<img>` can't
@@ -906,6 +948,13 @@ here — never the other way round.
   litbible.net page in both themes — a visual glance didn't catch it. If you
   touch the bridge, re-verify computed styles (`getComputedStyle`, not just
   eyeballing) against litbible.net before trusting a change.
+- **`apps-bridge.css` holds `/apps` on litbible's focus ring — temporarily.**
+  litbible's global `:focus-visible` is still `2px solid var(--green)`, so the
+  bridge pins `--focus-ring: var(--green)` inside `.apps` to keep the mirror
+  rendering identically. Plain green passes there (3.35:1 on `#FAFAF8`, 3.12:1
+  on the `#F2F2EE` panels, 4.8:1+ dark) even though it fails on LSC's cream.
+  **Delete the pin once litbible adopts `--focus-ring`** (FIXLIST OW11); the
+  site header/footer on `/apps` sit outside `.apps` and already use LSC's ring.
 - **The body background is set by `apps-bridge.css`, not a Layout prop.**
   litbible's `apps.astro` passes `Layout bg="white"`, which litbible's
   `global.css` resolves to `body { background: var(--surface-raised) }`
