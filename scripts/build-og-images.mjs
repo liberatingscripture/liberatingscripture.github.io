@@ -16,7 +16,8 @@
  *
  * Design (house style): ink field, a green accent bar, the page title in
  * Fraunces (display cut, opsz 144), the org wordmark in Inter,
- * liberatingscripture.org bottom-right. The right third carries art: the LSC
+ * liberatingscripture.org bottom-right. The title's column stops a gutter
+ * short of the art (see ART_LEFT). The right third carries art: the LSC
  * dove mark (support, companionship), the LIT Bible's own green-disc logo in a
  * green ring (lit-bible, echoing litbible.net's cards), the LIT app icon
  * (Android's gradient mark) in a rounded tile (apps, which also carries a
@@ -56,7 +57,15 @@ const WORDMARK = "Liberating Scripture Collective";
 const SITE = "liberatingscripture.org";
 
 const MARGIN = 90;
-const TEXT_MAX_W = 700; // left text column width (art occupies the right third)
+// The left text column is sized FROM the art, not guessed: it ends a gutter
+// short of the art's leftmost edge. ART_LEFT is the widest right-third art on
+// the shared 955 center — the LIT Bible ring (955 − 172 r − 3 half-stroke);
+// the dove disc starts at 785, the apps tile at 805. A fixed 700px column once
+// let the home title run to x≈790, straight into the disc. If you move or
+// enlarge any art, lower ART_LEFT with it; baseSVG throws on an overflow.
+const ART_LEFT = 780;
+const GUTTER = 56;
+const TEXT_MAX_W = ART_LEFT - GUTTER - MARGIN;
 
 function loadFont(file) {
   const buf = readFileSync(path.join(__dirname, "og", "fonts", file));
@@ -131,6 +140,15 @@ function baseSVG(title, footerAlign = "right") {
   ) {
     size -= 3;
     lines = wrap(fraunces, title, size, TEXT_MAX_W);
+  }
+  // The shrink loop has a floor, so a long enough title can exit it still
+  // overflowing. Fail the run rather than write a card with text over the art.
+  const tooWide = lines.find((l) => width(fraunces, l, size) > TEXT_MAX_W);
+  if (lines.length > 2 || tooWide) {
+    throw new Error(
+      `build-og-images: title "${title}" does not fit the text column ` +
+        `(${TEXT_MAX_W}px, two lines) even at ${size}px — shorten it.`,
+    );
   }
 
   const lh = LH();
@@ -334,4 +352,4 @@ await litBibleCard();
 await appsCard();
 await podcastsCard();
 
-console.log("build-og-images: wrote 6 cards to public/assets/og/");
+console.log("build-og-images: wrote 7 cards to public/assets/og/");
