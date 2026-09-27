@@ -6,7 +6,7 @@ import Layout from "../layouts/Layout.astro";
   title="Podcasts | Liberating Scripture Collective"
   description="Found in Translation unpacks the LIT Bible one chapter at a time. The Table We're Building is a conversation about faith, trauma, and belonging. Both from the Liberating Scripture Collective."
   canonical="https://liberatingscripture.org/podcasts/"
-  ogImage="https://liberatingscripture.org/assets/og/og-podcasts.png?v=2"
+  ogImage="https://liberatingscripture.org/assets/og/og-podcasts.png?v=3"
   ogImageAlt="Podcasts from the Liberating Scripture Collective: Found in Translation and The Table We're Building"
 >
   <Fragment slot="head">
@@ -298,11 +298,16 @@ import Layout from "../layouts/Layout.astro";
     margin-top: 0.5rem;
   }
 
+  /* The hairline ring (spread shadow, so it follows the radius) defines each
+     cover's edge: TWB's ink corner otherwise merges into the dark card, and
+     FIT's cream art into the white one. */
   .podcast-card__cover img {
     width: clamp(140px, 18vw, 240px);
     height: auto;
     border-radius: 16px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    box-shadow:
+      0 0 0 1px var(--border),
+      0 8px 24px rgba(0, 0, 0, 0.12);
   }
 
   .coming-soon-badge {

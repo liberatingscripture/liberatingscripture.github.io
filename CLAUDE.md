@@ -126,7 +126,9 @@ public/                 # Served as-is at the site root:
                         #   twb-cover.png (2000² square show art) stays for
                         #   JSON-LD/crawlers and the OG podcasts card; the
                         #   podcasts page loads twb-cover-480.webp from
-                        #   `build:images` (O3)
+                        #   `build:images` (O3). Its ink corner merges into
+                        #   the dark card and the OG ink field, so both draw a
+                        #   hairline ring around the covers — keep it
   assets/screenshots/   # App screenshots for /apps, as WebP — copied byte-for-
                         #   byte from litbible, but by hand, not CI (see Apps Page)
     carousel/           #   Hebrews 1 in each of the five liturgical seasons,
