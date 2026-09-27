@@ -270,16 +270,29 @@ async function litBibleCard() {
 // The two podcast covers as rounded tiles, stacked on the right. Both source
 // images are already square show art, so no crop loses their titles. The
 // footer URL moves left here so it clears the lower tile.
+//
+// Each tile wears a thin cream ring drawn just OUTSIDE its edge (the tile
+// covers nothing of it). TWB's art has an ink corner that is all but
+// identical to this card's INK field — the same trap as the apps card's
+// Android tile — so without the ring that corner vanishes and the cover
+// reads as clipped. FIT gets the same ring so the pair matches.
 async function podcastsCard() {
   const tile = 224;
   const radius = 26;
+  const ring = 2;
   const x = WIDTH - MARGIN - tile; // right edge aligned with the footer margin
   const gap = 28;
   const totalH = tile * 2 + gap;
   const top = Math.round((HEIGHT - totalH) / 2);
+  const ringRect = (y) =>
+    `<rect x="${x - ring / 2}" y="${y - ring / 2}" width="${tile + ring}" height="${tile + ring}" rx="${radius + ring / 2}" fill="none" stroke="${CREAM}" stroke-opacity="0.35" stroke-width="${ring}"/>`;
+  const svg = baseSVG("Podcasts", "left").replace(
+    "</svg>",
+    `${ringRect(top)}\n${ringRect(top + tile + gap)}</svg>`,
+  );
   const fit = await roundedTile(path.join(IMAGES, "fit-cover.webp"), tile, radius);
   const twb = await roundedTile(path.join(IMAGES, "twb-cover.png"), tile, radius);
-  await writeCard("og-podcasts", baseSVG("Podcasts", "left"), [
+  await writeCard("og-podcasts", svg, [
     { input: fit, left: x, top },
     { input: twb, left: x, top: top + tile + gap },
   ]);
