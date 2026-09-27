@@ -278,7 +278,7 @@ async function podcastsCard() {
   const totalH = tile * 2 + gap;
   const top = Math.round((HEIGHT - totalH) / 2);
   const fit = await roundedTile(path.join(IMAGES, "fit-cover.webp"), tile, radius);
-  const twb = await roundedTile(path.join(IMAGES, "twb-square.png"), tile, radius);
+  const twb = await roundedTile(path.join(IMAGES, "twb-cover.png"), tile, radius);
   await writeCard("og-podcasts", baseSVG("Podcasts", "left"), [
     { input: fit, left: x, top },
     { input: twb, left: x, top: top + tile + gap },

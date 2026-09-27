@@ -3,7 +3,7 @@
  * build-image-variants.mjs — right-sized WebP variants for on-page images.
  *
  * The source art in public/assets/images/ ships at full resolution
- * (twb-banner.png is 1536×1024) but is displayed at small sizes — a ≤240px
+ * (twb-cover.png is 2000×2000) but is displayed at small sizes — a ≤240px
  * podcast cover. This script emits WebP variants sized for those real display
  * footprints (with 2–3× DPR headroom), which the templates reference in place
  * of the heavy PNGs (FIXLIST O3).
@@ -30,9 +30,9 @@ const ROOT = path.resolve(__dirname, "..");
 const IMAGES = path.join(ROOT, "public", "assets", "images");
 
 // One entry per generated variant. `width` is the output pixel width; height
-// follows the source aspect ratio (3:2 banner → 3:2).
+// follows the source aspect ratio (square cover → square).
 const VARIANTS = [
-  { src: "twb-banner.png", out: "twb-banner-480.webp", width: 480 }, // podcasts cover
+  { src: "twb-cover.png", out: "twb-cover-480.webp", width: 480 }, // podcasts cover
 ];
 
 for (const { src, out, width } of VARIANTS) {
