@@ -123,8 +123,9 @@ public/                 # Served as-is at the site root:
                         #   `build:brand` — raster forms of the dove mark, for
                         #   JSON-LD and the OG composite only (pages inline the
                         #   mark instead; see The Brand Mark). The full-res
-                        #   twb-banner.png stays for JSON-LD/crawlers; the
-                        #   podcasts page loads twb-banner-480.webp from
+                        #   twb-cover.png (2000² square show art) stays for
+                        #   JSON-LD/crawlers and the OG podcasts card; the
+                        #   podcasts page loads twb-cover-480.webp from
                         #   `build:images` (O3)
   assets/screenshots/   # App screenshots for /apps, as WebP — copied byte-for-
                         #   byte from litbible, but by hand, not CI (see Apps Page)
