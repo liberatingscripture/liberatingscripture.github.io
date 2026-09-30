@@ -6,10 +6,13 @@
 # stale within the hour when a manual Astro 7 upgrade swept the same versions
 # in. Grouping collapses that into one reviewable PR per stream.
 #
-# IMPORTANT — what this file does NOT cover: grouping applies to *scheduled
-# version updates* only. Dependabot SECURITY updates (driven by advisories,
-# toggled in Settings → Security) still open an individual PR per advisory no
-# matter what is configured here. See CLAUDE.md → Deployment for that tradeoff.
+# IMPORTANT — what this file does NOT cover: the `groups:` below apply to
+# *scheduled version updates* only (none sets `applies-to: security-updates`).
+# Dependabot SECURITY updates are governed by the repo's own toggles in
+# Settings → Code security instead. With "Grouped security updates" on (it is,
+# since 2026-07-28) they arrive as one PR per package manager + directory;
+# with it off, one PR per advisory. Nothing in this file changes either.
+# See CLAUDE.md → Deployment.
 
 version: 2
 
