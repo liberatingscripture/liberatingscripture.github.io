@@ -1,6 +1,6 @@
 // Tests for the liberatingscripture.org contact-form backend (FIXLIST O5).
 //
-// These run inside workerd via @cloudflare/vitest-pool-workers, so
+// These run inside workerd via @cloudflare/vitest-plugin, so
 // `cloudflare:email` and EmailMessage are the real thing. The worker's entry is
 // `fetch(request, env)` with env as a plain parameter, so each test calls it
 // directly with a hand-built env — no real send_email or ratelimit binding is

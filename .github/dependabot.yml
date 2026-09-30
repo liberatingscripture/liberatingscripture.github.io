@@ -84,7 +84,7 @@ updates:
         # further down silently does not apply to any 0.x package.
         #
         # That is exactly how PR #41 arrived: @cloudflare/vitest-pool-workers
-        # 0.19.0 → 0.20.1 rode in as a grouped "minor" while carrying release
+        # (since renamed @cloudflare/vitest-plugin) 0.19.0 → 0.20.1 rode in as a grouped "minor" while carrying release
         # notes headed "Breaking change", an alpha miniflare 5, and a
         # transitive zod 3 → 4. Excluded here, each of these gets its own PR
         # regardless of how Dependabot grades it.
@@ -113,8 +113,17 @@ updates:
   # It has its own package.json and its own package-lock.json that the root
   # `npm ci` never touches (CI gives it a separate `npm ci` in the worker-tests
   # job), so GitHub's root-only defaults saw none of it — including wrangler,
-  # vitest, and @cloudflare/vitest-pool-workers. Deployed separately via
-  # wrangler, so a stale dep here rots quietly until a deploy fails.
+  # vitest, and @cloudflare/vitest-plugin. Deployed separately via wrangler, so
+  # a stale dep here rots quietly until a deploy fails.
+  #
+  # Dependabot CANNOT FOLLOW A PACKAGE RENAME, and this stream is where that
+  # bit. @cloudflare/vitest-pool-workers froze at 0.22.0 on 2026-08-18 and
+  # continued as @cloudflare/vitest-plugin 1.0.0 two days later. The old name
+  # was never marked deprecated on npm, so Dependabot saw "0.22.0 is latest"
+  # for six weeks and proposed nothing, while the renamed package shipped 28
+  # releases, including the fix for every open advisory in this tree. Silence
+  # from this stream is not proof a dependency is current: when an upstream
+  # package goes quiet, check its repo for a rename.
   # ---------------------------------------------------------------------------
   - package-ecosystem: npm
     directory: "/workers/contact-form"
@@ -123,34 +132,65 @@ updates:
       day: monday
       time: "09:00"
       timezone: America/Los_Angeles
-    # 5, against 4 direct dependencies — raised from 3 for the same reason as
-    # stream 1. With @cloudflare/vitest-pool-workers now excluded from the
-    # group, this stream can legitimately want a group PR plus one per excluded
-    # or major package at the same time, which 3 could not hold.
-    open-pull-requests-limit: 5
+    # 6: two group PRs plus one per direct dependency's major (4 deps), the
+    # worst case this stream can legitimately want open at once. See stream 1
+    # for why a starved stream is worse than a generous limit.
+    open-pull-requests-limit: 6
     commit-message:
       # Bare "chore" + include: scope — see stream 1 for why the scope must not
       # also be written into the prefix.
       prefix: "chore"
       include: scope
     groups:
+      # The test runtime and the deploy CLI, as ONE unit. Listed first on
+      # purpose: a dependency goes to the first group it matches.
+      #
+      # @cloudflare/vitest-plugin pins `wrangler` (and a 5.x ALPHA `miniflare`)
+      # at EXACT versions, and the two release in lockstep: every plugin
+      # release pins the wrangler published minutes before it (checked across
+      # ten consecutive releases, 1.2.3 to 1.3.3). That makes this pair the
+      # natural update unit:
+      #
+      #   - Bumped TOGETHER, they land on matching versions and npm keeps one
+      #     flat wrangler.
+      #   - Bumped APART, the tree splits. With wrangler in the general group
+      #     and the plugin in a PR of its own, the group PR raised our wrangler
+      #     range past the plugin's pin and npm installed a second, nested
+      #     wrangler + miniflare + workerd. That PR was declined six times
+      #     (#50, #55, #64, #71, #76, #85; see CLAUDE.md, "wrangler's version
+      #     is set by vitest-plugin").
+      #
+      # It stays out of the general group because EVERY release of it, a patch
+      # included, is a runtime swap: it moves the workerd the tests boot inside
+      # and the wrangler that deploys the Worker. Verify each one as CLAUDE.md
+      # → Deployment describes. (The plugin was 0.x under its old name,
+      # @cloudflare/vitest-pool-workers, and was excluded for stream 1's 0.x
+      # reason. At 1.x that reason no longer applies. This one does.)
+      #
+      # One known race: wrangler publishes a few minutes before the plugin, so
+      # a run landing in that window could propose a wrangler the plugin does
+      # not pin yet. The tell is a nested `vitest-plugin/node_modules/wrangler`
+      # key in the PR's lockfile, and the next run (or `@dependabot rebase`)
+      # resolves it.
+      worker-runtime:
+        patterns:
+          - "@cloudflare/vitest-plugin"
+          - "wrangler"
+        update-types:
+          - minor
+          - patch
       worker-minor-and-patch:
         patterns:
           - "*"
-        # Same 0.x exclusion as stream 1 — see the long comment there for why a
-        # 0.x "minor" is really a major. This is the stream that proved it:
-        # @cloudflare/vitest-pool-workers is the package PR #41 slipped through
-        # on, and it is the worst possible one to bundle, because the pool
-        # boots the workerd runtime the tests run inside (its 0.20.0 notes drop
-        # miniflare override options and move to a miniflare 5 ALPHA).
         exclude-patterns:
-          - "@cloudflare/vitest-pool-workers"
+          - "@cloudflare/vitest-plugin"
+          - "wrangler"
         update-types:
           - minor
           - patch
     # Majors ungrouped here too, and they matter more than usual: a wrangler
     # major can change wrangler.toml's schema, and a vitest /
-    # @cloudflare/vitest-pool-workers major has to move in lockstep with the
+    # @cloudflare/vitest-plugin major has to move in lockstep with the
     # workerd runtime the tests boot. Each gets its own PR.
 
   # ---------------------------------------------------------------------------
