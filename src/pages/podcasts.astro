@@ -1,5 +1,7 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import { APPLE_URL, SPOTIFY_URL } from "../lib/twb-show.mjs";
+import { launched as twbLaunched } from "../lib/twb-episodes";
 ---
 
 <Layout
@@ -35,15 +37,17 @@ import Layout from "../layouts/Layout.astro";
           },
           {
             "@type": "PodcastSeries",
-            "@id": "https://liberatingscripture.org/podcasts/#twb",
+            // Same node as the show page's own JSON-LD (one @id, two pages).
+            "@id": "https://liberatingscripture.org/table-were-building/#series",
             name: "The Table We're Building",
             description:
               "A trauma therapist and a spiritual director, wounded healers reclaiming faith after abuse, naming harm without shame, and crafting a bigger, braver table for belonging.",
-            url: "https://liberatingscripture.org/podcasts/",
+            url: "https://liberatingscripture.org/table-were-building/",
             image: "https://liberatingscripture.org/assets/images/twb-cover.png",
             inLanguage: "en",
             author: { "@id": "https://liberatingscripture.org/#organization" },
             producer: { "@id": "https://liberatingscripture.org/#organization" },
+            sameAs: [APPLE_URL, SPOTIFY_URL],
           },
         ],
       })}
@@ -129,7 +133,8 @@ import Layout from "../layouts/Layout.astro";
           <div class="podcast-card__info">
             <div class="podcast-card__info-header">
               <p class="eyebrow">Faith · Trauma · Belonging</p>
-              <span class="coming-soon-badge">Coming soon</span>
+              {/* Until the feed carries a real episode (see twb-episodes.ts). */}
+              {!twbLaunched && <span class="coming-soon-badge">Coming soon</span>}
             </div>
             <h2 id="twb-title">The Table We're Building</h2>
             <p class="podcast-card__hosts">
@@ -149,13 +154,31 @@ import Layout from "../layouts/Layout.astro";
               Consent-based spirituality, chosen family, and faith wide enough
               for everybody.
             </p>
-            <p class="podcast-notify">
-              Episodes and listening links are coming soon. Want to know when it
-              launches?
-            </p>
-            <a href="/contact/?topic=twb" class="btn btn--outline"
-              ><span>Get notified</span></a
-            >
+            {
+              !twbLaunched && (
+                <p class="podcast-notify">
+                  The trailer is out now. Follow the show, and the first episode
+                  will arrive the day it's released.
+                </p>
+              )
+            }
+            <div class="podcast-card__platforms">
+              <a
+                href={APPLE_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="platform-link">Apple Podcasts</a
+              >
+              <a
+                href={SPOTIFY_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="platform-link">Spotify</a
+              >
+            </div>
+            <a href="/table-were-building/" class="btn podcast-card__cta">
+              <span>{twbLaunched ? "All episodes and players" : "Hear the trailer"}</span>
+            </a>
           </div>
           <div
             class="podcast-card__cover podcast-card__cover--twb"
@@ -326,7 +349,7 @@ import Layout from "../layouts/Layout.astro";
     font-size: 0.95rem;
     color: var(--text-muted);
     font-style: italic;
-    margin: 1rem 0 0.75rem;
+    margin: 1rem 0 0;
   }
 
   @media (max-width: 700px) {

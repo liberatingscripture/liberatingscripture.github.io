@@ -7,9 +7,11 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "node scripts/fetch-podcast-feed.mjs && astro build",
     "preview": "astro preview",
     "check": "astro check",
+    "test": "node --test \"test/**/*.test.mjs\"",
+    "fetch:podcast": "node scripts/fetch-podcast-feed.mjs",
     "check:links": "node scripts/check-links.mjs",
     "check:mirror": "node scripts/check-apps-mirror.mjs",
     "build:brand": "node scripts/build-brand-assets.mjs",

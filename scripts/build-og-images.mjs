@@ -21,8 +21,8 @@
  * dove mark (support, companionship), the LIT Bible's own green-disc logo in a
  * green ring (lit-bible, echoing litbible.net's cards), the LIT app icon
  * (Android's gradient mark) in a rounded tile (apps, which also carries a
- * tagline under the title — the only card that does), or the two podcast covers
- * as rounded tiles (podcasts).
+ * tagline under the title — the only card that does), the two podcast covers
+ * as rounded tiles (podcasts), or The Table We're Building's cover alone (twb).
  *
  * Rendering: text is converted to SVG paths with opentype.js using the fonts
  * committed under scripts/og/fonts/ (see the README there), then sharp
@@ -298,6 +298,28 @@ async function podcastsCard() {
   ]);
 }
 
+// The Table We're Building's own page: its cover as one rounded tile,
+// centered on the right third like the LIT Bible logo (a single image reads
+// best centered). It wears the podcasts card's cream ring for the same reason:
+// the cover's ink corner would otherwise vanish into this card's INK field.
+async function twbCard() {
+  const tile = 340;
+  const radius = 34;
+  const ring = 2;
+  const cx = 955;
+  const cy = 345;
+  const x = Math.round(cx - tile / 2);
+  const y = Math.round(cy - tile / 2);
+  // Curly apostrophe, as on the cover: at display size the straight one reads
+  // as a tick mark.
+  const svg = baseSVG("The Table We’re Building").replace(
+    "</svg>",
+    `<rect x="${x - ring / 2}" y="${y - ring / 2}" width="${tile + ring}" height="${tile + ring}" rx="${radius + ring / 2}" fill="none" stroke="${CREAM}" stroke-opacity="0.35" stroke-width="${ring}"/></svg>`,
+  );
+  const cover = await roundedTile(path.join(IMAGES, "twb-cover.png"), tile, radius);
+  await writeCard("og-twb", svg, [{ input: cover, left: x, top: y }]);
+}
+
 // Just the Android gradient mark, centered on the right third like the LIT
 // Bible logo card — a single icon reads best centered, not stacked in a
 // right-aligned column the way a platform *pair* would need. (The popover
@@ -364,5 +386,6 @@ await emblemCard("og-spiritual-direction", "Spiritual Companionship");
 await litBibleCard();
 await appsCard();
 await podcastsCard();
+await twbCard();
 
-console.log("build-og-images: wrote 7 cards to public/assets/og/");
+console.log("build-og-images: wrote 8 cards to public/assets/og/");

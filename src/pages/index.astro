@@ -1,6 +1,7 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import LscMark from "../components/LscMark.astro";
+import { launched as twbLaunched } from "../lib/twb-episodes";
 
 const projects = [
   {
@@ -34,10 +35,11 @@ const projects = [
     full: "The Table We're Building",
     description:
       "A trauma therapist and a spiritual director, wounded healers reclaiming faith after abuse, naming harm without shame, and crafting a bigger, braver table for belonging.",
-    href: "/podcasts/",
-    cta: "Learn more",
+    href: "/table-were-building/",
+    // "Coming soon" until the feed carries a real episode (twb-episodes.ts).
+    cta: twbLaunched ? "Listen now" : "Hear the trailer",
     external: false,
-    status: "coming-soon",
+    status: twbLaunched ? "live" : "coming-soon",
   },
   {
     key: "sd",

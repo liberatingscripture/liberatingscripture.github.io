@@ -1,0 +1,608 @@
+---
+import Layout from "../layouts/Layout.astro";
+// Episodes come from the committed feed snapshots, which
+// scripts/fetch-podcast-feed.mjs refreshes as the first step of `npm run
+// build`. The page only ever reads those files, so a feed outage can't fail a
+// deploy; it just lists the last good snapshot.
+import { episodes, launched } from "../lib/twb-episodes";
+import {
+  formatDuration,
+  formatEpisodeDate,
+  isoDuration,
+  latestAppleEmbedUrl,
+} from "../lib/podcast-feed.mjs";
+import {
+  APPLE_ID,
+  APPLE_URL,
+  FEED_URL,
+  SPOTIFY_SHOW_ID,
+  SPOTIFY_URL,
+} from "../lib/twb-show.mjs";
+
+const PAGE_URL = "https://liberatingscripture.org/table-were-building/";
+const SERIES_ID = `${PAGE_URL}#series`;
+const COVER_URL = "https://liberatingscripture.org/assets/images/twb-cover.png";
+
+// The Apple player is the newest episode that has an Apple link, not the
+// show: Apple's show embed now renders only the trailer (see toAppleEmbedUrl).
+// The show embed stays as the fallback for before Apple has listed anything.
+// Both render as the same compact 160px row.
+const appleEmbedSrc =
+  latestAppleEmbedUrl(episodes) ??
+  `https://embed.podcasts.apple.com/us/podcast/the-table-were-building/id${APPLE_ID}?size=small&theme=auto`;
+
+const platforms = [
+  { label: "Apple Podcasts", href: APPLE_URL },
+  { label: "Spotify", href: SPOTIFY_URL },
+];
+
+const TYPE_BADGES = { trailer: "Trailer", bonus: "Bonus" } as const;
+
+// Until the first real episode, the show is "coming soon" and the trailer is
+// what there is to hear (see `launched`). These are the only lines that differ;
+// they flip on their own when the feed carries an episode.
+const copy = launched
+  ? {
+      eyebrow: "Podcast",
+      description:
+        "A trauma therapist and a spiritual director reclaiming faith after abuse and building a bigger, braver table for belonging. Listen on Apple Podcasts, Spotify, or any podcast app.",
+      listen: "Latest episode",
+      episodes: "All episodes",
+    }
+  : {
+      eyebrow: "Podcast · Coming soon",
+      description:
+        "Coming soon: a trauma therapist and a spiritual director reclaiming faith after abuse and building a bigger, braver table for belonging. Hear the trailer now.",
+      listen: "Hear the trailer",
+      episodes: "Episodes",
+    };
+
+function numbering(season?: string, episode?: string) {
+  if (season && episode) return `Season ${season}, Episode ${episode}`;
+  if (episode) return `Episode ${episode}`;
+  if (season) return `Season ${season}`;
+  return null;
+}
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "PodcastSeries",
+      "@id": SERIES_ID,
+      name: "The Table We're Building",
+      description:
+        "A trauma therapist and a spiritual director, wounded healers reclaiming faith after abuse, naming harm without shame, and crafting a bigger, braver table for belonging.",
+      url: PAGE_URL,
+      image: COVER_URL,
+      inLanguage: "en",
+      webFeed: FEED_URL,
+      author: [
+        { "@type": "Person", name: "Brandon Vélez Johnson" },
+        { "@type": "Person", name: "Aaron J. Smith" },
+      ],
+      producer: { "@id": "https://liberatingscripture.org/#organization" },
+      sameAs: [APPLE_URL, SPOTIFY_URL],
+    },
+    ...episodes.map((ep) => ({
+      "@type": "PodcastEpisode",
+      "@id": `${PAGE_URL}#${ep.id}`,
+      name: ep.title,
+      url: `${PAGE_URL}#${ep.id}`,
+      partOfSeries: { "@id": SERIES_ID },
+      ...(ep.published && { datePublished: ep.published.toISOString() }),
+      ...(ep.summary && { description: ep.summary }),
+      ...(ep.durationSeconds && { duration: isoDuration(ep.durationSeconds) }),
+      ...(ep.episode && { episodeNumber: ep.episode }),
+      ...(ep.audioUrl && {
+        associatedMedia: { "@type": "MediaObject", contentUrl: ep.audioUrl },
+      }),
+      ...(ep.links.length && { sameAs: ep.links.map((l) => l.url) }),
+    })),
+  ],
+};
+---
+
+<Layout
+  title="The Table We're Building Podcast | Liberating Scripture Collective"
+  description={copy.description}
+  canonical={PAGE_URL}
+  ogImage="https://liberatingscripture.org/assets/og/og-twb.png?v=1"
+  ogImageAlt="The Table We're Building, a podcast from the Liberating Scripture Collective"
+>
+  <Fragment slot="head">
+    {/* Feed autodiscovery: browsers, feed readers and podcast apps find the
+        show from the page URL alone. */}
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title="The Table We're Building"
+      href={FEED_URL}
+    />
+    <script
+      type="application/ld+json"
+      is:inline
+      set:html={JSON.stringify(jsonLd)}
+    />
+  </Fragment>
+
+  <div class="twb-page">
+    <header class="twb-hero">
+      <img
+        class="twb-hero__bg"
+        src="/assets/images/twb-hero-1280.webp"
+        srcset="/assets/images/twb-hero-640.webp 640w, /assets/images/twb-hero-1280.webp 1280w, /assets/images/twb-hero-1920.webp 1920w"
+        sizes="100vw"
+        alt=""
+        width="1920"
+        height="1280"
+        fetchpriority="high"
+        decoding="async"
+      />
+      <div class="twb-hero__content">
+        <p class="eyebrow">{copy.eyebrow}</p>
+        <h1>The Table We're Building</h1>
+        <p class="twb-hero__tagline">
+          A trauma therapist and a spiritual director building a bigger, braver
+          table for belonging.
+        </p>
+        <p class="twb-hero__byline">
+          with Brandon Vélez Johnson and Aaron J. Smith
+        </p>
+      </div>
+    </header>
+
+    <section class="twb-intro content" aria-label="Follow the show">
+      <img
+        class="twb-cover"
+        src="/assets/images/twb-cover-480.webp"
+        srcset="/assets/images/twb-cover-480.webp 480w, /assets/images/twb-cover-720.webp 720w"
+        sizes="(max-width: 700px) 240px, 320px"
+        alt="The Table We're Building cover art"
+        width="480"
+        height="480"
+        decoding="async"
+      />
+
+      {
+        !launched && (
+          <p class="twb-intro__note">
+            The trailer is out now. Follow the show, and the first episode will
+            arrive the day it's released.
+          </p>
+        )
+      }
+
+      <ul class="twb-platforms" role="list">
+        {
+          platforms.map((p) => (
+            <li>
+              <a
+                href={p.href}
+                class="btn"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <span>{p.label}</span>
+              </a>
+            </li>
+          ))
+        }
+        <li>
+          <a
+            href={FEED_URL}
+            class="btn btn--outline"
+            type="application/rss+xml"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span>RSS feed</span>
+          </a>
+        </li>
+      </ul>
+
+      <p class="twb-intro__about lede">
+        Wounded healers reclaiming faith after abuse, naming harm without
+        shame, and crafting space for people who refuse to surrender Jesus and
+        his work to the forces that weaponized them. Candid stories from fellow
+        survivors, therapists, theologians, and activists. Consent-based
+        spirituality, chosen family, and faith wide enough for everybody.
+      </p>
+    </section>
+
+    <section class="twb-listen" aria-labelledby="twb-listen-title">
+      <div class="content">
+        <h2 id="twb-listen-title">{copy.listen}</h2>
+        <div class="twb-embeds">
+          <div class="twb-embed twb-embed--apple">
+            {/* Attributes as Apple's own embed generator emits them. */}
+            <iframe
+              src={appleEmbedSrc}
+              width="660"
+              height="160"
+              title="The Table We're Building on Apple Podcasts"
+              allow="autoplay *; encrypted-media *; fullscreen *; clipboard-write"
+              sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation"
+              loading="lazy"></iframe>
+          </div>
+          <div class="twb-embed twb-embed--spotify">
+            {/* 152px is Spotify's compact player: the only height that keeps
+                the scrubber and transport (taller layouts trade them for art). */}
+            <iframe
+              src={`https://open.spotify.com/embed/show/${SPOTIFY_SHOW_ID}?utm_source=generator`}
+              width="660"
+              height="152"
+              title="The Table We're Building on Spotify"
+              allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+              loading="lazy"
+              allowfullscreen></iframe>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="twb-episodes" aria-labelledby="twb-episodes-title">
+      <div class="twb-episodes__inner content">
+        <h2 id="twb-episodes-title">{copy.episodes}</h2>
+        {
+          episodes.length > 0 ? (
+            <ol class="twb-ep-list" role="list">
+              {episodes.map((ep) => {
+                const date = ep.published && formatEpisodeDate(ep.published);
+                const num = numbering(ep.season, ep.episode);
+                const badge = ep.type !== "full" && TYPE_BADGES[ep.type];
+                return (
+                  <li class="twb-ep" id={ep.id}>
+                    <h3 class="twb-ep__title">{ep.title}</h3>
+                    <p class="twb-ep__meta">
+                      {badge && <span class="twb-ep__badge">{badge}</span>}
+                      {num && <span>{num}</span>}
+                      {date && <time datetime={date.iso}>{date.display}</time>}
+                      {ep.durationSeconds && (
+                        <time datetime={isoDuration(ep.durationSeconds)}>
+                          {formatDuration(ep.durationSeconds)}
+                        </time>
+                      )}
+                    </p>
+                    {ep.summary && <p class="twb-ep__summary">{ep.summary}</p>}
+                    {ep.links.length > 0 && (
+                      <ul class="twb-ep__links" role="list">
+                        {ep.links.map((link) => (
+                          <li>
+                            <a
+                              href={link.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              <span class="sr-only">
+                                Listen to {ep.title} on{" "}
+                              </span>
+                              {link.label}
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </li>
+                );
+              })}
+            </ol>
+          ) : (
+            <p class="twb-episodes__empty">
+              Episodes will be listed here as they're released. In the
+              meantime, follow the show on <a href={APPLE_URL}>Apple Podcasts</a>{" "}
+              or <a href={SPOTIFY_URL}>Spotify</a> to hear the first one.
+            </p>
+          )
+        }
+      </div>
+    </section>
+  </div>
+</Layout>
+
+<style>
+  .twb-page {
+    /* The cover overlaps the hero's lower edge by OVERLAP of its own height.
+       Both the hero's bottom padding and the intro's pull-up read this, so
+       the two can't drift apart. */
+    --twb-cover: clamp(220px, 26vw, 320px);
+    --twb-overlap: 0.42;
+  }
+
+  /* ---------- Hero ---------- */
+
+  /* A photo under an ink scrim: a fixed dark surface in both themes, so it
+     pins the focus ring like the site's other ink bands (see --focus-ring in
+     global.css). Text sits at the top, where the photo is darkest. */
+  .twb-hero {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background: var(--ink); /* until the photo paints */
+    --focus-ring: var(--green);
+    padding: clamp(3rem, 7vw, 5.5rem) var(--gutter)
+      calc(var(--twb-cover) * var(--twb-overlap) + clamp(2.5rem, 5vw, 4rem));
+  }
+
+  .twb-hero__bg {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 60%;
+  }
+
+  /* The scrim is heaviest behind the text, then lets the bench show through.
+     Its weakest point is still 0.5 over the bright bokeh in the photo's top
+     third, which is what keeps the cream tagline legible across it. */
+  .twb-hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(
+      to bottom,
+      rgba(29, 35, 28, 0.82) 0%,
+      rgba(29, 35, 28, 0.66) 55%,
+      rgba(29, 35, 28, 0.38) 100%
+    );
+  }
+
+  .twb-hero__content {
+    max-width: calc(52 * var(--ch));
+    margin-inline: auto;
+    text-align: center;
+  }
+
+  .twb-hero .eyebrow {
+    color: #3abf6a;
+  }
+
+  .twb-hero h1 {
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    line-height: 1.05;
+    color: var(--cream);
+    margin: 0.5rem 0 1rem;
+    text-wrap: balance;
+  }
+
+  .twb-hero__tagline {
+    --ch: var(--ch-display);
+    font-family: "Fraunces", serif;
+    font-size: clamp(1.15rem, 2.2vw, 1.45rem);
+    line-height: 1.45;
+    color: var(--cream);
+    margin: 0 auto 0.9rem;
+    max-width: calc(40 * var(--ch));
+    text-wrap: balance;
+  }
+
+  .twb-hero__byline {
+    font-size: 0.95rem;
+    color: #c8c6c0;
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  /* ---------- Cover, follow links, about ---------- */
+
+  .twb-intro {
+    margin-top: calc(var(--twb-cover) * var(--twb-overlap) * -1);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  /* The hairline ring defines the cover's edge where its ink corner would
+     otherwise merge into a dark page (same reason as /podcasts/). */
+  .twb-cover {
+    width: var(--twb-cover);
+    height: auto;
+    border-radius: 20px;
+    box-shadow:
+      0 0 0 1px var(--border),
+      0 24px 60px rgba(0, 0, 0, 0.3);
+  }
+
+  .twb-intro__note {
+    font-weight: 500;
+    max-width: calc(44 * var(--ch));
+    margin: clamp(1.75rem, 4vw, 2.5rem) auto 0;
+    text-wrap: balance;
+  }
+
+  .twb-platforms {
+    list-style: none;
+    padding: 0;
+    margin: clamp(1.75rem, 4vw, 2.5rem) 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+  }
+
+  .twb-intro__note + .twb-platforms {
+    margin-top: clamp(1.25rem, 3vw, 1.75rem);
+  }
+
+  .twb-platforms li {
+    margin: 0;
+  }
+
+  /* Smaller than a hero .lede: it's four sentences, and centered text gets
+     hard to track past about four lines. */
+  .twb-intro__about {
+    font-size: clamp(1.08rem, 1.6vw, 1.22rem);
+    max-width: calc(54 * var(--ch));
+    margin: clamp(2rem, 5vw, 3rem) auto 0;
+    text-wrap: pretty;
+  }
+
+  @media (max-width: 520px) {
+    .twb-platforms {
+      flex-direction: column;
+      align-self: stretch;
+    }
+    .twb-platforms .btn {
+      width: 100%;
+    }
+  }
+
+  /* ---------- Latest episode (players) ---------- */
+
+  /* Ink, not a green band: --green-deep fought both the players' blueprint
+     blue and the photo's warm wood. Ink is the cover's own corner color and
+     the hero's scrim, so the page reads as one surface family. Fixed in both
+     themes, so it pins the ink focus ring (--green, 4.58:1). In dark mode
+     ink sits almost on the page color; the hairline border keeps the band's
+     edges visible there and is invisible against cream. */
+  .twb-listen {
+    background: var(--ink);
+    --focus-ring: var(--green);
+    border-block: 1px solid var(--border);
+    margin-top: clamp(3.5rem, 7vw, 5.5rem);
+    padding: clamp(3rem, 6vw, 4.5rem) 0;
+  }
+
+  .twb-listen h2 {
+    color: var(--cream);
+    text-align: center;
+    font-size: clamp(2rem, 4vw, 2.75rem);
+    margin-bottom: clamp(1.5rem, 3vw, 2.25rem);
+  }
+
+  /* 660px is Apple's own cap (its generator's max-width): the player card
+     stops growing there, so a wider frame shows a dead band down one side.
+     Spotify takes the same column so the pair lines up. */
+  .twb-embeds {
+    width: min(660px, 100%);
+    margin-inline: auto;
+    display: grid;
+    gap: 1.25rem;
+  }
+
+  /* 12px matches the corner Apple and Spotify draw on their own cards, so
+     the frame never clips a different curve than the card inside it. */
+  .twb-embed {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 16px 44px rgba(0, 0, 0, 0.28);
+  }
+
+  .twb-embed iframe {
+    display: block;
+    width: 100%;
+    border: 0;
+  }
+
+  /* ---------- All episodes ---------- */
+
+  .twb-episodes {
+    padding: clamp(3.5rem, 7vw, 5.5rem) 0;
+  }
+
+  .twb-episodes__inner {
+    max-width: calc(64 * var(--ch));
+  }
+
+  .twb-episodes h2 {
+    text-align: center;
+    font-size: clamp(2rem, 4vw, 2.75rem);
+    margin-bottom: clamp(1.5rem, 3vw, 2rem);
+  }
+
+  .twb-ep-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 1.25rem;
+  }
+
+  .twb-ep {
+    margin: 0;
+    background: var(--surface-raised);
+    border-radius: 16px;
+    padding: clamp(1.25rem, 3vw, 1.75rem);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.07);
+    /* Clear the sticky header when an episode's #id is linked directly. */
+    scroll-margin-top: 88px;
+  }
+
+  .twb-ep__title {
+    font-size: clamp(1.4rem, 2.6vw, 1.7rem);
+    margin: 0 0 0.4rem;
+  }
+
+  .twb-ep__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.3rem 0.55rem;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin: 0 0 0.9rem;
+  }
+
+  /* Dots between the text items; the badge is its own pill and needs none. */
+  .twb-ep__meta > :not(.twb-ep__badge) + :not(.twb-ep__badge)::before {
+    content: "·";
+    margin-right: 0.55rem;
+  }
+
+  .twb-ep__badge {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    background: var(--badge-bg);
+    padding: 2px 9px;
+    border-radius: 4px;
+  }
+
+  .twb-ep__summary {
+    margin: 0 0 1.1rem;
+  }
+
+  .twb-ep__links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+  }
+
+  .twb-ep__links li {
+    margin: 0;
+  }
+
+  /* Same pill as /podcasts/' .platform-link. */
+  .twb-ep__links a {
+    display: inline-block;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text);
+    background: var(--page-bg);
+    padding: 6px 14px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    text-decoration: none;
+    transition:
+      border-color 160ms,
+      color 160ms;
+  }
+
+  .twb-ep__links a:hover {
+    border-color: var(--green);
+    color: var(--green-text);
+  }
+
+  .twb-episodes__empty {
+    color: var(--text-muted);
+  }
+</style>

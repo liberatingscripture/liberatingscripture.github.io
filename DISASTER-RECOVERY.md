@@ -34,8 +34,9 @@ measurement is **Cloudflare Web Analytics** (cookie-free). Off-platform:
 **GitHub** (repo + Pages + Actions), **Give Lively** (donations, embedded on
 /support/), **Brevo** (the footer newsletter — see below; a dedicated LSC list
 in the same account litbible.net uses), and the **podcast platform accounts**
-(Apple / Spotify / YouTube for *Found in Translation*). Everything else is in
-the repo.
+(Apple / Spotify / YouTube for *Found in Translation*; Spotify for Creators,
+which hosts *The Table We're Building* and distributes it to Apple and
+Spotify). Everything else is in the repo.
 
 ## Accounts & dashboards
 
@@ -53,6 +54,7 @@ this table only maps which services exist and which *kind* of identity owns each
 | Give Lively | Donation widget on /support/ (nonprofit slug `liberating-scripture-collective`) | The owner |
 | Brevo | The footer newsletter form posts to **a dedicated LSC list/form**, created in the same Brevo account litbible.net uses (the account login and recovery are litbible's; the list itself is an LSC asset with no second copy kept — same export caveat as litbible's own list). The captcha uses **our own dedicated Turnstile sitekey** (`0x4AAAAAAD6VVgt-e5g_YNul`, tracked in the Cloudflare row above), not litbible's — see FIXLIST OW9 for the one remaining verification step. Losing Brevo breaks the footer form; losing the Turnstile widget would too, but that one recovers the same way the contact form's does (we own it). | The primary admin identity (via litbible) |
 | Apple Podcasts / Spotify / YouTube | *Found in Translation* listings (Apple id `1586737797`, Spotify show `6S2wWaM5oqknwncPfOEyZ6`, `@foundintranslationpodcast`) — **linked from the site, not embedded** | **Managed by BDR**, not the site owner — podcast recovery goes through them |
+| Spotify for Creators (formerly Anchor) | *The Table We're Building*: the audio, the RSS feed (`https://anchor.fm/s/1073d93a4/podcast/rss`, which the site fetches at build time), and its distribution to Apple (id `6817089730`) and Spotify (show `2HRCvjrMHmJyIPjhAxAWUT`). The feed's `<link>` points at `/table-were-building/`, so that URL must not move without changing the feed too. All ids live in `src/lib/twb-show.mjs`. | The show's hosts' account (login in the private doc) |
 | Google Workspace (on the **litbible.net** domain) | The Google Drive holding the private Accounts doc, and the inbox that inbound `@liberatingscripture.org` mail is forwarded into. This org has no mailbox of its own — Cloudflare Email Routing forwards to a Workspace inbox on litbible.net (the specific address is the `DEST_EMAIL` secret value; kept in the private Drive doc). The `google._domainkey` + site-verification TXT records tie this domain to that same Google identity. | The primary admin identity |
 
 ## The dependency chain (read this first in a real emergency)
@@ -260,11 +262,18 @@ creation, smoke tests) is in `workers/contact-form/README.md`.
   *enforced* CSP `form-action` — if subscribes start failing silently with no
   Brevo-side cause, check that rule before suspecting Brevo (see
   `docs/security-headers.md`).
-- **Podcast platforms** — Apple / Spotify / YouTube are **linked, not
-  embedded**, so an outage there never touches this site's build. The audio and
-  feeds live in those accounts, which **BDR manages** (as with litbible's
-  RedCircle/Resend) — podcast recovery is theirs to drive, not the site
-  owner's.
+- **Podcast platforms** — *Found in Translation*'s Apple / Spotify / YouTube
+  are **linked, not embedded**, so an outage there never touches this site's
+  build. The audio and feeds live in those accounts, which **BDR manages** (as
+  with litbible's RedCircle/Resend) — podcast recovery is theirs to drive, not
+  the site owner's.
+- ***The Table We're Building*** is **embedded** (Apple and Spotify players on
+  /table-were-building/), and its feed plus Apple's episode list are **fetched
+  by every build** (`scripts/fetch-podcast-feed.mjs`). Neither can break a
+  deploy: a failed fetch keeps the committed snapshots in `src/data/`, and the
+  page renders from those. If the show ever moves hosts, its new feed URL goes
+  in `src/lib/twb-show.mjs` and the old host must redirect the old feed
+  (Apple and Spotify follow a 301), or the listings go stale.
 - **Apple Pay domain association** —
   `public/.well-known/apple-developer-merchantid-domain-association` is committed
   and ships in every build; it verifies the domain for Apple Pay inside the Give
