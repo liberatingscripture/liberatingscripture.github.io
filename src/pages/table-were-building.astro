@@ -227,15 +227,17 @@ const jsonLd = {
           </div>
           <div class="twb-embed twb-embed--spotify">
             {/* 152px is Spotify's compact player: the only height that keeps
-                the scrubber and transport (taller layouts trade them for art). */}
+                the scrubber and transport (taller layouts trade them for art).
+                No `allowfullscreen`, though Spotify's snippet carries one:
+                `fullscreen` in `allow` already grants it, and having both
+                makes the browser log a warning on every load. */}
             <iframe
               src={`https://open.spotify.com/embed/show/${SPOTIFY_SHOW_ID}?utm_source=generator`}
               width="660"
               height="152"
               title="The Table We're Building on Spotify"
               allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-              loading="lazy"
-              allowfullscreen></iframe>
+              loading="lazy"></iframe>
           </div>
         </div>
       </div>
