@@ -108,14 +108,19 @@ import Layout from "../layouts/Layout.astro";
           for how Turnstile itself handles data during that check.
         </p>
         <p>
-          <strong>Cookies:</strong> The site sets one cookie of its own, a small
-          flag (<code>lsc_apps_launch_v1</code>) that remembers you have seen the
-          one-time announcement about the LIT Bible apps, so it doesn't reappear.
-          It contains no personal data and expires after 30 days. The same
-          announcement counts pageviews within a single browsing session, using
-          your browser's session storage (<code>lsc_pv</code>), so it can wait
-          until your second page rather than interrupting you on arrival. That
-          count never leaves your device and is discarded when you close the tab.
+          <strong>Cookies and browser storage:</strong> The site sets one
+          cookie of its own, a small flag (<code>lsc_apps_launch_v1</code>) that
+          remembers you have seen the one-time announcement about the LIT Bible
+          apps, so it doesn't reappear. It contains no personal data and expires
+          after 30 days. The same announcement counts pageviews within a single
+          browsing session, using your browser's session storage
+          (<code>lsc_pv</code>), so it can wait until your second page rather
+          than interrupting you on arrival. That count never leaves your device
+          and is discarded when you close the tab. If you choose Light or Dark
+          with the theme switch in the header, that choice is kept in your
+          browser's local storage (<code>lsc-theme</code>) so every page opens
+          the way you set it; it never leaves your device, and choosing System
+          removes it.
         </p>
         <p>
           The site also uses Cloudflare Web Analytics, which is
@@ -166,22 +171,22 @@ import Layout from "../layouts/Layout.astro";
         </p>
         <p>
           <strong>On iOS:</strong> If you have iCloud enabled for LIT Bible,
-          this data is also synced to your personal iCloud account via Apple's
+          this data is also synced to your personal iCloud account via Apple’s
           CloudKit. Sync happens automatically in the background, the same way
           Apple Notes and Reminders work. Your data is stored in your own
           private iCloud database; the LIT Bible team has no access to it there
           either. You can turn off iCloud sync for LIT Bible at any time in iOS
           Settings → [Your Name] → iCloud → Apps Using iCloud. App preferences
-          like text size and display settings are stored in your device's
+          like text size and display settings are stored in your device’s
           standard preferences storage and are not synced to iCloud.
         </p>
         <p>
           <strong>On Android:</strong> If your device has Backup enabled, a copy
-          of your highlights and notes is included in your device's automatic
+          of your highlights and notes is included in your device’s automatic
           backup to your own Google Drive (via Android Auto Backup), so they can
           restore on a new device. This backup lives in your personal Google
           account; the LIT Bible team has no access to it there either. You can
-          turn it off at any time in your device's settings under Settings →
+          turn it off at any time in your device’s settings under Settings →
           Google → Backup. Your reading position and your app preferences (like
           text size and display settings) are stored on your device but are not
           included in this backup; only your highlights and notes are.
@@ -213,7 +218,7 @@ import Layout from "../layouts/Layout.astro";
         <h2 id="privacy-sharing">Sharing (app)</h2>
         <p>
           <strong>On both platforms:</strong> When you select text and choose
-          Share, your device's standard share sheet opens. The selected passage
+          Share, your device’s standard share sheet opens. The selected passage
           text is passed to whatever app you choose to share it with. The LIT
           Bible team does not log what you share, where you share it, or
           frequency.
@@ -226,19 +231,19 @@ import Layout from "../layouts/Layout.astro";
           <strong>On iOS,</strong> the app uses one third-party software
           library: <strong>GRDB</strong>, an open-source database library that
           stores scripture content locally on your device. It makes no network
-          connections of its own. iCloud sync uses Apple's CloudKit framework,
-          which is part of the iOS operating system and subject to Apple's
+          connections of its own. iCloud sync uses Apple’s CloudKit framework,
+          which is part of the iOS operating system and subject to Apple’s
           privacy policy.
         </p>
         <p>
           <strong>On Android,</strong> the app uses two third-party software
           libraries: <strong>Room</strong> (an open-source database library from
           Google that stores scripture content locally on your device using the
-          device's built-in SQLite), and <strong>OkHttp</strong> (an open-source
+          device’s built-in SQLite), and <strong>OkHttp</strong> (an open-source
           HTTP library used only for the content-update downloads described
           above, fetching translation text from litbible.net). Automatic backup
           of your highlights and notes uses Android Auto Backup, which is part
-          of the Android operating system and subject to Google's privacy
+          of the Android operating system and subject to Google’s privacy
           policy.
         </p>
       </section>

@@ -778,9 +778,8 @@ override it. Two cooperating pieces (ported from litbible):
   The tray's script re-parents it to `<body>` (to escape the sticky header's
   stacking context) and writes/clears `lsc-theme` exactly as the pre-paint
   script reads it. If the popover's or any component's storage changes, update
-  `/privacy`'s Cookies paragraph too (it names `lsc_apps_launch_v1`/`lsc_pv`;
-  `lsc-theme` is localStorage, not a cookie — mention it if that section ever
-  broadens to storage generally).
+  `/privacy`'s "Cookies and browser storage" paragraph too. It names
+  `lsc_apps_launch_v1`, `lsc_pv`, and this `lsc-theme` key.
 
 ### Why `cssTarget` is pinned in `astro.config.mjs`
 
@@ -952,6 +951,12 @@ here — never the other way round.
   `apps-mirror`, whenever it publishes a change worth carrying across. To fix
   drift, copy litbible's file wholesale (the check prints the exact `curl`
   commands); don't hand-patch.
+  **No open issue is not proof of sync.** From 2026-09-23 to 09-30 that
+  notifier silently skipped every multi-commit push, so 8 mirrored files and
+  five privacy changes drifted with every run green and no issue here (fixed
+  in litbible's notifier, which now diffs each push's whole range and fails
+  loudly otherwise). `npm run check:mirror` reads litbible's `main` directly,
+  so it is the check to trust. Run it before saying the two are in step.
 - **Two things are deliberately NOT mirrored.** `src/pages/apps.astro` — two
   sites can't share a canonical URL, so its Layout props and JSON-LD head stay
   LSC's own; keep only the *section list* in step. And
@@ -1205,8 +1210,12 @@ kept in step with `litbible.net/privacy`. Like `/apps`, treat it as mirrored
 content: **when either site's policy changes, change both.**
 
 - **The app sections are shared text.** *Your reading data*, *Content updates*,
-  *The home screen widget*, *Sharing*, *Third-party software*, and *Children*
-  are the same copy on both sites. litbible.net/privacy is the **policy of
+  *The home screen widget*, *Sharing*, and *Third-party software* are the same
+  copy on both sites, byte for byte: take litbible's section HTML verbatim
+  rather than retyping it (that is how its curly-quote sweep came across).
+  *Children* is shared in substance but names each site's own forms (LSC's
+  contact form; litbible's contact and app-support forms), so it differs on
+  purpose. litbible.net/privacy is the **policy of
   record** — it's the URL the App Store and Play listings point at — and the
   Scope section says so, so the two can't silently contradict each other.
 - **The site sections are not shared, and shouldn't be.** Each site describes
@@ -1214,10 +1223,12 @@ content: **when either site's policy changes, change both.**
   first-party flow needing a real disclosure), where litbible only links out.
   LSC has one contact form; litbible has contact + app-support. Don't flatten
   these toward litbible's wording.
-- **Cookies must match the code.** The policy names `lsc_apps_launch_v1` and
-  the `lsc_pv` session counter because `AppsLaunchPopover.astro` sets them. If
-  the popover's storage changes, or a component starts setting anything new,
-  update the Cookies paragraph in the same change — a privacy policy that
+- **Storage must match the code.** The "Cookies and browser storage"
+  paragraph names `lsc_apps_launch_v1` and the `lsc_pv` session counter
+  (`AppsLaunchPopover.astro`), and the `lsc-theme` local-storage key the theme
+  switch writes (`SiteHeader.astro`; System removes it). If any of those
+  changes, or a component starts storing anything new, update that paragraph
+  in the same change — a privacy policy that
   under-reports storage is worse than one that says nothing.
 - **Third-party embeds must match the code too.** "What we don't do" names
   each one (Give Lively on /support/, the Apple and Spotify players on
