@@ -14,6 +14,8 @@ Live at **[liberatingscripture.org](https://liberatingscripture.org)**.
 - **Fonts**: Crimson Text, Inter, Fraunces (self-hosted via `@fontsource`)
 - **Forms**: self-hosted Cloudflare Worker + Turnstile (contact page; see `workers/contact-form/`)
 - **Donations**: Give Lively (embed on the support page)
+- **Podcast**: The Table We're Building's page is built from its RSS feed,
+  fetched at build time (Apple Podcasts and Spotify players embedded)
 - **Newsletter**: Brevo (footer form; posts to the shared LIT Bible list)
 - **Hosting**: GitHub Pages, deployed by GitHub Actions
 
@@ -31,12 +33,15 @@ npm run dev      # Start the dev server at http://localhost:4321
 | Command | What it does |
 | :------ | :----------- |
 | `npm run dev` | Start the local dev server at `localhost:4321` |
-| `npm run build` | Build the production site to `dist/` |
+| `npm run build` | Fetch the podcast feed, then build the production site to `dist/` |
 | `npm run preview` | Preview the production build locally |
 | `npm run check` | Run `astro check` (type checking / diagnostics) — also runs in CI |
+| `npm test` | Run the unit tests in `test/` — also runs in CI |
+| `npm run fetch:podcast` | Refresh just the podcast feed snapshots in `src/data/` |
 | `npm run check:links` | Verify internal links in `dist/` resolve (run after `build`) — also runs in CI |
 | `npm run build:brand` | Regenerate the favicons, app icons and logo rasters from the dove mark (one-shot; not part of the build — run before `build:og`) |
 | `npm run build:og` | Regenerate the Open Graph share cards (one-shot; not part of the build) |
+| `npm run build:images` | Regenerate the resized WebP images (one-shot; not part of the build) |
 
 ## Structure
 
@@ -47,15 +52,19 @@ src/
                 #   ported verbatim from litbible.net)
   content.config.ts, content/   # Content collections backing /apps
   lib/          # lsc-mark.mjs — the dove mark's geometry, shared by the
-                #   LscMark component and the brand-asset generator
+                #   LscMark component and the brand-asset generator; the
+                #   podcast feed parser and The Table We're Building's ids
+  data/         # Committed podcast feed snapshots (written by the build)
   layouts/      # Layout.astro (base HTML shell)
   pages/        # One file per route: index, about, lit-bible, apps, support,
-                #   podcasts, community, spiritual-direction, contact,
-                #   privacy, 404
+                #   podcasts, table-were-building, community,
+                #   spiritual-direction, contact, privacy, 404
   styles/       # global.css (the full design system) + pages/apps.css
 public/         # Served at the site root: images, app screenshots, OG images,
                 #   favicons, CNAME, robots.txt, site.webmanifest, .well-known/
-scripts/        # Build-time tooling (one-shot brand-asset and OG-card generators)
+scripts/        # Build-time tooling: the podcast feed fetcher, plus one-shot
+                #   brand-asset, OG-card and image generators
+test/           # Unit tests (node:test)
 workers/        # Cloudflare Worker for the contact form (deployed separately)
 .github/workflows/deploy.yml   # Builds and deploys to GitHub Pages
 .github/dependabot.yml         # Grouped weekly/monthly dependency updates
@@ -66,6 +75,8 @@ workers/        # Cloudflare Worker for the contact form (deployed separately)
 Pushing to the `main` branch triggers `.github/workflows/deploy.yml`, which
 builds the site and deploys `dist/` to GitHub Pages. The custom domain is set by
 `public/CNAME`. There's nothing to deploy by hand — merging to `main` ships it.
+The same workflow also rebuilds once a day, so new podcast episodes appear on
+their own.
 
 ## Design system
 

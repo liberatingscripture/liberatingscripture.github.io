@@ -38,10 +38,15 @@ support and get in touch. The site is **live** at liberatingscripture.org.
 ```bash
 npm install      # Install dependencies
 npm run dev      # Dev server at localhost:4321
-npm run build    # Production build to dist/
+npm run build    # Fetch the TWB podcast feed, then production build to
+                 #   dist/ (the fetch never fails the build; see The Table
+                 #   We're Building below)
 npm run preview  # Preview the production build
 npm run check    # astro check (type/diagnostics) — also runs in CI on every
                  #   push/PR, before the build
+npm test         # node --test over test/ (the podcast feed parser) — also
+                 #   runs in CI, before the build
+npm run fetch:podcast # Refresh the TWB feed snapshots alone (src/data/)
 npm run check:links # Verify every internal href/#fragment in dist/ resolves
                  #   (reads dist/ only, no network — run AFTER build; also runs
                  #   in CI right after the build). See scripts/check-links.mjs
@@ -50,7 +55,8 @@ npm run build:brand # Regenerate every raster/SVG form of the LSC dove mark —
                  #   (one-shot; not in the build). Run BEFORE build:og.
 npm run build:og # Regenerate the OG cards (one-shot; not in the build)
 npm run build:images # Regenerate the right-sized WebP variants of the on-page
-                 #   podcast art (one-shot; not in the build)
+                 #   podcast art and the TWB hero photo (one-shot; not in
+                 #   the build)
 ```
 
 The contact-form Worker has its own test suite (`cd workers/contact-form &&
@@ -84,6 +90,15 @@ src/
     lsc-mark.mjs        # The dove mark's path data + SVG builders — the single
                         #   source of truth, imported by BOTH LscMark.astro and
                         #   scripts/build-brand-assets.mjs (see The Brand Mark)
+    podcast-feed.mjs    # Pure, import-free RSS parser for the TWB page (tested
+                        #   by test/; see The Table We're Building)
+    twb-show.mjs        # TWB's ids (feed, Apple, Spotify) + the
+                        #   hand-entered per-episode Spotify links
+    twb-episodes.ts     # Thin shell: parses the snapshots once; exports
+                        #   `episodes` and `launched` to the three pages
+  data/                 # Committed feed snapshots, written by
+                        #   scripts/fetch-podcast-feed.mjs: twb-feed.xml +
+                        #   twb-apple-episodes.json. Don't hand-edit
   layouts/
     Layout.astro        # Base HTML shell (SEO/OG, fonts, favicons, header/footer,
                         #   and the one announcement popover)
@@ -94,6 +109,9 @@ src/
     apps.astro          #   The LIT Bible iOS/Android apps (see Apps Page)
     support.astro       #   Donate + get involved (Give Lively embed)
     podcasts.astro      #   Hub for both podcasts
+    table-were-building.astro # The Table We're Building's own page: feed-
+                        #     driven episode list + Apple/Spotify players. URL
+                        #     is fixed by the feed's <link> (see below)
     community.astro     #   Community & Courses
     spiritual-direction.astro #  "Spiritual Companionship" page (URL kept as
                         #     /spiritual-direction/; wording is the umbrella term)
@@ -128,7 +146,9 @@ public/                 # Served as-is at the site root:
                         #   podcasts page loads twb-cover-480.webp from
                         #   `build:images` (O3). Its ink corner merges into
                         #   the dark card and the OG ink field, so both draw a
-                        #   hairline ring around the covers — keep it
+                        #   hairline ring around the covers — keep it.
+                        #   twb-cover-720.webp and twb-hero-{640,1280,1920}.webp
+                        #   are build:images output for /table-were-building/
   assets/screenshots/   # App screenshots for /apps, as WebP — copied byte-for-
                         #   byte from litbible, but by hand, not CI (see Apps Page)
     carousel/           #   Hebrews 1 in each of the five liturgical seasons,
@@ -159,9 +179,13 @@ scripts/
                         #   by hand: `npm run build:og`; NOT part of the build.
                         #   Commits PNGs to public/assets/og/
   build-image-variants.mjs # One-shot WebP resizer (sharp) for the on-page
-                        #   podcast art. Run by hand: `npm run build:images`;
-                        #   NOT part of the build. Commits WebP to
-                        #   public/assets/images/ (see O3)
+                        #   podcast art and the TWB hero. Run by hand:
+                        #   `npm run build:images`; NOT part of the build.
+                        #   Commits WebP to public/assets/images/ (see O3)
+  image-sources/        # Sources nothing serves at full size (twb-hero.jpg),
+                        #   kept out of public/ so they never ship
+  fetch-podcast-feed.mjs # First step of `npm run build`: refreshes src/data/
+                        #   from the TWB feed + Apple's lookup. Never fails
   check-links.mjs       # Post-build internal link checker (`npm run check:links`,
                         #   dependency-free, reads dist/ only). Ported from
                         #   litbible; runs in CI after the build (O4)
@@ -180,8 +204,9 @@ workers/
                         #     `npm test` here, and CI's worker-tests job (O5)
 .github/
   workflows/
-    deploy.yml          # Build + deploy to GitHub Pages on push to main; also
-                        #   runs check:links and the worker-tests job on PRs
+    deploy.yml          # Build + deploy to GitHub Pages on push to main and
+                        #   daily (schedule, for new TWB episodes); also runs
+                        #   tests, check:links and the worker-tests job on PRs
     apps-mirror.yml     # Fails a PR that edits a mirrored /apps file into a
                         #   state that doesn't match litbible's main. Scoped to
                         #   the PR's own changed files, so being behind litbible
@@ -190,6 +215,8 @@ workers/
                         #   workers/contact-form npm, and github-actions.
                         #   Minor+patch grouped per stream; majors ungrouped
                         #   (see Deployment)
+test/
+  podcast-feed.test.mjs # node:test suite for src/lib/podcast-feed.mjs
 docs/
   security-headers.md   # Cloudflare header setup the owner applies (FIXLIST OW1)
 DISASTER-RECOVERY.md    # Dashboards/secrets/redeploy path (repo root; not shipped)
@@ -212,15 +239,20 @@ LICENSE                 # Dual: MIT for the code, all-rights-reserved for the
 ## Deployment
 
 `.github/workflows/deploy.yml` runs on every push to `main`, on pull requests,
-and via manual dispatch: the `build` job `npm ci`s, `npm run check`s,
-`npm run build`s, `npm run check:links` (validates internal links in `dist/`),
+via manual dispatch, and **daily on a schedule** (13:37 UTC): the `build` job
+`npm ci`s, `npm run check`s, `npm test`s, `npm run build`s (which fetches the
+TWB feed first), `npm run check:links` (validates internal links in `dist/`),
 uploads `dist/` as a Pages artifact, and then the `deploy` job publishes to
 GitHub Pages. A separate `worker-tests` job runs the contact-form Worker's
 vitest suite (its own dependency tree, so its own `npm ci` in
 `workers/contact-form/`); it gates neither `build` nor `deploy`. The `deploy`
 job is skipped on pull requests (`if: github.event_name != 'pull_request'`),
 so PRs build, type-check, link-check, and run the Worker tests but never
-publish. The custom domain comes from `public/CNAME` (liberatingscripture.org).
+publish. The schedule exists only so /table-were-building/ picks up new
+episodes (and flips from "coming soon" at launch) without a push. It rebuilds
+`main` as-is, and `worker-tests` skips it. GitHub disables a schedule after 60
+days with no repo activity (merged Dependabot PRs count), so if new episodes
+stop appearing, check the Actions tab for that first. The custom domain comes from `public/CNAME` (liberatingscripture.org).
 Push to `main` is the site deploy.
 
 Two things in that workflow are load-bearing and easy to "clean up" by mistake:
@@ -630,7 +662,8 @@ background:
 | Green-deep (`--green-deep`) | `--focus-ring: var(--cream)` | 4.97:1 (plain `--green` is 1.89:1) |
 
 Pinned today — ink: `.site-footer`, `.support-strip` (index), `.support-hero`,
-`.community-hero`; green-deep: `.hero` (index), `.about-hero`, `.lit-hero`,
+`.community-hero`, and `.twb-hero` (a photo under an ink scrim) +
+`.twb-listen` on /table-were-building/; green-deep: `.hero` (index), `.about-hero`, `.lit-hero`,
 `.podcasts-hero`, `.notfound` (404). **A new ink or green-deep band must add
 the pin**, or the default deep-green ring vanishes on it in light mode. `/apps`
 needs no pin of its own — see Apps Page.
@@ -883,6 +916,10 @@ These are configured in-page; update the IDs/keys here if they ever change:
   silently blocked; see `docs/security-headers.md`.
 - **Give Lively** — donations (live; slug `liberating-scripture-collective`).
   Widget embedded in `src/pages/support.astro`.
+- **The Table We're Building** — hosted on Spotify for Creators (formerly
+  Anchor), feed `https://anchor.fm/s/1073d93a4/podcast/rss`; Apple Podcasts ID
+  `6817089730`; Spotify show `2HRCvjrMHmJyIPjhAxAWUT`. All of these live in
+  `src/lib/twb-show.mjs` and nowhere else.
 - **Apple Podcasts** — Found in Translation podcast ID `1586737797`.
 - **Spotify** — Found in Translation podcast ID `6S2wWaM5oqknwncPfOEyZ6`.
 - **YouTube** — `@foundintranslationpodcast`.
@@ -1110,6 +1147,57 @@ The page is `noindex` and excluded from the sitemap (`astro.config.mjs`), and
 mid-opt-out. It's linked from `/privacy`, and otherwise reached from email
 footers; it is deliberately not in the nav.
 
+## The Table We're Building (`/table-were-building/`)
+
+The show's own page is driven by its RSS feed, on the pattern litbible.net uses
+for Found in Translation. It departs from litbible only where this show differs.
+
+- **The URL is not ours to change.** The feed's channel `<link>` (set in
+  Spotify for Creators) is `https://liberatingscripture.org/table-were-building/`.
+  Moving the page means changing the feed too.
+- **Build-time snapshots, never a live fetch.** `scripts/fetch-podcast-feed.mjs`
+  runs first in `npm run build` and writes two committed snapshots to
+  `src/data/`: the RSS feed, and Apple's episode list from the public iTunes
+  lookup. On any failure it warns and keeps the last snapshot, so a host outage
+  can't fail a deploy. Commit whatever it changes along with your work. The
+  Apple list is *merged* across runs and never pruned, because Apple's lookup
+  is occasionally partial and an episode URL never changes once issued.
+- **Apple links are automatic; Spotify's are not.** Apple reports each
+  episode's RSS guid, so `parseFeed` joins on it, and the Apple player shows
+  the newest episode Apple has listed. Nothing public maps a feed episode to
+  its `open.spotify.com` URL, so per-episode Spotify links are hand-entered
+  in `EPISODE_LINKS` in `src/lib/twb-show.mjs`. An episode without one just
+  shows Apple. The Spotify *player* is show-level, so it never needs one.
+- **The Apple player is an episode embed, not the show embed.** Apple's show
+  embed now renders only the trailer, litbible's hard-won lesson (see
+  `toAppleEmbedUrl`). The show embed is only the fallback for before Apple
+  has listed anything.
+- **Trailers are kept**, unlike litbible's parser, which drops them. A new
+  show's trailer is its first and, for a while, only episode.
+- **"Coming soon" is derived, not written.** `launched` in
+  `src/lib/twb-episodes.ts` turns true once the feed carries anything but a
+  trailer. Until then the page, the /podcasts/ card and the homepage card say
+  "coming soon" and point at the trailer. The first real episode flips all
+  three on the next build (at the latest, the daily scheduled one) with no
+  edits. Don't hard-code launch copy anywhere; read `launched`.
+- **Feed text is never rendered as HTML.** Show notes reach the page only as
+  plain text (`htmlToParagraphs`/`summarize`). The feed is a third-party
+  document, and `set:html` would trust it with the page.
+- **Episode `#id`s are assigned oldest-first**, so a later episode reusing a
+  title gets the `-2` and existing deep links don't move.
+- **No YouTube, by design.** Unlike Found in Translation, the show has no
+  YouTube channel and won't (owner, 2026-09-30), so the page carries no video
+  player or link, and the parser knows only Apple and Spotify.
+- **The players are third-party embeds**, disclosed in `/privacy` and listed
+  in `frame-src` in `docs/security-headers.md`. Keep both in step with the
+  page.
+- **Design.** The hero is a full-bleed photo (`twb-hero-*.webp`, from
+  `scripts/image-sources/`) under an ink scrim, with the cover overlapping
+  its lower edge: litbible's FIT layout in this site's tokens. The players sit
+  on an **ink** band, not green-deep. The owner found deep green fought the
+  cover's blueprint blue and the photo's warm wood, and ink is the cover's own
+  corner color.
+
 ## Privacy Policy (`/privacy`)
 
 The policy covers **this site and the LIT Bible apps**, and is deliberately
@@ -1131,6 +1219,10 @@ content: **when either site's policy changes, change both.**
   the popover's storage changes, or a component starts setting anything new,
   update the Cookies paragraph in the same change — a privacy policy that
   under-reports storage is worse than one that says nothing.
+- **Third-party embeds must match the code too.** "What we don't do" names
+  each one (Give Lively on /support/, the Apple and Spotify players on
+  /table-were-building/). Adding or removing an embed means changing that
+  paragraph, plus `frame-src` in `docs/security-headers.md`.
 - Bump the effective date **and** the JSON-LD `dateModified` together.
 
 ## AI & Crawler Policy (`public/robots.txt`)

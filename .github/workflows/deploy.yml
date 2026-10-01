@@ -5,6 +5,13 @@ on:
     branches: [main]
   pull_request:
   workflow_dispatch:
+  # Daily rebuild from main, so /table-were-building/ picks up new episodes
+  # without anyone pushing: `npm run build` fetches the show's feed first
+  # (scripts/fetch-podcast-feed.mjs). It also flips the show from "coming soon"
+  # to launched the day its first real episode appears. Off the hour, as
+  # GitHub recommends, to dodge the top-of-hour scheduling backlog.
+  schedule:
+    - cron: "37 13 * * *"
 
 permissions:
   contents: read
@@ -22,6 +29,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run check
+      - run: npm test
       - run: npm run build
       # Verify every internal href/#fragment in dist/ resolves (no network).
       - run: npm run check:links
@@ -40,8 +48,11 @@ jobs:
   # The contact-form Worker is a separate package with its own dependency tree
   # (deliberately — it keeps vitest/workerd out of the site's root deps), so the
   # root `npm ci` above never installs it and its tests need their own job. It
-  # runs on pushes and PRs but is not a deploy dependency.
+  # runs on pushes and PRs but is not a deploy dependency. It skips the daily
+  # scheduled run: nothing in the Worker changes overnight, and the alpha
+  # miniflare it boots (see CLAUDE.md) shouldn't page anyone at 6am for it.
   worker-tests:
+    if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
     defaults:
       run:

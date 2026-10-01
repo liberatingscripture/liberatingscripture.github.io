@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:anchor="https://anchor.fm/xmlns" xmlns:podcast="https://podcastindex.org/namespace/1.0" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:psc="http://podlove.org/simple-chapters">
+	<channel>
+		<title><![CDATA[The Table We're Building]]></title>
+		<description><![CDATA[The Table We’re Building is a conversation with a trauma therapist and a spiritual director—wounded healers reclaiming faith after abuse, naming harm without shame, and crafting a bigger, braver table for belonging. 
+
+Pull up a chair for candied stories from fellow survivors, therapists, theologians, and activists who refuse to surrender Jesus and his work to the forces that weaponized them. Together we’ll practice consent-based spirituality, celebrate chosen family, and imagine a faith wide enough for everybody.]]></description>
+		<link>https://liberatingscripture.org/table-were-building/</link>
+		<generator>Anchor Podcasts</generator>
+		<lastBuildDate>Mon, 28 Sep 2026 19:20:44 GMT</lastBuildDate>
+		<atom:link href="https://anchor.fm/s/1073d93a4/podcast/rss" rel="self" type="application/rss+xml"/>
+		<author><![CDATA[Brandon Vélez Johnson and Aaron J. Smith]]></author>
+		<copyright><![CDATA[Brandon Vélez Johnson and Aaron J. Smith]]></copyright>
+		<language><![CDATA[en]]></language>
+		<atom:link rel="hub" href="https://pubsubhubbub.appspot.com/"/>
+		<itunes:author>Brandon Vélez Johnson and Aaron J. Smith</itunes:author>
+		<itunes:summary>The Table We’re Building is a conversation with a trauma therapist and a spiritual director—wounded healers reclaiming faith after abuse, naming harm without shame, and crafting a bigger, braver table for belonging. 
+
+Pull up a chair for candied stories from fellow survivors, therapists, theologians, and activists who refuse to surrender Jesus and his work to the forces that weaponized them. Together we’ll practice consent-based spirituality, celebrate chosen family, and imagine a faith wide enough for everybody.</itunes:summary>
+		<itunes:type>episodic</itunes:type>
+		<itunes:owner>
+			<itunes:name>Brandon Vélez Johnson and Aaron J. Smith</itunes:name>
+			<itunes:email>thetablewerebuilding@gmail.com</itunes:email>
+		</itunes:owner>
+		<itunes:explicit>true</itunes:explicit>
+		<itunes:category text="Religion &amp; Spirituality">
+			<itunes:category text="Christianity"/>
+		</itunes:category>
+		<itunes:image href="https://d3t3ozftmdmh3i.cloudfront.net/staging/podcast_uploaded_nologo/44064433/44064433-1790530903291-c8788f877383f.jpg"/>
+		<item>
+			<title><![CDATA[Teaser for The Table We're Building]]></title>
+			<description><![CDATA[<p>A podcast with a trauma therapist and a spiritual director—wounded healers reclaiming faith and naming harm without shame. Stories that build, embody, and welcome with honor people at the table of God. You are welcome here.<br></p>
+]]></description>
+			<link>https://podcasters.spotify.com/pod/show/thetablewerebuilding/episodes/Teaser-for-The-Table-Were-Building-e3pejdn</link>
+			<guid isPermaLink="false">70523e98-f7bd-4b73-a0a5-ae12f05938c8</guid>
+			<dc:creator><![CDATA[Brandon Vélez Johnson and Aaron J. Smith]]></dc:creator>
+			<pubDate>Sun, 27 Sep 2026 02:57:25 GMT</pubDate>
+			<enclosure url="https://anchor.fm/s/1073d93a4/podcast/play/126356343/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2026-8-27%2F6bae652f-ce69-9fbe-8f36-0143c8fdafdb.mp3" length="6504436" type="audio/mpeg"/>
+			<itunes:summary>&lt;p&gt;A podcast with a trauma therapist and a spiritual director—wounded healers reclaiming faith and naming harm without shame. Stories that build, embody, and welcome with honor people at the table of God. You are welcome here.&lt;br&gt;&lt;/p&gt;
+</itunes:summary>
+			<itunes:explicit>false</itunes:explicit>
+			<itunes:duration>00:05:55</itunes:duration>
+			<itunes:image href="https://d3t3ozftmdmh3i.cloudfront.net/staging/podcast_uploaded_nologo/44064433/44064433-1790530903291-c8788f877383f.jpg"/>
+			<itunes:episodeType>trailer</itunes:episodeType>
+		</item>
+	</channel>
+</rss>

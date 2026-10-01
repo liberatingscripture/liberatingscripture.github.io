@@ -17,7 +17,7 @@ import Layout from "../layouts/Layout.astro";
         "@id": "https://liberatingscripture.org/privacy/#webpage",
         url: "https://liberatingscripture.org/privacy/",
         name: "Privacy Policy | Liberating Scripture Collective",
-        dateModified: "2026-07-21",
+        dateModified: "2026-09-30",
         isPartOf: { "@id": "https://liberatingscripture.org/#website" },
       })}
     />
@@ -35,7 +35,7 @@ import Layout from "../layouts/Layout.astro";
           collect it in the first place.
         </p>
         <p class="privacy-effective">
-          Effective date: <time datetime="2026-07-21">July 21, 2026</time>
+          Effective date: <time datetime="2026-09-30">September 30, 2026</time>
         </p>
       </div>
     </header>
@@ -136,14 +136,23 @@ import Layout from "../layouts/Layout.astro";
           There are no accounts to create, no advertising networks, and no
           cross-site tracking. The single cookie we set is the announcement flag
           described above — it holds no personal data — and our only measurement
-          is the cookie-free, aggregate analytics. The one exception is the
-          donation widget on the
-          <a href="/support/">support page</a>: it is operated by
+          is the cookie-free, aggregate analytics. There are two exceptions,
+          both services from other companies embedded in a page. The donation
+          widget on the <a href="/support/">support page</a> is operated by
           <a href="https://www.givelively.org/">Give Lively</a>, runs on their
           systems, and may set its own cookies or storage when you use it to
           give (see
           <a href="https://www.givelively.org/privacy">Give Lively's privacy policy</a>).
-          Apart from that, you can read every page without telling us anything
+          And the audio players on
+          <a href="/table-were-building/">The Table We're Building's page</a>
+          are Apple Podcasts' and Spotify's own. They load from Apple's and
+          Spotify's servers when you open that page, so those companies can
+          see the visit and may set their own cookies or
+          storage, especially if you press play or are signed in to them (see
+          <a href="https://www.apple.com/legal/privacy/">Apple's privacy policy</a>
+          and
+          <a href="https://www.spotify.com/legal/privacy-policy/">Spotify's privacy policy</a>).
+          Apart from those, you can read every page without telling us anything
           about yourself.
         </p>
       </section>
@@ -248,14 +257,19 @@ import Layout from "../layouts/Layout.astro";
             Scripture Collective and the LIT Bible
           </li>
           <li>
-            <strong>Apple Podcasts</strong>, for the Found in Translation
-            podcast
+            <strong>Apple Podcasts</strong>, for our podcasts, Found in
+            Translation and The Table We're Building
           </li>
           <li>
-            <strong>Spotify</strong>, for the Found in Translation podcast
+            <strong>Spotify</strong>, for our podcasts, Found in Translation
+            and The Table We're Building
           </li>
           <li>
             <strong>YouTube</strong>, for the Found in Translation podcast
+          </li>
+          <li>
+            <strong>Spotify for Creators</strong> (anchor.fm), which hosts The
+            Table We're Building's RSS feed
           </li>
           <li>
             <strong>The App Store and Google Play</strong>, for the LIT Bible
@@ -301,8 +315,8 @@ import Layout from "../layouts/Layout.astro";
       <section aria-labelledby="privacy-changes">
         <h2 id="privacy-changes">Changes to this policy</h2>
         <p>
-          If the site or app gains features that touch your data, such as an
-          embedded podcast player, we'll describe them here before they matter
+          If the site or app gains features that touch your data, such as
+          another embedded service, we'll describe them here before they matter
           and update the effective date above. Changes that materially affect
           how app data is handled are also noted in the app's Translation
           Updates section.

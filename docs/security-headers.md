@@ -16,7 +16,10 @@
 > same day — the version used when the rule was first created carried a bare
 > `https://sibforms.com`, which matches none of the site's actual form targets
 > (see the `form-action` note below). Step 3's Report-Only watch is the part
-> still outstanding.
+> still outstanding. **Re-paste pending (2026-09-30):** the Report-Only value
+> below gained the two podcast-player origins in `frame-src` when
+> /table-were-building/ shipped. Until it's re-pasted, that page logs two
+> Report-Only violations; nothing is blocked either way.
 
 ## Design decisions (owner, 2026-07-18; CSP split revised 2026-07-22)
 
@@ -53,6 +56,8 @@
 | `fonts.gstatic.com` | /support/ | the font files that stylesheet references | font |
 | `challenges.cloudflare.com` | /contact/, every page (footer newsletter) | Turnstile script + its **iframe** | script/frame |
 | `1742a6b7.sibforms.com` | every page (footer newsletter), `/unsubscribe/` | the subscribe/unsubscribe **POST target** only — reached by our own `fetch`, and by a native form POST as fallback | connect/**form-action** |
+| `embed.podcasts.apple.com` | /table-were-building/ | Apple Podcasts episode player **iframe** (its 301s stay on this origin) | frame |
+| `open.spotify.com` | /table-were-building/ | Spotify show player **iframe** | frame |
 | `static.cloudflareinsights.com` | every page | Cloudflare Web Analytics beacon script | script/connect |
 | `cloudflareinsights.com` | every page | analytics beacon POST target | connect |
 | `/cdn-cgi/*` (rum, challenge-platform, speculation) | every page | Cloudflare edge (same-origin) | covered by `'self'` |
@@ -67,10 +72,11 @@
 > this table was built; the sibling litbible repo used a non-browser fetch and
 > twice concluded, wrongly, that its beacon was missing.
 
-No page statically embeds an `<iframe>`; the only frames created at runtime are
-Turnstile's and Give Lively's modal. The podcast links on /podcasts/ are plain
-outbound `<a>` links, **not** embedded players — so, unlike litbible, this
-site's `frame-src` does **not** need Apple/Spotify/YouTube.
+The only static `<iframe>`s are the two podcast players on
+/table-were-building/ (rows added 2026-09-30, origins confirmed from the page's
+own resource timing plus each embed URL's redirect chain). The frames created
+at runtime are Turnstile's and Give Lively's modal. /podcasts/ itself still only
+links out.
 
 ## Step 1 — HSTS (SSL/TLS → Edge Certificates)
 
@@ -97,7 +103,7 @@ X-Frame-Options: DENY
 Referrer-Policy: strict-origin-when-cross-origin
 Permissions-Policy: camera=(), microphone=(), geolocation=()
 Content-Security-Policy: frame-ancestors 'none'; object-src 'none'; base-uri 'self'
-Content-Security-Policy-Report-Only: default-src 'self'; form-action 'self' https://*.sibforms.com; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://secure.givelively.org https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://secure.givelively.org; img-src 'self' data: https://secure.givelively.org; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://secure.givelively.org https://static.cloudflareinsights.com https://cloudflareinsights.com https://*.sibforms.com; frame-src https://challenges.cloudflare.com https://secure.givelively.org; media-src 'self'
+Content-Security-Policy-Report-Only: default-src 'self'; form-action 'self' https://*.sibforms.com; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://secure.givelively.org https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://secure.givelively.org; img-src 'self' data: https://secure.givelively.org; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://secure.givelively.org https://static.cloudflareinsights.com https://cloudflareinsights.com https://*.sibforms.com; frame-src https://challenges.cloudflare.com https://secure.givelively.org https://embed.podcasts.apple.com https://open.spotify.com; media-src 'self'
 ```
 
 Notes on the values:
