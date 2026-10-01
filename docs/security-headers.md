@@ -16,10 +16,10 @@
 > same day — the version used when the rule was first created carried a bare
 > `https://sibforms.com`, which matches none of the site's actual form targets
 > (see the `form-action` note below). Step 3's Report-Only watch is the part
-> still outstanding. **Re-paste pending (2026-09-30):** the Report-Only value
-> below gained the two podcast-player origins in `frame-src` when
-> /table-were-building/ shipped. Until it's re-pasted, that page logs two
-> Report-Only violations; nothing is blocked either way.
+> still outstanding. Re-pasted again 2026-09-30, when /table-were-building/
+> shipped and `frame-src` gained the two podcast-player origins. Verified the
+> same day: the live Report-Only header matches the value below exactly, and
+> that page loads both players with no Report-Only violations.
 
 ## Design decisions (owner, 2026-07-18; CSP split revised 2026-07-22)
 
