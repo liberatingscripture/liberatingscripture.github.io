@@ -418,6 +418,23 @@ PRs afterward — `@dependabot close` as a comment is unreliable, so verify with
 a worktree, where `--delete-branch` skips the *local* branch but still deletes
 the remote one correctly.
 
+**Closing a superseded *ungrouped* PR suppresses that version everywhere,
+including files the manual change didn't touch.** Dependabot treats a closed
+single-dependency PR as "don't propose this version again". PR #28 (checkout
+4 → 7) was closed when the action majors landed by hand on 2026-07-28, so when
+`apps-mirror.yml` arrived on 08-02 pinned to `checkout@v6`, Dependabot never
+proposed v7 for it. The pin sat stale until the 2026-10-05 audit bumped it by
+hand. After landing a major by hand, grep the *whole* tree for the old version
+(`grep -rn '<pkg>@' .github/`) rather than trusting Dependabot to catch
+stragglers. Closing a *grouped* PR suppresses nothing, so this applies only to
+ungrouped ones, i.e. majors.
+
+**The 2026-10-05 audit is a second data point for "run `npm audit` too".**
+The alerts API reported 0 open, and no security PR came, while root
+`npm audit` found `devalue` (high, six advisories), `http-cache-semantics`
+(high) and `fast-uri` (moderate). All were in-range transitive bumps, fixed by
+`npm update devalue http-cache-semantics fast-uri --package-lock-only`.
+
 ### `wrangler`'s version is set by vitest-plugin, not by our range
 
 `@cloudflare/vitest-plugin` depends on `wrangler` at an **exact** version, not a
