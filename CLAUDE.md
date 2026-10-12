@@ -389,21 +389,21 @@ real runs, and each is a trap worth not re-entering:
   `npm view @astrojs/check peerDependencies`. When that range admits `^7`, merge
   it. **litbible.net's repo made the same call independently — keep the two in
   agreement.**
-- **A failing vitest 5 PR is the same shape for the same reason — also no
-  `ignore`.** `@cloudflare/vitest-plugin` (1.3.3 as of 2026-09-29) peers on
-  `vitest: "^4.1.0"`, as its predecessor pool-workers did, so vitest 5 dies in
-  `npm ci` with ERESOLVE and reddens
-  the `worker-tests` job — that was PR #77 (5.0.1, closed 2026-09-21), and #87
-  (5.0.2, closed 2026-09-29) exactly again. Each new stable 5.x re-proposes it,
-  which is the notification doing its job, not noise to suppress. Every argument
-  above transfers verbatim: the PR turning green is the only thing that would
-  report the peer range widening, and an `ignore` would mute a genuine vitest
-  advisory alongside it. Check with
-  `npm view @cloudflare/vitest-plugin peerDependencies`; merge when that
-  range admits `^5`. **The event to watch for is a vitest-plugin release, not a
-  vitest one** — this unblocks in lockstep with the exact pin described below,
-  which is also why a vitest major and a vitest-plugin major cannot be reviewed
-  independently of each other.
+- **A failing vitest 5 PR was the same shape for the same reason, and the
+  no-`ignore` call paid off.** Through 1.3.x, `@cloudflare/vitest-plugin`
+  peered on `vitest: "^4.1.0"`, as its predecessor pool-workers did, so vitest 5
+  died in `npm ci` with ERESOLVE and reddened the `worker-tests` job. That was
+  PR #77 (5.0.1, closed 2026-09-21), #87 (5.0.2, closed 2026-09-29), and #100
+  (5.0.3). Each new stable 5.x re-proposed it, which was the notification doing
+  its job, not noise to suppress. **vitest-plugin 1.4.0 (2026-10-08) widened
+  the peer to `^4.1.0 || ^5.0.0`.** The 2026-10-12 audit spotted it with
+  `npm view @cloudflare/vitest-plugin peerDependencies`, landed 1.4.0 on its
+  own (still on vitest 4), then `@dependabot rebase`d #100 so the vitest major
+  is reviewed in its own PR. **The event to watch for was a vitest-plugin
+  release, not a vitest one**: the block lifts in lockstep with the exact pin
+  described below, which is also why a vitest major and a vitest-plugin major
+  cannot be reviewed independently of each other. The same reasoning applies
+  to the next vitest major.
 
 With grouped security updates on, Dependabot now does most of that batching
 itself. The manual technique still matters when the real remedy is a major
@@ -435,10 +435,24 @@ The alerts API reported 0 open, and no security PR came, while root
 (high) and `fast-uri` (moderate). All were in-range transitive bumps, fixed by
 `npm update devalue http-cache-semantics fast-uri --package-lock-only`.
 
+**The 2026-10-12 audit is a third.** At the start, the alerts API reported 0
+open, while `npm audit` found **2 high in the root tree and 5 high in the
+worker**. The API caught up during the audit itself. Alerts #45–#47 appeared,
+and a root-only `source-map-js` security PR (#104) followed. Both came days
+after the advisories were published, and only after the hand fix was already
+on a branch. Two advisories caused all seven: `sharp` < 0.35.5
+(librsvg, GHSA-wq5f-xc86-pv6w) and `source-map-js` < 1.2.2 (GHSA-68fv-2mgg-jv7q).
+Root `sharp` arrived as an ordinary version-update PR (#101). The worker's copy
+came in through the plugin's pinned miniflare, so it needed vitest-plugin 1.4.0.
+`source-map-js` had no PR in either tree, and
+`npm update source-map-js --package-lock-only` fixed both. Three audits in a
+row now: treat `npm audit` as the primary signal and the alerts page as a
+lagging secondary.
+
 ### `wrangler`'s version is set by vitest-plugin, not by our range
 
 `@cloudflare/vitest-plugin` depends on `wrangler` at an **exact** version, not a
-range (1.3.3 pins `wrangler: "4.144.0"`, and `miniflare`, `zod` and `esbuild`
+range (1.4.0 pins `wrangler: "4.149.0"`, and `miniflare`, `zod` and `esbuild`
 the same way; `workerd` follows from those). The worker's own `package.json`
 asks for `wrangler: "^4.118.0"`, which that pin satisfies — so npm dedupes both
 onto **one flat copy**. That is the healthy state, and it is what makes
@@ -465,7 +479,7 @@ because the nested copies stay on the plugin's pinned versions regardless.
 **The structural fix, since 2026-09-29: `wrangler` and the plugin share one
 Dependabot group** (`worker-runtime` in `dependabot.yml`). The two release in
 lockstep: every plugin release pins the wrangler published minutes before it
-(verified across 1.2.3 to 1.3.3). So a PR that bumps both lands them on matching
+(verified across 1.2.3 to 1.3.3, and again at 1.3.6 and 1.4.0). So a PR that bumps both lands them on matching
 versions and stays flat, and the split PR should stop appearing. If one
 appears anyway:
 
@@ -494,9 +508,12 @@ appears anyway:
 ### The worker tree runs an alpha miniflare — deliberately
 
 `npm audit` in `workers/contact-form/` reports **0 vulnerabilities** as of
-2026-09-29, following the move to `@cloudflare/vitest-plugin` 1.3.3. That
-release pins miniflare `5.20260926.1-alpha`, which carries `undici` 7.29.1 and
-`sharp` 0.35.4. It closed alert #30 (`sharp`, libheif, open since
+2026-10-12, following the bump to `@cloudflare/vitest-plugin` 1.4.0. That
+release pins miniflare `5.20261006.1-alpha`, which carries `undici` 7.29.1 and
+`sharp` 0.35.5. (The 1.3.3 → 1.4.0 step was itself a security fix: 1.3.x's
+miniflare carried `sharp` 0.35.4, hit by a librsvg advisory that never showed
+up on the alerts page. See "The 2026-10-12 audit is a third" above.) The
+earlier move to 1.3.3 on 2026-09-29 closed alert #30 (`sharp`, libheif, open since
 mid-September) and alerts #37–#40, #43 and #44, a batch of `undici` advisories
 published 2026-09-28/29 covering `>=7.0.0 <7.29.1`. The **root** tree was hit by
 the same `undici` batch (8.10.0, via astro → unifont) and was fixed the same day
@@ -517,8 +534,8 @@ available tools pointed at the fix:
   while the new name had already shipped the patched miniflare.
 
 **The price is stated plainly, because it is the whole story:** the Worker tests
-boot inside an **alpha miniflare** (`5.20260926.1-alpha` as of vitest-plugin
-1.3.3). `zod` 3 → 4 rode in transitively back at pool-workers 0.21.3. Both are
+boot inside an **alpha miniflare** (`5.20261006.1-alpha` as of vitest-plugin
+1.4.0). `zod` 3 → 4 rode in transitively back at pool-workers 0.21.3. Both are
 dev-only. Every vitest-plugin bump moves that alpha forward again, and it
 releases almost daily. Treat each bump as a runtime swap and verify it
 accordingly, not as a version-number change.
@@ -552,7 +569,9 @@ intact. The vitest-plugin migration on 2026-09-29 cleared the same bar and
 added one more check worth repeating: because the plugin's pin also moves the
 **deploy** CLI (wrangler 4.124.0 → 4.144.0 that time), compare the dry-run
 bundle (`npm run check` writes it to `.wrangler-check/`) against `main`'s. It
-came out byte-identical.
+came out byte-identical. The 1.4.0 bump on 2026-10-12 cleared the whole bar
+again (wrangler 4.144.0 → 4.149.0, 28/28 tests, bindings intact, bundle
+byte-identical to `main`'s).
 
 **Why the alpha is an acceptable risk here, specifically.** The blast radius is
 dev-only in *both* directions: `undici` and miniflare reach only the local
