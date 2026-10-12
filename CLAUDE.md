@@ -435,9 +435,12 @@ The alerts API reported 0 open, and no security PR came, while root
 (high) and `fast-uri` (moderate). All were in-range transitive bumps, fixed by
 `npm update devalue http-cache-semantics fast-uri --package-lock-only`.
 
-**The 2026-10-12 audit is a third.** The alerts API again reported 0 open, and
-again no security PR came. Meanwhile `npm audit` found **2 high in the root
-tree and 5 high in the worker**. Two advisories caused all seven: `sharp` < 0.35.5
+**The 2026-10-12 audit is a third.** At the start, the alerts API reported 0
+open, while `npm audit` found **2 high in the root tree and 5 high in the
+worker**. The API caught up during the audit itself. Alerts #45–#47 appeared,
+and a root-only `source-map-js` security PR (#104) followed. Both came days
+after the advisories were published, and only after the hand fix was already
+on a branch. Two advisories caused all seven: `sharp` < 0.35.5
 (librsvg, GHSA-wq5f-xc86-pv6w) and `source-map-js` < 1.2.2 (GHSA-68fv-2mgg-jv7q).
 Root `sharp` arrived as an ordinary version-update PR (#101). The worker's copy
 came in through the plugin's pinned miniflare, so it needed vitest-plugin 1.4.0.
