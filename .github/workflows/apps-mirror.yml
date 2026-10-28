@@ -19,6 +19,7 @@ on:
     paths:
       - 'src/components/apps/**'
       - 'src/styles/pages/apps.css'
+      - 'src/content/apps-sections/**'
       - 'src/content/callouts/**'
       - 'src/content/examples/**'
       - 'src/content/seasons/**'

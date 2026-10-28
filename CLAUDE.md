@@ -72,20 +72,22 @@ src/
     SiteFooter.astro    # Dark footer + the Brevo newsletter form (see Privacy)
     AppsLaunchPopover.astro # LIT Bible app announcement modal (see Popover)
     LscMark.astro       # The LSC dove mark, inline (see The Brand Mark)
-    apps/               # /apps sections, a byte-for-byte MIRROR of litbible's
-                        #   (see Apps Page; enforced by apps-mirror.yml): Hero,
-                        #   ExamplesSlider, ReaderCallouts, ChurchYearCarousel,
-                        #   BigScreens, HumaneByDesign, JoinBeta,
-                        #   AboutTranslation, plus AppIcons + PlatformIcon
-                        #   (which live here, not top-level, so the imports
-                        #   match litbible's). Edit these on litbible, not here.
-                        #   rather than forking their own copies.
-  content.config.ts     # Astro content collections backing /apps: callouts,
-                        #   examples, seasons (see Apps Page) — ported from
-                        #   litbible; no other collections exist here
+    apps/               # /apps, a byte-for-byte MIRROR of litbible's (see Apps
+                        #   Page; enforced by apps-mirror.yml): AppsPage (the
+                        #   page body), the section components (Hero,
+                        #   AboutTranslation, ExamplesSlider, ReaderCallouts,
+                        #   ChurchYearCarousel, BigScreens, HumaneByDesign,
+                        #   JoinBeta), collections.ts + render.ts, AppIcons +
+                        #   PlatformIcon (which live here so the imports match
+                        #   litbible's), and litbible's own CLAUDE.md for the
+                        #   directory. Edit these on litbible, not here.
+  content.config.ts     # Spreads `appsCollections` from components/apps/
+                        #   collections.ts (the mirrored schemas); no other
+                        #   collections exist here
   content/
-    callouts/, examples/, seasons/ # /apps section copy as markdown
-                        #   frontmatter + body, ported from litbible verbatim
+    apps-sections/, callouts/, examples/, seasons/ # /apps copy as data: one
+                        #   JSON per section, markdown for the rest. Mirrored
+                        #   from litbible, where its Apps Page Studio edits them
   lib/
     lsc-mark.mjs        # The dove mark's path data + SVG builders — the single
                         #   source of truth, imported by BOTH LscMark.astro and
@@ -993,9 +995,19 @@ here — never the other way round.
   in litbible's notifier, which now diffs each push's whole range and fails
   loudly otherwise). `npm run check:mirror` reads litbible's `main` directly,
   so it is the check to trust. Run it before saying the two are in step.
+- **The page is data.** Since 2026-10, litbible's templates hold no copy: each
+  section's words, links, pictures, `background`, `order` and `hidden` live in
+  `src/content/apps-sections/<id>.json`, and `AppsPage.astro` draws them. Our
+  `content.config.ts` spreads the mirrored `appsCollections`, and our
+  `apps.astro` renders `<AppsPage />` inside LSC's Layout. A new section file
+  or `collections.ts` field arrives as one more mirror issue; add any new
+  file to `MIRRORED` in `check-apps-mirror.mjs` (and its folder to
+  `apps-mirror.yml`'s paths) when it does.
 - **Two things are deliberately NOT mirrored.** `src/pages/apps.astro` — two
   sites can't share a canonical URL, so its Layout props and JSON-LD head stay
-  LSC's own; keep only the *section list* in step. And
+  LSC's own. The section list is *not* part of the fork: both sites render the
+  mirrored `<AppsPage />`, so a reorder or new section never touches this repo's
+  `apps.astro`. And
   `src/styles/pages/apps-bridge.css` — LSC-only, and the reason `apps.css` can
   be a pure mirror.
 - **The screenshot bytes are mirrored by hand, not by CI.** They used to be a

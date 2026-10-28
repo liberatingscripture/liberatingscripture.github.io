@@ -49,7 +49,7 @@ npm run dev      # Start the dev server at http://localhost:4321
 src/
   components/   # SiteHeader, SiteFooter, AppsLaunchPopover, AppIcons,
                 #   PlatformIcon, LscMark, apps/ (the /apps page sections,
-                #   ported verbatim from litbible.net)
+                #   mirrored from litbible.net)
   content.config.ts, content/   # Content collections backing /apps
   lib/          # lsc-mark.mjs — the dove mark's geometry, shared by the
                 #   LscMark component and the brand-asset generator; the
