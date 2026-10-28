@@ -4,8 +4,8 @@
 // "Apps Page & Announcement Popover".
 //
 // THIS FILE is the one deliberate fork: two sites cannot share a canonical
-// URL, so the Layout props and JSON-LD head below are LSC's own. Keep only
-// the section list in step with litbible's src/pages/apps.astro.
+// URL, so the Layout props and JSON-LD head below are LSC's own. The section
+// list is not part of the fork: both sites render <AppsPage />.
 //
 // Everything else is byte-identical and enforced by CI (.github/workflows/
 // apps-mirror.yml): the components under src/components/apps/ and
@@ -16,13 +16,7 @@ import Layout from "../layouts/Layout.astro";
 // Bridge FIRST, then the litbible mirror — see apps-bridge.css's header.
 import "../styles/pages/apps-bridge.css";
 import "../styles/pages/apps.css";
-import Hero from "../components/apps/Hero.astro";
-import ExamplesSlider from "../components/apps/ExamplesSlider.astro";
-import ReaderCallouts from "../components/apps/ReaderCallouts.astro";
-import BigScreens from "../components/apps/BigScreens.astro";
-import HumaneByDesign from "../components/apps/HumaneByDesign.astro";
-import JoinBeta from "../components/apps/JoinBeta.astro";
-import AboutTranslation from "../components/apps/AboutTranslation.astro";
+import AppsPage from "../components/apps/AppsPage.astro";
 
 const IOS_URL = "https://apps.apple.com/app/id6772577879";
 const ANDROID_URL =
@@ -90,13 +84,5 @@ const ANDROID_URL =
     />
   </Fragment>
 
-  <div class="apps">
-    <Hero />
-    <AboutTranslation />
-    <ExamplesSlider />
-    <ReaderCallouts />
-    <BigScreens />
-    <HumaneByDesign />
-    <JoinBeta />
-  </div>
+  <AppsPage />
 </Layout>
