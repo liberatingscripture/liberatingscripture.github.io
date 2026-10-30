@@ -4,11 +4,11 @@
   "background": "plain",
   "eyebrow": "Supercharged on tablets and foldables",
   "title": "Expand your views,\nand your view.",
-  "text": "Browse the nerdy stuff without losing your place on iPhone Duo, iPad, and Android foldables.",
+  "text": "Browse the nerdy stuff without losing your place. Built for iPhone Duo, iPad, and Android foldables.",
   "devices": {
     "tablet": {
       "src": "/assets/screenshots/translation-ipad-2-framed.webp",
-      "alt": "LIT Bible on an iPad Air in landscape — the Glossary panel beside Matthew 5 in the side-by-side study view",
+      "alt": "LIT Bible on an iPad Air in landscape, with the Glossary panel beside Matthew 5 in the side-by-side study view",
       "width": 1300,
       "height": 945
     },
@@ -20,7 +20,7 @@
     },
     "duo": {
       "src": "/assets/screenshots/sacred-time-duo-2-framed.webp",
-      "alt": "LIT Bible on an unfolded iPhone Duo in landscape — the Today page for the First Sunday of Advent beside Mark 13",
+      "alt": "LIT Bible on an unfolded iPhone Duo in landscape, with the Today page for the First Sunday of Advent beside Mark 13",
       "width": 1300,
       "height": 944
     }

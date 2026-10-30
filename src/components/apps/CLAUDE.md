@@ -107,8 +107,8 @@ templates hold no copy at all: **never write a word back into a component.**
   2026-10-28): its title is the page's only `<h1>`. The schema check refuses a
   hidden hero, and the board offers no Hide for it.
 - **Image `width`/`height` give the shape before the picture loads.** The ones
-  the refactor carried over are the original PNGs' sizes (1350×2760 for a file
-  that ships at 489×1000), which is the same shape; the Studio writes each new
+  the refactor carried over are the original PNGs' sizes (the hero's Android picture says 1187×2513 for
+  a file that ships at 472×1000), which is the same shape; the Studio writes each new
   picture's real size. The carousel's `frame` (603×1311) is a shade taller
   than its screenshots (489×1000), as it always was; the Studio fixes it the
   first time a request changes a carousel screenshot (`fitCarouselFrame`).
@@ -136,8 +136,9 @@ the templates, and would publish without anyone applying this repo's rules.
   page model, the rules and each image's size, written by Claude from
   `npm run studio:apps -- seed`), `studio/draft` (BDR's unsent edits; Claude
   never writes it; the board saves typing when the field is left, and never
-  redraws a panel while a text field has focus, since that drops the caret), and `requests/rNNNN` (sent batches, whose `status`,
-  `results`, `calls`, `pr`, `preview` and `log` Claude updates). Uploaded
+  redraws a panel while a text field has focus, since that drops the caret),
+  and `requests/rNNNN` (sent batches, whose `status`, `results`, `calls`,
+  `pr`, `preview` and `log` Claude updates). Uploaded
   pictures are in its asset store; a change holds the asset id.
 - **`scripts/apps-studio/core.mjs` is the one rule set**: reading the content
   files into the model, applying a change (refused as a conflict when the page
@@ -174,7 +175,12 @@ the templates, and would publish without anyone applying this repo's rules.
   file it wrote before stopping (`undo.mjs`): a replaced file gets its old
   bytes, a new one is removed, nothing else is touched. A raw iPhone or iPad
   screenshot can be framed by the `frames` CLI (Apple devices only, with
-  BDR's saved colors); Android and foldable pictures arrive framed. The app
+  BDR's saved colors); Android and foldable pictures arrive framed. A
+  picture's fully clear margin is cut away before it ships (`opaqueBox` in
+  `store.mjs`; never the icons, never a picture with no transparency), since
+  the page lines devices up by their pictures' edges and a framed iPhone came
+  with a margin the Android picture didn't, which stood it above the hero's
+  baseline (BDR, 2026-10-28). The app
   icons are replaced in place, so the home page, the Android banner and the
   share card follow.
 - **A picture can be added to a section** (BDR, 2026-10-27; first use, an
