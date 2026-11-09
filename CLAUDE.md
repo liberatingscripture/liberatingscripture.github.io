@@ -337,8 +337,8 @@ Two things the config buys that the toggles could not:
   means `@astrojs/check` + `sharp` (root); **keep the list in step with the 0.x
   entries in each `package.json`.** The worker stream still excludes
   `@cloudflare/vitest-plugin`, but no longer for this reason — it is 1.x now.
-  It stays out because every release of it, patches included, pins a new alpha
-  miniflare and a new wrangler, i.e. swaps the test runtime and the deploy CLI.
+  It stays out because every release of it, patches included, pins a new
+  prerelease miniflare and a new wrangler, i.e. swaps the test runtime and the deploy CLI.
   The proof was PR #41 on 2026-08-03: pool-workers 0.19.0 →
   0.20.1 arrived as a grouped "minor" carrying release notes headed *"Breaking
   change"*, an **alpha** miniflare 5, and a transitive zod 3 → 4 — in the one
@@ -348,12 +348,13 @@ Two things the config buys that the toggles could not:
   that risk. The exclusion has kept doing its job three times since, each time
   surfacing a pool-workers bump as its own reviewable PR rather than burying it
   in the group: 0.20.3 on 2026-08-10 (#46, held), 0.21.3 on 2026-08-17
-  (#52, **merged** — see "The worker tree runs an alpha miniflare" below), and 0.22.0
+  (#52, **merged** — see "The worker tree runs a prerelease miniflare" below), and 0.22.0
   on 2026-08-24 (#57, **merged**). All three carried patched `undici`, which is
   what made them a different call from #41's. Note what the exclusion bought:
   the decision to boot the test suite on an alpha runtime got made deliberately,
   in its own PR, rather than riding in unread under a "minor" label — and it
-  keeps getting re-made, since every vitest-plugin bump advances that alpha.
+  keeps getting re-made, since every vitest-plugin bump advances that
+  prerelease.
 
 Three details in that file were settled on 2026-07-28/29 after watching its first
 real runs, and each is a trap worth not re-entering:
@@ -507,7 +508,7 @@ appears anyway:
   lockfile diff larger than the bump implies, since `vitest` drags `vite` and
   `rolldown` platform binaries with it.
 
-### The worker tree runs an alpha miniflare — deliberately
+### The worker tree runs a prerelease miniflare — deliberately
 
 `npm audit` in `workers/contact-form/` reports **0 vulnerabilities** as of
 2026-10-12, following the bump to `@cloudflare/vitest-plugin` 1.4.0. That
@@ -536,11 +537,15 @@ available tools pointed at the fix:
   while the new name had already shipped the patched miniflare.
 
 **The price is stated plainly, because it is the whole story:** the Worker tests
-boot inside an **alpha miniflare** (`5.20261006.1-alpha` as of vitest-plugin
-1.4.0). `zod` 3 → 4 rode in transitively back at pool-workers 0.21.3. Both are
-dev-only. Every vitest-plugin bump moves that alpha forward again, and it
-releases almost daily. Treat each bump as a runtime swap and verify it
-accordingly, not as a version-number change.
+boot inside a **prerelease miniflare 5**. It was an alpha from #52 through
+vitest-plugin 1.4.0 (`5.20261006.1-alpha`, miniflare's last alpha). From
+plugin 1.4.4 (PR #108, 2026-10-21) on, the pin is a **beta**
+(`5.20261023.3-beta` at 1.4.11). Beta is a step toward stable, not stable:
+nothing about the risk below changed with it. `zod` 3 → 4 rode in
+transitively back at pool-workers 0.21.3. Both are dev-only. Every
+vitest-plugin bump moves that prerelease forward again, and it releases almost
+daily. Treat each bump as a runtime swap and verify it accordingly, not as a
+version-number change.
 
 The alpha arrived with PR #52 on 2026-08-17 (pool-workers 0.19.1 → 0.21.3),
 which took `undici` to 7.29.0 and cleared that month's advisories.
@@ -559,7 +564,10 @@ This reverses a call declined twice before (#41 on 2026-08-03, #46 on
   dependencies.undici` reporting ≥ 7.29.0 — now passes without any stable
   release existing. The newest **stable** miniflare is still `4.20260730.0`,
   still pinned to the affected 7.28.0. Do not re-read that trigger as evidence
-  a stable fix shipped; it is not.
+  a stable fix shipped; it is not. The dist-tags have since moved again (seen
+  2026-11-09): `latest` is back on stable `4.20260730.0`, and the 5.x line
+  publishes under a separate `beta` tag. So `@latest` says nothing about 5.x
+  in either direction. Read the version list instead (below).
 
 **What was verified before merging — and the bar to clear for the next one.**
 Green CI was not treated as sufficient, since the risk is a runtime swap rather
@@ -575,17 +583,17 @@ came out byte-identical. The 1.4.0 bump on 2026-10-12 cleared the whole bar
 again (wrangler 4.144.0 → 4.149.0, 28/28 tests, bindings intact, bundle
 byte-identical to `main`'s).
 
-**Why the alpha is an acceptable risk here, specifically.** The blast radius is
+**Why the prerelease is an acceptable risk here, specifically.** The blast radius is
 dev-only in *both* directions: `undici` and miniflare reach only the local
 simulator and test harness — the deployed Worker runs on Cloudflare's runtime
 and bundles none of it, and the site build never touches this tree. So the
-advisories were never a shipped-code risk, and neither is the alpha. If the
-alpha regresses, the Worker tests fail loudly in the `worker-tests` job; it
+advisories were never a shipped-code risk, and neither is the prerelease. If
+the prerelease regresses, the Worker tests fail loudly in the `worker-tests` job; it
 cannot quietly ship anything bad. That asymmetry — loud failure, no production
 exposure — is what made this worth taking and what made the earlier refusals
 defensible too. Neither call was wrong on its facts.
 
-**If the alpha proves flaky**, pinning back to an older harness reopens
+**If the prerelease proves flaky**, pinning back to an older harness reopens
 advisories. Going back to pool-workers 0.22.0 reopens the seven listed above,
 and going back to 0.19.x reopens the August five as well. That is the trade,
 not a regression to fix sideways. Revisit

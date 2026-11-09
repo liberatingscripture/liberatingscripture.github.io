@@ -145,7 +145,8 @@ updates:
       # The test runtime and the deploy CLI, as ONE unit. Listed first on
       # purpose: a dependency goes to the first group it matches.
       #
-      # @cloudflare/vitest-plugin pins `wrangler` (and a 5.x ALPHA `miniflare`)
+      # @cloudflare/vitest-plugin pins `wrangler` (and a 5.x PRERELEASE
+      # `miniflare`, alpha through 1.4.0 and beta since 1.4.4)
       # at EXACT versions, and the two release in lockstep: every plugin
       # release pins the wrangler published minutes before it (checked across
       # ten consecutive releases, 1.2.3 to 1.3.3). That makes this pair the
@@ -194,16 +195,18 @@ updates:
     # workerd runtime the tests boot. Each gets its own PR.
 
   # ---------------------------------------------------------------------------
-  # Stream 3 — GitHub Actions used by .github/workflows/deploy.yml
-  # (checkout, setup-node, upload-pages-artifact, deploy-pages). Monthly: these
+  # Stream 3 — GitHub Actions used by .github/workflows/ (deploy.yml uses
+  # checkout, setup-node, upload-pages-artifact, deploy-pages; apps-mirror.yml
+  # reuses checkout and setup-node). Monthly: these
   # move slowly, and a stale action is a CI concern, not a shipped-code one.
   # ---------------------------------------------------------------------------
   - package-ecosystem: github-actions
     directory: "/"
     schedule:
       interval: monthly
-    # 5, not 3. There are four actions in deploy.yml and majors are ungrouped,
-    # so a limit of 3 silently starved setup-node on the first run: checkout,
+    # 5, not 3. There are four distinct actions across the workflows and
+    # majors are ungrouped, so a limit of 3 silently starved setup-node on the
+    # first run: checkout,
     # deploy-pages and upload-pages-artifact filled every slot and setup-node's
     # bump never got a PR at all. Keep this at least one above the action count.
     open-pull-requests-limit: 5
