@@ -1020,12 +1020,18 @@ here — never the other way round.
   be a pure mirror.
 - **The screenshot bytes are mirrored by hand, not by CI.** They used to be a
   third exception (this repo shipped full-resolution originals); it now ships
-  litbible's ~2x-display-size copies, so all 12 files under
-  `public/assets/screenshots/` are byte-identical to litbible's. They are
+  litbible's ~2x-display-size copies, so every file under
+  `public/assets/screenshots/` is byte-identical to litbible's. They are
   deliberately absent from `MIRRORED` in `check-apps-mirror.mjs`, which reads
   files as UTF-8 and folds CRLF — that mangles binaries, so enforcing them
-  needs a hash path the script doesn't have yet. Re-copy by hand if either side
-  re-exports. The full-resolution originals are archived in litbible's
+  needs a hash path the script doesn't have yet. **So a green `check:mirror`
+  says nothing about them**: litbible's #403 re-cut `iphone-john-1.webp` and
+  changed its size in `hero.json`, and #119 carried the JSON across but not
+  the image, which went unnoticed until #120. Whenever a mirrored JSON names
+  a screenshot, `cmp` each file against a litbible checkout too. litbible
+  also carries three screenshots nothing on either site references
+  (`android-matthew-5`, `iphone-glossary`, `iphone-matthew-5`); leave them
+  out. The full-resolution originals are archived in litbible's
   `_source-images/screenshots/`, not here. Filenames are lowercase-kebab with no
   spaces on both sides precisely so the components can carry identical `src`
   strings.
