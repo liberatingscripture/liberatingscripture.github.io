@@ -14,14 +14,10 @@
  *   - src/styles/pages/apps-bridge.css  LSC-only; exists precisely so that
  *                                   apps.css can stay a pure mirror
  *
- * Absent for a different reason:
- *   - public/assets/screenshots/*   these ARE byte-identical to litbible's
- *                                   now, but this script reads every file as
- *                                   UTF-8 and folds CRLF (see lf() below),
- *                                   which corrupts binary comparison. Covering
- *                                   them means reading Buffers and comparing
- *                                   hashes for binary extensions. Until then
- *                                   they are mirrored by hand.
+ * Images (BINARY below) are compared as raw bytes; everything else is read
+ * as UTF-8 with CRLF folded (see lf()). Folding would corrupt an image, and a
+ * re-cut screenshot is exactly the drift a text-only check missed: litbible's
+ * #403 re-cut iphone-john-1.webp, and only its hero.json came across.
  *
  * Usage:
  *   node scripts/check-apps-mirror.mjs           compare against litbible main
@@ -80,16 +76,39 @@ export const MIRRORED = [
   "src/content/seasons/easter.md",
   "src/content/seasons/lent.md",
   "src/content/seasons/ordinary-time.md",
+  "public/assets/screenshots/android-foldable-philippians-2.webp",
+  "public/assets/screenshots/android-john-1.webp",
+  "public/assets/screenshots/android-romans-8.webp",
+  "public/assets/screenshots/carousel/hebrews-1-advent.webp",
+  "public/assets/screenshots/carousel/hebrews-1-christmas.webp",
+  "public/assets/screenshots/carousel/hebrews-1-easter.webp",
+  "public/assets/screenshots/carousel/hebrews-1-lent.webp",
+  "public/assets/screenshots/carousel/hebrews-1-ordinary-time.webp",
+  "public/assets/screenshots/iphone-john-1.webp",
+  "public/assets/screenshots/sacred-time-duo-2-framed.webp",
+  "public/assets/screenshots/sacred-time-iphone-1-framed.webp",
+  "public/assets/screenshots/study-iphone-1-framed.webp",
+  "public/assets/screenshots/translation-ipad-2-framed.webp",
 ];
+
+/** Compared byte for byte rather than as text. */
+const BINARY = /\.(webp|png|jpe?g|avif|gif)$/i;
 
 /** Both repos normalize to LF via .gitattributes; fold anyway so a Windows
  *  working copy doesn't report drift the committed blobs don't have. */
 const lf = (s) => s.replace(/\r\n/g, "\n");
 
+/** A file's contents in comparable form: raw bytes for an image, LF text
+ *  otherwise. */
+const contents = async (p) =>
+  BINARY.test(p) ? readFile(p) : lf(await readFile(p, "utf8"));
+
+const same = (a, b) => (Buffer.isBuffer(a) ? a.equals(b) : a === b);
+
 async function fetchUpstream(file, localRoot) {
   if (localRoot) {
     const p = path.join(localRoot, file);
-    return existsSync(p) ? lf(await readFile(p, "utf8")) : null;
+    return existsSync(p) ? contents(p) : null;
   }
   const url = `https://raw.githubusercontent.com/${UPSTREAM}/${REF}/${file}`;
   const res = await fetch(url);
@@ -97,7 +116,9 @@ async function fetchUpstream(file, localRoot) {
   if (!res.ok) {
     throw new Error(`${url} → HTTP ${res.status}`);
   }
-  return lf(await res.text());
+  return BINARY.test(file)
+    ? Buffer.from(await res.arrayBuffer())
+    : lf(await res.text());
 }
 
 async function main() {
@@ -144,8 +165,7 @@ async function main() {
       continue;
     }
 
-    const local = lf(await readFile(file, "utf8"));
-    if (local !== upstream) drift.push(file);
+    if (!same(await contents(file), upstream)) drift.push(file);
   }
 
   const source = localRoot ? localRoot : `litbible ${REF}`;
