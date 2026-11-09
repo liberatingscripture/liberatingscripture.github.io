@@ -3,7 +3,7 @@
 // the popover of the same name on litbible.net (keep the two in step); the CTA
 // points at this site's own /apps page.
 //
-// Shown once per visitor (cookie lsc_apps_launch_v1, 30-day expiry), and only
+// Shown once per visitor (cookie lsc_apps_launch_v1, 365-day expiry), and only
 // from the 2nd pageview of a session so it never fires on a search entrance.
 // This is the site's single announcement slot: Layout renders exactly one
 // popover component.
@@ -337,7 +337,7 @@ const APPS_URL = "/apps/";
 
 <script>
   const COOKIE_NAME = "lsc_apps_launch_v1";
-  const COOKIE_DAYS = 30;
+  const COOKIE_DAYS = 365;
 
   function getCookie(name: string): string | null {
     const match = document.cookie.match(

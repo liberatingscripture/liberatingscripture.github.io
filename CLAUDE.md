@@ -151,8 +151,9 @@ public/                 # Served as-is at the site root:
                         #   hairline ring around the covers — keep it.
                         #   twb-cover-720.webp and twb-hero-{640,1280,1920}.webp
                         #   are build:images output for /table-were-building/
-  assets/screenshots/   # App screenshots for /apps, as WebP — copied byte-for-
-                        #   byte from litbible, but by hand, not CI (see Apps Page)
+  assets/screenshots/   # App screenshots for /apps, as WebP — mirrored byte-for-
+                        #   byte from litbible, checked by check:mirror (see Apps
+                        #   Page)
     carousel/           #   Hebrews 1 in each of the five liturgical seasons,
                         #     for ChurchYearCarousel
   assets/og/            # Open Graph share images: og-default.png (site-wide
@@ -1018,20 +1019,21 @@ here — never the other way round.
   `apps.astro`. And
   `src/styles/pages/apps-bridge.css` — LSC-only, and the reason `apps.css` can
   be a pure mirror.
-- **The screenshot bytes are mirrored by hand, not by CI.** They used to be a
-  third exception (this repo shipped full-resolution originals); it now ships
-  litbible's ~2x-display-size copies, so every file under
-  `public/assets/screenshots/` is byte-identical to litbible's. They are
-  deliberately absent from `MIRRORED` in `check-apps-mirror.mjs`, which reads
-  files as UTF-8 and folds CRLF — that mangles binaries, so enforcing them
-  needs a hash path the script doesn't have yet. **So a green `check:mirror`
-  says nothing about them**: litbible's #403 re-cut `iphone-john-1.webp` and
-  changed its size in `hero.json`, and #119 carried the JSON across but not
-  the image, which went unnoticed until #120. Whenever a mirrored JSON names
-  a screenshot, `cmp` each file against a litbible checkout too. litbible
-  also carries three screenshots nothing on either site references
-  (`android-matthew-5`, `iphone-glossary`, `iphone-matthew-5`); leave them
-  out. The full-resolution originals are archived in litbible's
+- **The screenshots are mirrored too, compared as raw bytes.** They used to be
+  a third exception (this repo shipped full-resolution originals); it now
+  ships litbible's ~2x-display-size copies, so every file under
+  `public/assets/screenshots/` is byte-identical to litbible's and listed in
+  `MIRRORED`. The script compares anything matching its `BINARY` pattern
+  byte for byte, because its text path folds CRLF, which would mangle an
+  image. They were unchecked until #120. Before that, litbible's #403 re-cut
+  `iphone-john-1.webp` and changed its size in `hero.json`, and #119 carried
+  the JSON across but not the image. **CI alone still wouldn't catch that
+  case**: it checks only a PR's own changed files, so a PR that copies just
+  the JSON never looks at the image. Run the full `npm run check:mirror`
+  before calling a mirror PR done. A new screenshot on litbible needs adding
+  to `MIRRORED`. litbible also carries three screenshots nothing on either
+  site references (`android-matthew-5`, `iphone-glossary`,
+  `iphone-matthew-5`); leave them out. The full-resolution originals are archived in litbible's
   `_source-images/screenshots/`, not here. Filenames are lowercase-kebab with no
   spaces on both sides precisely so the components can carry identical `src`
   strings.
@@ -1096,7 +1098,8 @@ here — never the other way round.
   to. Keep the gating if you touch the component.
 - **The popover is the site's single announcement slot.** `Layout.astro`
   renders exactly one. It shows once per visitor (cookie `lsc_apps_launch_v1`,
-  30 days) and only from the **2nd pageview of a session**, never on a session
+  365 days, matching litbible's since its #424; `/privacy` states the
+  lifetime, so change both together) and only from the **2nd pageview of a session**, never on a session
   entrance — a modal on a search-landing page is what Google's
   intrusive-interstitial penalty targets. It's also suppressed on `/apps` (its
   own CTA destination), `/lit-bible` (which carries the announcement in-page),
