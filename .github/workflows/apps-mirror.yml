@@ -23,6 +23,7 @@ on:
       - 'src/content/callouts/**'
       - 'src/content/examples/**'
       - 'src/content/seasons/**'
+      - 'public/assets/screenshots/**'
   workflow_dispatch: # full check on demand, ignoring which files changed
 
 jobs:
