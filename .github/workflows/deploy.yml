@@ -18,6 +18,27 @@ permissions:
   pages: write
   id-token: write
 
+# One queue for every run that can deploy (push to main, schedule, dispatch),
+# and a separate queue per pull request. Both halves are load-bearing:
+#
+# - Main's runs queue WHOLE, in the order they were triggered. GitHub keeps one
+#   running and one pending per group, and a newcomer replaces the pending one.
+#   So the last commit merged is always the last one deployed. When the group
+#   sat on the deploy job instead, deploys queued in the order their BUILDS
+#   finished: on 2026-11-16, three merges ten seconds apart left the site one
+#   commit behind main, because #129's deploy queued before #128's and was
+#   replaced by it.
+# - Each PR gets its own group, so PRs never contend with each other or with
+#   main. One global group here is what cancelled three of five Dependabot PRs'
+#   checks on 2026-07-28, since grouped Dependabot opens PRs in batches.
+#
+# Never also put a `pages` group on a job. The run already holds it, so GitHub
+# cancels the job as a deadlock between the workflow and the job. See
+# CLAUDE.md → Deployment.
+concurrency:
+  group: ${{ github.event_name == 'pull_request' && format('deploy-pr-{0}', github.event.pull_request.number) || 'pages' }}
+  cancel-in-progress: false
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -49,7 +70,7 @@ jobs:
   # (deliberately — it keeps vitest/workerd out of the site's root deps), so the
   # root `npm ci` above never installs it and its tests need their own job. It
   # runs on pushes and PRs but is not a deploy dependency. It skips the daily
-  # scheduled run: nothing in the Worker changes overnight, and the alpha
+  # scheduled run: nothing in the Worker changes overnight, and the prerelease
   # miniflare it boots (see CLAUDE.md) shouldn't page anyone at 6am for it.
   worker-tests:
     if: github.event_name != 'schedule'
@@ -71,15 +92,8 @@ jobs:
     needs: build
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
-    # The `pages` singleton belongs HERE, on the deploy job, not at the workflow
-    # level. GitHub Pages only requires that real *deployments* be serialized —
-    # scoping it to the workflow made every PR contend for one global slot, so a
-    # batch of PRs opened together cancelled each other's builds before they ran
-    # (three of five Dependabot PRs got zero checks on 2026-07-28 this way).
-    # Grouped Dependabot delivers PRs in batches by design, so keep it job-level.
-    concurrency:
-      group: pages
-      cancel-in-progress: false
+    # Serialized by the workflow-level `concurrency` above. Don't add a job-level
+    # group here (see the note there).
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

@@ -267,12 +267,31 @@ Two things in that workflow are load-bearing and easy to "clean up" by mistake:
   silently missing `/.well-known/`, and **no CI job catches it**: `check:links`
   reads `dist/` *before* the upload, and `deploy` never runs on a PR. The only
   signal is the live site 404ing.
-- **The `pages` concurrency group lives on the `deploy` job, not the workflow.**
-  Pages only needs real deployments serialized. At workflow level, every PR
-  contended for one global slot, so PRs opened together cancelled each other's
-  builds before they ran — three of five Dependabot PRs got zero checks that way
-  on 2026-07-28. Grouped Dependabot delivers PRs in batches by design, so this
-  has to stay job-scoped.
+- **Concurrency is workflow-level, with one `pages` queue for `main` and a
+  separate group per PR.** The group key is an expression:
+  `deploy-pr-<number>` on `pull_request`, `pages` for everything else (push,
+  schedule, dispatch). GitHub keeps one running and one pending run per group,
+  and a newcomer replaces the pending one. Each half of the key exists because
+  the simpler setup broke:
+  - **One global group at workflow level** made every PR contend for one slot,
+    so PRs opened together cancelled each other's checks before they ran.
+    Three of five Dependabot PRs got zero checks that way on 2026-07-28, and
+    grouped Dependabot opens PRs in batches by design.
+  - **A `pages` group on the `deploy` job only** (the fix for that, until
+    2026-11-16) queued deploys in the order their *builds finished*, not merge
+    order. Three merges ten seconds apart left the site one commit behind
+    `main`: #129's deploy queued first and was replaced ("a higher priority
+    waiting request for pages exists") by #128's. Neither `cancel-in-progress`
+    value helps there, because both act in arrival order.
+
+  Queueing whole runs on `main` makes arrival order the trigger order, so the
+  last merge deploys last. The cost is that a run superseded while pending
+  skips its own build and tests, which is fine because the newer run covers a
+  superset. **Don't also add a job-level `pages` group**: the run already
+  holds it, and GitHub cancels the job as a workflow/job deadlock. To confirm
+  the live commit after a burst of merges, compare
+  `gh api 'repos/liberatingscripture/liberatingscripture.github.io/deployments?environment=github-pages&per_page=1' --jq '.[0].sha'`
+  with `git rev-parse origin/main`.
 
 Dependency updates run on **both** of Dependabot's halves, and the distinction
 between them is the thing to keep straight:
