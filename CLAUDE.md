@@ -294,7 +294,13 @@ between them is the thing to keep straight:
   — none does today, so the toggle governs unopposed.
 - **Scheduled version updates** come from `.github/dependabot.yml`, added
   2026-07-28. Three streams: root npm and `workers/contact-form` npm (weekly),
-  and github-actions (monthly).
+  and github-actions (monthly). All three run at **10:25 UTC** (Mondays for
+  npm, the 1st of the month for actions) so they land alongside litbible's
+  (owner's choice, 2026-11-16). The time comes from this file's
+  `schedule.time`. litbible sets no `time:`, so its slot is one GitHub
+  assigned that repo, observed in its job history and steady in UTC across
+  the DST change. If it drifts, compare the two repos'
+  `gh run list --workflow "Dependabot Updates"` and follow litbible.
 
 The config **reverses** the earlier decision recorded in FIXLIST S15/OW8 to
 follow litbible's precedent of toggles-only and no committed yml. That
