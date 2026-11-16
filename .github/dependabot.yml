@@ -24,11 +24,18 @@ updates:
   # ---------------------------------------------------------------------------
   - package-ecosystem: npm
     directory: "/"
+    # Monday 10:25 UTC, to land alongside litbible's weekly PRs (owner's
+    # request, 2026-11-16). litbible's own config sets no `time:`, so its hour
+    # is one GitHub assigned that repo: its PRs have opened at ~10:25 UTC
+    # every Monday since at least 2026-10-26, and stayed there across the DST
+    # change, which is why this is pinned in UTC rather than Pacific. If
+    # litbible ever sets an explicit `time:`, copy that instead: 10:25 is an
+    # observed time, not a configured one, so GitHub could move it.
     schedule:
       interval: weekly
       day: monday
-      time: "09:00"
-      timezone: America/Los_Angeles
+      time: "10:25"
+      timezone: Etc/UTC
     # 8, against 9 direct dependencies. Raised from 5 when the 0.x
     # exclude-patterns went in: every exclusion converts a package from "rides
     # in the group PR" to "gets its own PR", so the worst-case PR count for
@@ -127,11 +134,12 @@ updates:
   # ---------------------------------------------------------------------------
   - package-ecosystem: npm
     directory: "/workers/contact-form"
+    # Same slot as stream 1 (litbible's Monday 10:25 UTC; see the note there).
     schedule:
       interval: weekly
       day: monday
-      time: "09:00"
-      timezone: America/Los_Angeles
+      time: "10:25"
+      timezone: Etc/UTC
     # 6: two group PRs plus one per direct dependency's major (4 deps), the
     # worst case this stream can legitimately want open at once. See stream 1
     # for why a starved stream is worse than a generous limit.
@@ -202,8 +210,14 @@ updates:
   # ---------------------------------------------------------------------------
   - package-ecosystem: github-actions
     directory: "/"
+    # Monthly runs on the 1st. Pinned to 10:25 UTC like streams 1 and 2: with
+    # no `time:` this stream ran at GitHub's pick for this repo (~23:36 UTC),
+    # while litbible's unpinned monthly run lands at the same ~10:25 UTC slot
+    # as its weekly ones (job history, Aug to Nov 2026).
     schedule:
       interval: monthly
+      time: "10:25"
+      timezone: Etc/UTC
     # 5, not 3. There are four distinct actions across the workflows and
     # majors are ungrouped, so a limit of 3 silently starved setup-node on the
     # first run: checkout,
